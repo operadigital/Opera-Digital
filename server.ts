@@ -172,36 +172,41 @@ INSTRUÇÕES DE PREENCHIMENTO:
    - A imagem de captura de tela direta do site: "${screenshotUrl}"; OU
    - Uma foto de altíssima qualidade do Unsplash estritamente temática e contextual para o ramo exato do site.`;
 
-      const response = await ai.models.generateContent({
-        model: 'gemini-3.6-flash',
-        contents: prompt,
-        config: {
-          systemInstruction: `Você é o Diretor de Tecnologia e Marketing da Opera Digital. 
+      const response = await Promise.race([
+        ai.models.generateContent({
+          model: 'gemini-2.5-flash',
+          contents: prompt,
+          config: {
+            systemInstruction: `Você é o Diretor de Tecnologia e Marketing da Opera Digital. 
 Sua função é gerar publicações do portfólio com total fidelidade ao site do cliente analisado.
 Sua resposta DEVE ser estritamente em formato JSON estruturado seguindo o schema fornecido.`,
-          responseMimeType: 'application/json',
-          responseSchema: {
-            type: Type.OBJECT,
-            properties: {
-              title: { type: Type.STRING, description: 'Título atrativo do projeto alinhado ao site real' },
-              clientName: { type: Type.STRING, description: 'Nome exato da marca ou cliente do site' },
-              category: { 
-                type: Type.STRING, 
-                description: 'Categoria exata: E-commerce | ERP & PDV | Automações & IA | Portais & Web Apps' 
+            responseMimeType: 'application/json',
+            responseSchema: {
+              type: Type.OBJECT,
+              properties: {
+                title: { type: Type.STRING, description: 'Título atrativo do projeto alinhado ao site real' },
+                clientName: { type: Type.STRING, description: 'Nome exato da marca ou cliente do site' },
+                category: { 
+                  type: Type.STRING, 
+                  description: 'Categoria exata: E-commerce | ERP & PDV | Automações & IA | Portais & Web Apps' 
+                },
+                description: { type: Type.STRING, description: 'Descrição rica e profissional baseada no site real' },
+                resultMetric: { type: Type.STRING, description: 'Métrica de impacto real ou estimada (ex: +320% de vendas, Economia de 40h/mês)' },
+                imageUrl: { type: Type.STRING, description: 'URL direta da imagem oficial, captura de tela do site ou Unsplash contextual' },
+                tags: {
+                  type: Type.ARRAY,
+                  items: { type: Type.STRING },
+                  description: 'Lista de 3 a 5 tags relacionadas ao site'
+                }
               },
-              description: { type: Type.STRING, description: 'Descrição rica e profissional baseada no site real' },
-              resultMetric: { type: Type.STRING, description: 'Métrica de impacto real ou estimada (ex: +320% de vendas, Economia de 40h/mês)' },
-              imageUrl: { type: Type.STRING, description: 'URL direta da imagem oficial, captura de tela do site ou Unsplash contextual' },
-              tags: {
-                type: Type.ARRAY,
-                items: { type: Type.STRING },
-                description: 'Lista de 3 a 5 tags relacionadas ao site'
-              }
-            },
-            required: ['title', 'clientName', 'category', 'description', 'resultMetric', 'imageUrl', 'tags']
+              required: ['title', 'clientName', 'category', 'description', 'resultMetric', 'imageUrl', 'tags']
+            }
           }
-        }
-      });
+        }),
+        new Promise<never>((_, reject) =>
+          setTimeout(() => reject(new Error('Timeout na consulta da IA Gemini')), 10000)
+        )
+      ]);
 
       const jsonText = response.text ? response.text.trim() : '';
       if (!jsonText) {
