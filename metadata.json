@@ -1,0 +1,8 @@
+{
+  "name": "Copy of Opera Digital",
+  "description": "Plataforma de gestão completa para empreendedores brasileiros",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
