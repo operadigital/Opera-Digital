@@ -1,8 +1,16 @@
 import React from 'react';
-import { Star, Quote, TrendingUp, CheckCircle2 } from 'lucide-react';
-import { TESTIMONIAL_DATA } from '../data/mockData';
+import { Star, Quote, CheckCircle2, MessageSquare, Globe } from 'lucide-react';
 
 export const Testimonial: React.FC = () => {
+  const testimonial = {
+    quote: "A criação do nosso site novo e a estruturação do nosso WhatsApp Web transformaram nosso atendimento. Hoje recebemos os clientes do Google direto no WhatsApp com respostas imediatas, o que aumentou drasticamente nossa taxa de fechamento de orçamentos.",
+    author: "Ricardo Mendes",
+    role: "Diretor Comercial",
+    company: "Mendes & Associados",
+    avatarUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80",
+    tags: ["Criação de Site", "WhatsApp Web", "Atendimento IA"]
+  };
+
   return (
     <section className="py-20 bg-slate-900 text-white relative overflow-hidden">
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-[#0A4EE4]/15 blur-[160px] rounded-full pointer-events-none" />
@@ -15,12 +23,12 @@ export const Testimonial: React.FC = () => {
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
             
-            {/* Left Author Photo & Highlight Badge */}
+            {/* Left Author Photo */}
             <div className="lg:col-span-4 flex flex-col items-center text-center lg:border-r lg:border-slate-700/80 lg:pr-8">
               <div className="relative mb-4">
                 <img 
-                  src={TESTIMONIAL_DATA.avatarUrl} 
-                  alt={TESTIMONIAL_DATA.author}
+                  src={testimonial.avatarUrl} 
+                  alt={testimonial.author}
                   className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl object-cover border-2 border-[#0A4EE4] shadow-lg shadow-[#0A4EE4]/30"
                 />
                 <div className="absolute -bottom-2 -right-2 bg-emerald-500 text-slate-950 p-1.5 rounded-lg shadow-md">
@@ -29,15 +37,15 @@ export const Testimonial: React.FC = () => {
               </div>
 
               <h4 className="font-extrabold text-xl text-white">
-                {TESTIMONIAL_DATA.author}
+                {testimonial.author}
               </h4>
 
               <p className="text-xs text-blue-300 font-semibold mt-0.5">
-                {TESTIMONIAL_DATA.role}
+                {testimonial.role}
               </p>
 
               <p className="text-xs text-slate-400 mt-1">
-                {TESTIMONIAL_DATA.company}
+                {testimonial.company}
               </p>
 
               {/* Star Rating */}
@@ -49,7 +57,7 @@ export const Testimonial: React.FC = () => {
 
               {/* Tags */}
               <div className="flex flex-wrap justify-center gap-1.5 mt-4">
-                {TESTIMONIAL_DATA.tags.map((tag, tIdx) => (
+                {testimonial.tags.map((tag, tIdx) => (
                   <span key={tIdx} className="text-[10px] bg-slate-700/80 text-slate-300 font-medium px-2.5 py-0.5 rounded-full">
                     {tag}
                   </span>
@@ -57,23 +65,24 @@ export const Testimonial: React.FC = () => {
               </div>
             </div>
 
-            {/* Right Quote Content & Results */}
+            {/* Right Quote Content */}
             <div className="lg:col-span-8 space-y-6">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-bold">
-                <TrendingUp className="w-3.5 h-3.5" />
-                <span>{TESTIMONIAL_DATA.metrics}</span>
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-bold">
+                <Globe className="w-3.5 h-3.5" />
+                <span>Site Profissional + WhatsApp Estruturado</span>
               </div>
 
               <p className="text-lg sm:text-2xl font-semibold text-slate-100 leading-relaxed italic">
-                "{TESTIMONIAL_DATA.quote}"
+                "{testimonial.quote}"
               </p>
 
               <div className="pt-4 border-t border-slate-700/60 flex flex-wrap items-center justify-between gap-4 text-xs text-slate-400">
-                <span>
-                  Lojas físicas integradas com Mercado Livre, Shopee e PDV balcão
+                <span className="flex items-center gap-1.5">
+                  <MessageSquare className="w-4 h-4 text-emerald-400" />
+                  Atendimento automatizado e captura de clientes pelo site
                 </span>
                 <span className="text-[#0A4EE4] font-bold">
-                  Cliente Opera Digital há 3 anos
+                  Parceiro Opera Digital
                 </span>
               </div>
             </div>

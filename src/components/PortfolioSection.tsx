@@ -83,12 +83,12 @@ export const PortfolioSection: React.FC = () => {
       const domainClean = domain.replace(/^www\./, '').split('.')[0].toUpperCase();
       const derivedClient = newClient.trim() || domainClean;
 
-      setNewTitle(`Plataforma Digital ${derivedClient}`);
+      setNewTitle(`Site/Projeto ${derivedClient}`);
       setNewClient(derivedClient);
-      setNewDesc(`Solução web completa e otimizada para ${derivedClient} com alta performance e integração de processos.`);
-      setNewMetric('+210% em Eficiência Operacional');
+      setNewDesc(`Desenvolvimento web e estruturação digital exclusiva para ${derivedClient}.`);
+      setNewMetric('Site Otimizado e Responsivo');
       setNewImageUrl(`https://api.microlink.io/?url=${encodeURIComponent(formattedLink)}&screenshot=true&embed=screenshot.url`);
-      setNewTags('Opera Digital, Inovação, Web App');
+      setNewTags('Opera Digital, Site, WhatsApp');
     } finally {
       setIsGeneratingAi(false);
     }
@@ -143,7 +143,7 @@ export const PortfolioSection: React.FC = () => {
     }
   };
 
-  const categories = ['Todos', 'E-commerce', 'ERP & PDV', 'Automações & IA', 'Portais & Web Apps'];
+  const categories = ['Todos', 'Criação de Sites', 'WhatsApp Web', 'Landing Pages', 'E-commerce & Portais'];
 
   const filteredProjects = projects.filter((p) => {
     const matchesCategory = selectedCategory === 'Todos' || p.category === selectedCategory;

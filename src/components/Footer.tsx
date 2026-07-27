@@ -39,8 +39,7 @@ export const Footer: React.FC<FooterProps> = ({
             </div>
 
             <p className="text-slate-400 text-xs leading-relaxed max-w-sm">
-              Plataforma completa de gestão integrada para empreendedores brasileiros. 
-              ERP, Frente de Caixa PDV, Hub de Marketplace, Conta Digital e Inteligência Artificial em um só lugar.
+              Criação de Sites Profissionais, Landing Pages de alta conversão e Estruturação do WhatsApp Web com Atendimento Automático e Inteligência Artificial.
             </p>
 
             <div className="pt-2 flex items-center gap-3">
@@ -84,22 +83,22 @@ export const Footer: React.FC<FooterProps> = ({
 
             <div className="pt-1 flex items-center gap-2 text-[11px] text-slate-500">
               <ShieldCheck className="w-4 h-4 text-emerald-400" />
-              <span>Conexão criptografada SSL 256-bits • Sefaz Homologado</span>
+              <span>Conexão criptografada SSL 256-bits • Atendimento Garantido</span>
             </div>
           </div>
 
-          {/* Column 2: Produtos */}
+          {/* Column 2: Serviços */}
           <div className="space-y-3">
             <h4 className="font-bold text-sm text-white uppercase tracking-wider">
-              Produtos
+              Serviços
             </h4>
             <ul className="space-y-2 text-slate-400">
-              <li><a href="#produto-erp" className="hover:text-white transition-colors">Sistema ERP Fiscal</a></li>
-              <li><a href="#produto-hub" className="hover:text-white transition-colors">Hub de Marketplace</a></li>
-              <li><a href="#produto-pdv" className="hover:text-white transition-colors">Frente de Caixa PDV</a></li>
-              <li><a href="#produto-bank" className="hover:text-white transition-colors">Conta Digital Integrada</a></li>
-              <li><a href="#produto-shipping" className="hover:text-white transition-colors">Gestão de Envios & Frete</a></li>
-              <li><a href="#agentes-ia" className="hover:text-white transition-colors font-medium text-blue-400">Agentes de IA Nativa</a></li>
+              <li><a href="#criacao-de-sites" className="hover:text-white transition-colors">Criação de Sites Profissionais</a></li>
+              <li><a href="#estruturacao-whatsapp" className="hover:text-white transition-colors">Estruturação do WhatsApp Web</a></li>
+              <li><a href="#criacao-de-sites" className="hover:text-white transition-colors">Landing Pages de Alta Conversão</a></li>
+              <li><a href="#estruturacao-whatsapp" className="hover:text-white transition-colors">Robôs & Agentes virtuais de IA</a></li>
+              <li><a href="#trabalhos" className="hover:text-white transition-colors">Trabalhos Realizados</a></li>
+              <li><a href="#agentes-ia" className="hover:text-white transition-colors font-medium text-blue-400">Simulador de Agente IA</a></li>
             </ul>
           </div>
 

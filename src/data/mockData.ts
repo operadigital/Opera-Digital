@@ -1,143 +1,75 @@
-import { ProductItem, AiAgentFeature, TestimonialData, PortfolioProject } from '../types';
+import { ServiceItem, AiAgentFeature, PortfolioProject } from '../types';
 
-export const PRODUCTS_LIST: ProductItem[] = [
+export const SERVICES_LIST: ServiceItem[] = [
   {
-    id: 'erp',
-    title: 'Sistema ERP',
-    category: 'Gestão Central',
-    shortDesc: 'Emissão ilimitada de NFs, controle de fluxo de pedidos, relatórios financeiros e conexão com +30 marketplaces.',
-    fullDesc: 'Elimine o trabalho manual e erros de digitação. Nosso ERP automatiza desde a entrada de mercadorias via XML até a geração do DRE gerencial, garantindo conformidade fiscal e total visibilidade financeira.',
-    badge: 'Gestão Inteligente',
-    iconName: 'FileText',
-    mockupType: 'erp',
+    id: 'criacao-de-sites',
+    title: 'Criação de Sites Profissionais',
+    category: 'Presença Digital & Alta Performance',
+    shortDesc: 'Desenvolvimento de websites modernos, Landing Pages de alta conversão, e-commerces e portais corporativos sob medida.',
+    fullDesc: 'Construímos sites rápidos, 100% responsivos para dispositivos móveis, otimizados para os motores de busca (SEO) e desenhados focando na máxima conversão dos seus visitantes em clientes reais.',
+    badge: 'Design Exclusivo',
+    iconName: 'Globe',
     highlights: [
-      'Emissão automática de NFe, NFCe e NFSe em segundos',
-      'DRE e relatórios financeiros em tempo real',
-      'Sincronização instantânea com +30 marketplaces',
-      'Controle rigoroso de estoque multi-depósito'
+      'Layouts modernos e personalizados com a identidade visual da sua marca',
+      'Otimização completa para SEO para seu site se destacar no Google',
+      'Páginas ultra-rápidas e 100% adaptadas para celulares e computadores',
+      'Integração direta com o WhatsApp Web para captação imediata de contatos'
     ]
   },
   {
-    id: 'hub',
-    title: 'Hub de Integração',
-    category: 'Vendas Multicanal',
-    shortDesc: 'Gerencie múltiplos canais de venda em um só painel: anúncios, produtos em massa e etiquetas automáticas.',
-    fullDesc: 'Conecte suas lojas do Mercado Livre, Shopee, Amazon, Magalu, Tiendanube e Nuvemshop. Publique produtos em massa com precificação inteligente ajustada por canal.',
-    badge: 'Automação Multicanal',
-    iconName: 'Layers',
-    mockupType: 'hub',
+    id: 'estruturacao-whatsapp',
+    title: 'Estruturação do WhatsApp Web',
+    category: 'Automação & Atendimento Inteligente',
+    shortDesc: 'Transforme o seu WhatsApp em uma máquina de vendas com atendentes virtuais, agentes de IA e fluxos automatizados.',
+    fullDesc: 'Estruturamos todo o ecossistema do seu WhatsApp Web: desde robôs de triagem e agentes virtuais de IA até mensagens automáticas de boas-vindas, acompanhamento de propostas e direcionamento para sua equipe.',
+    badge: 'Vendas Automatizadas',
+    iconName: 'MessageSquare',
     highlights: [
-      'Publicação e atualização em massa de anúncios',
-      'Impressão unificada de etiquetas de envio',
-      'Sincronização de estoque em tempo real para evitar furo',
-      'Mapeamento de categorias e atributos por marketplace'
-    ]
-  },
-  {
-    id: 'pdv',
-    title: 'Sistema PDV',
-    category: 'Loja Física & Balcão',
-    shortDesc: 'Frente de caixa ultrarrápida, operação com suporte offline, estoque sincronizado com a web e controle de comissões.',
-    fullDesc: 'Transforme seu balcão de vendas em um ponto de alto desempenho. Compatível com leitor de código de barras, impressoras térmicas e TEF para recebimentos via cartão e Pix.',
-    badge: 'Frente de Caixa',
-    iconName: 'Store',
-    mockupType: 'pdv',
-    highlights: [
-      'Operação contínua mesmo sem conexão com a internet',
-      'Fechamento de caixa cego e sangria simplificada',
-      'Cálculo e divisão de comissão de vendedores em tempo real',
-      'Sincronização imediata entre estoque físico e e-commerce'
-    ]
-  },
-  {
-    id: 'bank',
-    title: 'Conta Digital',
-    category: 'Finanças Integradas',
-    shortDesc: 'Pix sem taxas veladas, pagamentos em lote de salários/fornecedores, cálculo de GNRE e conciliação automática.',
-    fullDesc: 'Sua gestão financeira e bancária na mesma plataforma. Esqueça arquivos CNAB complexos: receba de clientes e pague fornecedores diretamente do ERP com total transparência.',
-    badge: '100% Integrada ao ERP',
-    iconName: 'Wallet',
-    mockupType: 'bank',
-    highlights: [
-      'Recebimentos via Pix com liquidação imediata',
-      'Emissão e pagamento automatizado de guias GNRE',
-      'Pagamentos de boletos e salários em lote',
-      'Conciliação bancária inteligente sem necessidade de importação manual'
-    ]
-  },
-  {
-    id: 'shipping',
-    title: 'Envios',
-    category: 'Logística & Frete',
-    shortDesc: 'Tabela de fretes reduzida, coletas diárias sem quantidade mínima e rastreamento automatizado em tempo real.',
-    fullDesc: 'Reduza em até 40% seus custos com frete. Integrado com as principais transportadoras e Correios, gerando cotação instantânea no checkout e notificações no WhatsApp do cliente.',
-    badge: 'Frete Mais Barato',
-    iconName: 'Truck',
-    mockupType: 'shipping',
-    highlights: [
-      'Coletas inclusas na sua empresa sem cota mínima de envio',
-      'Rastreamento inteligente enviado por WhatsApp para o cliente',
-      'Comparador de frete dinâmico na hora da venda',
-      'Gestão simples de devoluções e logística reversa'
+      'Atendimento automatizado 24 horas por dia, 7 dias por semana',
+      'Agentes virtuais com IA preparados com todas as informações do seu negócio',
+      'Funil de vendas direto no chat com respostas e botões de ação rápidos',
+      'Multi-atendentes na mesma conta de WhatsApp Web com distribuição inteligente'
     ]
   }
 ];
 
 export const AI_AGENTS_FEATURES: AiAgentFeature[] = [
   {
-    id: 'create-agents',
-    title: 'Criar agentes personalizados',
-    description: 'Configure robôs virtuais especializados em vendas, atendimento ao cliente ou suporte técnico com o tom de voz da sua marca.',
+    id: 'whatsapp-vendas',
+    title: 'Agentes de IA no WhatsApp',
+    description: 'Configure robôs virtuais inteligentes no seu WhatsApp Web para apresentar produtos, responder dúvidas frequentes e qualificar clientes.',
     iconName: 'Bot',
-    badge: 'Sem Código',
-    examplePrompt: 'Crie um agente de vendas para atender clientes no WhatsApp interessados em autopeças.',
-    sampleResponse: '🤖 Agente "Atendente Opera Parts" criado! Ele já conhece seu catálogo de 1.400 itens, preços e estoque atual.'
+    badge: 'WhatsApp Web',
+    examplePrompt: 'Crie um atendente de vendas para tirar dúvidas de clientes sobre nossos serviços de desenvolvimento de sites.',
+    sampleResponse: '🤖 Agente WhatsApp ativado! Ele responderá os clientes instantaneamente com informações completas e direcionará os interessados.'
   },
   {
-    id: 'chat-data',
-    title: 'Conversar com dados',
-    description: 'Pergunte em português claro sobre seu faturamento, produto mais vendido, margem de lucro ou previsão de caixa.',
-    iconName: 'MessageSquare',
-    badge: 'Insights em Tempo Real',
-    examplePrompt: 'Qual foi nosso produto com maior margem de lucro essa semana e quanto faturamos?',
-    sampleResponse: '📊 Esta semana o produto com maior margem foi "Kit Amortecedor Dianteiro" (42% de margem). Faturamento total: R$ 48.920,00.'
-  },
-  {
-    id: 'automate-routines',
-    title: 'Automatizar rotinas',
-    description: 'Deixe que a IA emita notas fiscais pós-venda, envie lembretes de cobrança via Pix e faça a conciliação bancária diária.',
+    id: 'captura-leads',
+    title: 'Integração Site + WhatsApp',
+    description: 'Converta os visitantes do seu site em conversas diretas no WhatsApp Web com formulários e botões de clique rápido inteligentes.',
     iconName: 'Zap',
-    badge: 'Zero Tarefas Manuais',
-    examplePrompt: 'Automatize a emissão de NF e envio de comprovante assim que a compra for aprovada no Mercado Livre.',
-    sampleResponse: '⚡ Rotina ativa: NFs serão geradas automaticamente em menos de 3s e o boleto/Pix enviado direto ao comprador.'
+    badge: 'Lead Direto',
+    examplePrompt: 'Como conectar os formulários do meu site novo para enviar a notificação no WhatsApp?',
+    sampleResponse: '⚡ Integração pronta: cada novo lead preenchido no site iniciará automaticamente uma conversa no seu WhatsApp Web!'
   },
   {
-    id: 'delegate-tasks',
-    title: 'Delegar tarefas complexas',
-    description: 'A IA otimiza títulos de anúncios, cria descrições persuasivas e reajusta preços com base no custo das mercadorias.',
-    iconName: 'CheckCircle2',
-    badge: 'Alta Produtividade',
-    examplePrompt: 'Otimize a descrição e o título de 50 produtos com estoque parado para vender mais rápido na Shopee.',
-    sampleResponse: '✨ Descrições otimizadas para SEO e palavras-chave populares geradas para os 50 produtos selecionados!'
+    id: 'respostas-rapidas',
+    title: 'Respostas e Funis Automáticos',
+    description: 'Automatize sequências de atendimento, triagem inicial e acompanhamento de propostas sem deixar nenhum cliente esperando.',
+    iconName: 'MessageSquare',
+    badge: 'Zero Espera',
+    examplePrompt: 'Monte um fluxo de boas-vindas e triagem para novos clientes que entrarem em contato pelo WhatsApp.',
+    sampleResponse: '✨ Fluxo de triagem estruturado! O cliente é saudado, escolhe o assunto e recebe atendimento ágil.'
   }
 ];
 
-export const TESTIMONIAL_DATA: TestimonialData = {
-  quote: "Com o Opera Digital, conseguimos unificar a operação das nossas 4 lojas físicas com o e-commerce no Mercado Livre e Shopee. Economizamos mais de 25 horas semanais de digitação manual de notas fiscais e dobramos nosso volume de expedição.",
-  author: "Diego Costa",
-  role: "Fundador e Diretor de Operações",
-  company: "Tudo para Moto (São Paulo/SP)",
-  metrics: "+300% em vendas sem aumentar a equipe",
-  avatarUrl: "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=250",
-  tags: ["4 Lojas Físicas", "E-commerce Multicanal", "12.000 NFs/mês"]
-};
-
-export const STATS_DATA = [
-  { value: '+63 mil', label: 'Empreendedores ativos', detail: 'em todo o Brasil' },
-  { value: '+170 mil', label: 'Vendas processadas/hora', detail: 'com 99.99% de uptime' },
-  { value: '+194 M', label: 'Notas Fiscais geradas', detail: 'sem erros ou rejeições' },
-  { value: 'R$ 4,2 Bi', label: 'Transacionados na Conta Digital', detail: 'com taxa zero no Pix' }
+export const VALUE_PILLARS = [
+  { title: 'Sites 100% Personalizados', description: 'Desenvolvimento focado na conversão de visitantes em clientes' },
+  { title: 'WhatsApp Web Automatizado', description: 'Agilidade de atendimento 24/7 com inteligência artificial' },
+  { title: 'Design & SEO de Elite', description: 'Páginas velozes e posicionadas para atrair novas oportunidades' },
+  { title: 'Suporte & Acompanhamento', description: 'Atendimento próximo para manter suas soluções sempre atualizadas' }
 ];
 
 export const INITIAL_PORTFOLIO_PROJECTS: PortfolioProject[] = [];
+
 

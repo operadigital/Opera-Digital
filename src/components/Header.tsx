@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  Menu, X, ChevronDown, Layers, FileText, Store, Wallet, Truck, 
-  ArrowRight, Sparkles, Shield, User, LogIn, Check
+  Menu, X, ChevronDown, Globe, MessageSquare, 
+  ArrowRight, Sparkles, ShieldCheck
 } from 'lucide-react';
-import { PRODUCTS_LIST } from '../data/mockData';
+import { SERVICES_LIST } from '../data/mockData';
 
 interface HeaderProps {
   onNavigateToRegister: () => void;
@@ -20,7 +20,7 @@ export const Header: React.FC<HeaderProps> = ({
 }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [productsMenuOpen, setProductsMenuOpen] = useState(false);
+  const [servicesMenuOpen, setServicesMenuOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -29,17 +29,6 @@ export const Header: React.FC<HeaderProps> = ({
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-
-  const getProductIcon = (iconName: string) => {
-    switch (iconName) {
-      case 'FileText': return <FileText className="w-5 h-5 text-[#0A4EE4]" />;
-      case 'Layers': return <Layers className="w-5 h-5 text-[#0A4EE4]" />;
-      case 'Store': return <Store className="w-5 h-5 text-[#0A4EE4]" />;
-      case 'Wallet': return <Wallet className="w-5 h-5 text-[#0A4EE4]" />;
-      case 'Truck': return <Truck className="w-5 h-5 text-[#0A4EE4]" />;
-      default: return <Sparkles className="w-5 h-5 text-[#0A4EE4]" />;
-    }
-  };
 
   return (
     <header 
@@ -72,73 +61,58 @@ export const Header: React.FC<HeaderProps> = ({
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-600">
-            {/* Products Mega Menu Dropdown */}
+            {/* Services Dropdown */}
             <div 
               className="relative"
-              onMouseEnter={() => setProductsMenuOpen(true)}
-              onMouseLeave={() => setProductsMenuOpen(false)}
+              onMouseEnter={() => setServicesMenuOpen(true)}
+              onMouseLeave={() => setServicesMenuOpen(false)}
             >
               <button 
                 className="flex items-center gap-1 font-semibold text-[#0A4EE4] hover:text-blue-700 transition-colors py-2"
-                onClick={() => setProductsMenuOpen(!productsMenuOpen)}
+                onClick={() => setServicesMenuOpen(!servicesMenuOpen)}
               >
-                <span>Produtos</span>
-                <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${productsMenuOpen ? 'rotate-180 text-[#0A4EE4]' : 'text-[#0A4EE4]'}`} />
+                <span>Serviços & Soluções</span>
+                <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${servicesMenuOpen ? 'rotate-180 text-[#0A4EE4]' : 'text-[#0A4EE4]'}`} />
               </button>
 
-              {/* Mega Menu Container */}
-              {productsMenuOpen && (
-                <div className="absolute top-full left-1/2 -translate-x-1/2 w-[720px] bg-white rounded-2xl shadow-2xl border border-slate-100 p-6 grid grid-cols-2 gap-4 mt-1 animate-in fade-in slide-in-from-top-2 duration-200 z-50">
-                  <div className="col-span-2 pb-2 mb-2 border-b border-slate-100 flex items-center justify-between">
-                    <span className="text-xs uppercase tracking-wider font-bold text-slate-400">
-                      Ecossistema de Soluções Opera
-                    </span>
-                    <span className="text-xs text-[#0A4EE4] font-bold bg-blue-50 px-2.5 py-0.5 rounded-full">
-                      Tudo Integrado
-                    </span>
-                  </div>
-
-                  {PRODUCTS_LIST.map((prod) => (
-                    <a
-                      key={prod.id}
-                      href={`#produto-${prod.id}`}
-                      onClick={() => setProductsMenuOpen(false)}
-                      className="flex items-start gap-3.5 p-3 rounded-xl hover:bg-slate-50 transition-colors group border border-transparent hover:border-slate-100"
-                    >
-                      <div className="p-2.5 rounded-xl bg-blue-50 group-hover:bg-[#0A4EE4] group-hover:text-white transition-colors shrink-0">
-                        {getProductIcon(prod.iconName)}
-                      </div>
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <h4 className="font-semibold text-slate-900 group-hover:text-[#0A4EE4] transition-colors text-sm">
-                            {prod.title}
-                          </h4>
-                          {prod.badge && (
-                            <span className="text-[10px] font-medium text-slate-500 bg-slate-100 px-1.5 py-0.2 rounded">
-                              {prod.category}
-                            </span>
-                          )}
-                        </div>
-                        <p className="text-xs text-slate-500 line-clamp-2 mt-0.5 leading-relaxed">
-                          {prod.shortDesc}
-                        </p>
-                      </div>
-                    </a>
-                  ))}
-
-                  <div className="col-span-2 mt-2 pt-3 border-t border-slate-100 bg-slate-50 -mx-6 -mb-6 p-4 rounded-b-2xl flex items-center justify-between">
-                    <div className="flex items-center gap-2 text-xs text-slate-600">
-                      <Shield className="w-4 h-4 text-[#0A4EE4]" />
-                      <span>Todos os módulos integrados em uma só plataforma</span>
+              {/* Menu Container */}
+              {servicesMenuOpen && (
+                <div className="absolute top-full left-1/2 -translate-x-1/2 w-[520px] bg-white rounded-2xl shadow-2xl border border-slate-100 p-4 grid grid-cols-1 gap-3 mt-1 animate-in fade-in slide-in-from-top-2 duration-200 z-50">
+                  <a
+                    href="#criacao-de-sites"
+                    onClick={() => setServicesMenuOpen(false)}
+                    className="flex items-start gap-3.5 p-3.5 rounded-xl hover:bg-slate-50 transition-colors group border border-transparent hover:border-slate-100"
+                  >
+                    <div className="p-2.5 rounded-xl bg-blue-50 text-[#0A4EE4] group-hover:bg-[#0A4EE4] group-hover:text-white transition-colors shrink-0">
+                      <Globe className="w-5 h-5" />
                     </div>
-                    <a 
-                      href="#agentes-ia"
-                      onClick={() => setProductsMenuOpen(false)}
-                      className="text-xs font-bold text-[#0A4EE4] hover:underline flex items-center gap-1"
-                    >
-                      Conhecer Agentes de IA <ArrowRight className="w-3.5 h-3.5" />
-                    </a>
-                  </div>
+                    <div>
+                      <h4 className="font-bold text-slate-900 group-hover:text-[#0A4EE4] transition-colors text-sm">
+                        Criação de Sites Profissionais
+                      </h4>
+                      <p className="text-xs text-slate-500 mt-0.5 leading-relaxed">
+                        Websites modernos, Landing Pages de alta conversão e portais responsivos.
+                      </p>
+                    </div>
+                  </a>
+
+                  <a
+                    href="#estruturacao-whatsapp"
+                    onClick={() => setServicesMenuOpen(false)}
+                    className="flex items-start gap-3.5 p-3.5 rounded-xl hover:bg-slate-50 transition-colors group border border-transparent hover:border-slate-100"
+                  >
+                    <div className="p-2.5 rounded-xl bg-emerald-50 text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white transition-colors shrink-0">
+                      <MessageSquare className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-slate-900 group-hover:text-emerald-600 transition-colors text-sm">
+                        Estruturação do WhatsApp Web
+                      </h4>
+                      <p className="text-xs text-slate-500 mt-0.5 leading-relaxed">
+                        Atendimento automatizado, Agentes de IA e funis de vendas inteligentes no chat.
+                      </p>
+                    </div>
+                  </a>
                 </div>
               )}
             </div>
@@ -152,7 +126,7 @@ export const Header: React.FC<HeaderProps> = ({
 
             <a 
               href="#agentes-ia" 
-              className="hover:text-[#0A4EE4] transition-colors flex items-center gap-1.5"
+              className="hover:text-[#0A4EE4] transition-colors flex items-center gap-1.5 font-semibold"
             >
               <span>Agentes de IA</span>
               <span className="bg-blue-50 text-[#0A4EE4] text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">
@@ -162,9 +136,9 @@ export const Header: React.FC<HeaderProps> = ({
 
             <a 
               href="#sobre" 
-              className="hover:text-[#0A4EE4] transition-colors"
+              className="hover:text-[#0A4EE4] transition-colors font-semibold"
             >
-              Sobre
+              Sobre a Opera
             </a>
           </nav>
 
@@ -174,7 +148,7 @@ export const Header: React.FC<HeaderProps> = ({
               onClick={onNavigateToRegister}
               className="bg-[#0A4EE4] text-white px-5 py-2.5 rounded-full text-sm font-bold shadow-lg shadow-blue-200 hover:bg-blue-700 transition-all duration-200 flex items-center gap-1.5"
             >
-              <span>Começar agora</span>
+              <span>Solicitar Orçamento</span>
             </button>
           </div>
 
@@ -203,50 +177,44 @@ export const Header: React.FC<HeaderProps> = ({
           <div className="relative z-50 md:hidden bg-white border-b border-slate-200 px-4 pt-3 pb-6 space-y-4 shadow-xl animate-in slide-in-from-top duration-200 max-h-[85vh] overflow-y-auto">
             <div className="space-y-1">
               <div className="text-xs uppercase font-extrabold tracking-wider text-slate-400 px-3 py-1">
-                Navegação Principal
+                Serviços Principais
               </div>
               
-              {/* Products Accordion for Mobile */}
-              <div className="space-y-1 bg-slate-50 p-3 rounded-2xl border border-slate-100 my-2">
-                <div className="flex items-center justify-between px-2 mb-2">
-                  <span className="text-xs font-bold text-slate-900 uppercase tracking-wider">
-                    Produtos
-                  </span>
-                  <span className="text-[10px] text-[#0A4EE4] font-bold bg-blue-50 px-2 py-0.5 rounded-full">
-                    Módulos ERP
-                  </span>
-                </div>
-                {PRODUCTS_LIST.map((prod) => (
-                  <a
-                    key={prod.id}
-                    href={`#produto-${prod.id}`}
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="flex items-center justify-between p-2.5 text-sm font-semibold text-slate-700 hover:text-[#0A4EE4] active:bg-blue-50 rounded-xl transition-colors min-h-[44px]"
-                  >
-                    <div className="flex items-center gap-2.5">
-                      <div className="p-1.5 rounded-lg bg-blue-50 text-[#0A4EE4]">
-                        {getProductIcon(prod.iconName)}
-                      </div>
-                      <span>{prod.title}</span>
-                    </div>
-                    <span className="text-[10px] text-slate-400 font-normal">
-                      {prod.category}
-                    </span>
-                  </a>
-                ))}
+              <div className="space-y-1 bg-slate-50 p-2.5 rounded-2xl border border-slate-100 my-2">
+                <a
+                  href="#criacao-de-sites"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex items-center gap-3 p-3 text-sm font-semibold text-slate-800 hover:text-[#0A4EE4] active:bg-blue-50 rounded-xl transition-colors"
+                >
+                  <div className="p-2 rounded-lg bg-blue-50 text-[#0A4EE4]">
+                    <Globe className="w-4 h-4" />
+                  </div>
+                  <span>Criação de Sites Profissionais</span>
+                </a>
+
+                <a
+                  href="#estruturacao-whatsapp"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex items-center gap-3 p-3 text-sm font-semibold text-slate-800 hover:text-emerald-600 active:bg-emerald-50 rounded-xl transition-colors"
+                >
+                  <div className="p-2 rounded-lg bg-emerald-50 text-emerald-600">
+                    <MessageSquare className="w-4 h-4" />
+                  </div>
+                  <span>Estruturação do WhatsApp Web</span>
+                </a>
               </div>
 
               <a
                 href="#trabalhos"
                 onClick={() => setMobileMenuOpen(false)}
-                className="block px-3 py-3 text-base font-semibold text-slate-800 hover:bg-slate-50 active:bg-slate-100 rounded-xl transition-colors min-h-[44px]"
+                className="block px-3 py-3 text-base font-semibold text-slate-800 hover:bg-slate-50 active:bg-slate-100 rounded-xl transition-colors"
               >
                 Trabalhos Realizados
               </a>
               <a
                 href="#agentes-ia"
                 onClick={() => setMobileMenuOpen(false)}
-                className="flex items-center justify-between px-3 py-3 text-base font-semibold text-slate-800 hover:bg-slate-50 active:bg-slate-100 rounded-xl transition-colors min-h-[44px]"
+                className="flex items-center justify-between px-3 py-3 text-base font-semibold text-slate-800 hover:bg-slate-50 active:bg-slate-100 rounded-xl transition-colors"
               >
                 <span>Agentes de IA</span>
                 <span className="bg-blue-50 text-[#0A4EE4] text-xs font-bold px-2.5 py-0.5 rounded-full">
@@ -256,7 +224,7 @@ export const Header: React.FC<HeaderProps> = ({
               <a
                 href="#sobre"
                 onClick={() => setMobileMenuOpen(false)}
-                className="block px-3 py-3 text-base font-semibold text-slate-800 hover:bg-slate-50 active:bg-slate-100 rounded-xl transition-colors min-h-[44px]"
+                className="block px-3 py-3 text-base font-semibold text-slate-800 hover:bg-slate-50 active:bg-slate-100 rounded-xl transition-colors"
               >
                 Sobre a Opera Digital
               </a>
@@ -270,7 +238,7 @@ export const Header: React.FC<HeaderProps> = ({
                 }}
                 className="w-full h-12 text-center font-bold text-white bg-[#0A4EE4] hover:bg-blue-700 active:bg-blue-800 rounded-xl text-sm shadow-md shadow-blue-200 transition-colors flex items-center justify-center gap-2"
               >
-                <span>Criar minha conta</span>
+                <span>Solicitar Orçamento</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
             </div>
@@ -280,3 +248,4 @@ export const Header: React.FC<HeaderProps> = ({
     </header>
   );
 };
+

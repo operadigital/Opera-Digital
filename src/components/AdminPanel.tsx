@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { 
   Building2, Plus, ExternalLink, Trash2, Edit3, Search, 
   Users, TrendingUp, Sparkles, LogOut, CheckCircle2, ArrowLeft,
-  MessageSquare, Globe, Tag, RefreshCw, BarChart3, ShieldCheck, Mail, Phone
+  MessageSquare, Globe, Tag, RefreshCw, BarChart3, ShieldCheck, Mail, Phone,
+  Star, Quote
 } from 'lucide-react';
 import { INITIAL_PORTFOLIO_PROJECTS } from '../data/mockData';
 import { PortfolioProject } from '../types';
@@ -13,7 +14,7 @@ interface AdminPanelProps {
 }
 
 export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onGoToSite }) => {
-  const [activeTab, setActiveTab] = useState<'portfolio' | 'leads' | 'metrics'>('portfolio');
+  const [activeTab, setActiveTab] = useState<'portfolio' | 'leads' | 'testimonials' | 'metrics'>('portfolio');
 
   // Portfolio State
   const [projects, setProjects] = useState<PortfolioProject[]>(() => {
@@ -179,6 +180,74 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onGoToSite }) 
       console.error(e);
     }
     fetch(`/api/leads/${id}`, { method: 'DELETE' }).catch(() => {});
+  };
+
+  // Testimonials State (Stored for future use)
+  const [testimonials, setTestimonials] = useState<any[]>(() => {
+    try {
+      const saved = localStorage.getItem('opera_admin_testimonials');
+      if (saved) return JSON.parse(saved);
+    } catch (e) {
+      console.error(e);
+    }
+    return [
+      {
+        id: 'test-1',
+        author: 'Ricardo Mendes',
+        role: 'Diretor Comercial',
+        company: 'Mendes & Associados',
+        quote: 'A criação do nosso site novo e a estruturação do nosso WhatsApp Web transformaram nosso atendimento. Hoje recebemos os clientes do Google direto no WhatsApp.',
+        tags: 'Criação de Site, WhatsApp Web, Atendimento IA',
+        status: 'Armazenado'
+      }
+    ];
+  });
+
+  const [isAddTestimonialModalOpen, setIsAddTestimonialModalOpen] = useState(false);
+  const [testAuthor, setTestAuthor] = useState('');
+  const [testRole, setTestRole] = useState('');
+  const [testCompany, setTestCompany] = useState('');
+  const [testQuote, setTestQuote] = useState('');
+  const [testTags, setTestTags] = useState('');
+
+  const handleSaveTestimonial = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!testAuthor.trim() || !testQuote.trim()) return;
+
+    const newTestimonial = {
+      id: 'test-' + Date.now(),
+      author: testAuthor.trim(),
+      role: testRole.trim() || 'Cliente',
+      company: testCompany.trim() || 'Empresa Parceira',
+      quote: testQuote.trim(),
+      tags: testTags.trim() || 'Depoimento',
+      status: 'Armazenado para o Futuro'
+    };
+
+    const updated = [newTestimonial, ...testimonials];
+    setTestimonials(updated);
+    try {
+      localStorage.setItem('opera_admin_testimonials', JSON.stringify(updated));
+    } catch (e) {
+      console.error(e);
+    }
+
+    setTestAuthor('');
+    setTestRole('');
+    setTestCompany('');
+    setTestQuote('');
+    setTestTags('');
+    setIsAddTestimonialModalOpen(false);
+  };
+
+  const handleDeleteTestimonial = (id: string) => {
+    const updated = testimonials.filter(t => t.id !== id);
+    setTestimonials(updated);
+    try {
+      localStorage.setItem('opera_admin_testimonials', JSON.stringify(updated));
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   const handleOpenAddModal = () => {
@@ -372,6 +441,18 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onGoToSite }) 
             </button>
 
             <button
+              onClick={() => setActiveTab('testimonials')}
+              className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 transition-all ${
+                activeTab === 'testimonials'
+                  ? 'bg-[#0A4EE4] text-white shadow-md'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              <Quote className="w-4 h-4" />
+              <span>Depoimentos ({testimonials.length})</span>
+            </button>
+
+            <button
               onClick={() => setActiveTab('metrics')}
               className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 transition-all ${
                 activeTab === 'metrics'
@@ -391,6 +472,16 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onGoToSite }) 
             >
               <Plus className="w-4 h-4" />
               <span>Novo Trabalho / Projeto</span>
+            </button>
+          )}
+
+          {activeTab === 'testimonials' && (
+            <button
+              onClick={() => setIsAddTestimonialModalOpen(true)}
+              className="bg-[#0A4EE4] hover:bg-blue-600 text-white font-bold text-xs sm:text-sm px-5 py-2.5 rounded-xl transition-all shadow-lg shadow-blue-900/30 flex items-center gap-2"
+            >
+              <Plus className="w-4 h-4" />
+              <span>Novo Depoimento</span>
             </button>
           )}
         </div>
@@ -594,6 +685,78 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onGoToSite }) 
           </div>
         )}
 
+        {/* TAB: TESTIMONIALS MANAGEMENT */}
+        {activeTab === 'testimonials' && (
+          <div className="space-y-6">
+            <div className="bg-[#0A4EE4]/10 border border-blue-500/30 p-4 rounded-2xl flex items-start gap-3">
+              <Quote className="w-5 h-5 text-blue-400 shrink-0 mt-0.5" />
+              <div className="text-xs text-slate-300 space-y-1">
+                <p className="font-bold text-white">Gestão de Depoimentos (Aguardando Ativação)</p>
+                <p className="text-slate-400">
+                  Os depoimentos foram removidos da página inicial pública. Você pode cadastrar, alterar e armazenar depoimentos neste espaço para reativá-los futuramente.
+                </p>
+              </div>
+            </div>
+
+            {testimonials.length === 0 ? (
+              <div className="bg-slate-950 rounded-2xl border border-slate-800 p-12 text-center">
+                <Quote className="w-12 h-12 text-slate-700 mx-auto mb-3" />
+                <h4 className="text-white font-bold text-base">Nenhum depoimento cadastrado</h4>
+                <p className="text-slate-400 text-xs mt-1 max-w-sm mx-auto mb-4">
+                  Adicione depoimentos de clientes satisfeitos para mantê-los salvos aqui.
+                </p>
+                <button
+                  onClick={() => setIsAddTestimonialModalOpen(true)}
+                  className="bg-[#0A4EE4] hover:bg-blue-600 text-white font-bold text-xs px-4 py-2.5 rounded-xl inline-flex items-center gap-2"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>Cadastrar Primeiro Depoimento</span>
+                </button>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {testimonials.map((t) => (
+                  <div key={t.id} className="bg-slate-950 p-6 rounded-2xl border border-slate-800 space-y-4 relative group">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-1 text-amber-400">
+                        {[...Array(5)].map((_, i) => (
+                          <Star key={i} className="w-3.5 h-3.5 fill-amber-400" />
+                        ))}
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] font-bold bg-slate-800 text-slate-400 px-2 py-0.5 rounded-full border border-slate-700">
+                          {t.status || 'Armazenado'}
+                        </span>
+                        <button
+                          onClick={() => handleDeleteTestimonial(t.id)}
+                          className="p-1.5 text-slate-500 hover:text-rose-400 hover:bg-rose-500/20 rounded-lg transition-colors"
+                          title="Excluir Depoimento"
+                        >
+                          <Trash2 className="w-4 h-4 text-rose-400" />
+                        </button>
+                      </div>
+                    </div>
+
+                    <p className="text-sm text-slate-200 italic leading-relaxed">
+                      "{t.quote}"
+                    </p>
+
+                    <div className="pt-3 border-t border-slate-900 flex items-center justify-between text-xs">
+                      <div>
+                        <h5 className="font-bold text-white">{t.author}</h5>
+                        <p className="text-[11px] text-slate-400">{t.role} • {t.company}</p>
+                      </div>
+                      <div className="text-[10px] bg-blue-500/10 text-blue-400 font-mono px-2 py-0.5 rounded border border-blue-500/20">
+                        {t.tags}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
         {/* TAB 3: SYSTEM METRICS */}
         {activeTab === 'metrics' && (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -768,6 +931,102 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onGoToSite }) 
                 </button>
               </div>
 
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ADD TESTIMONIAL MODAL */}
+      {isAddTestimonialModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-xs">
+          <div className="bg-slate-900 border border-slate-800 rounded-3xl max-w-lg w-full overflow-hidden shadow-2xl text-slate-100">
+            <div className="bg-slate-950 p-6 border-b border-slate-800 flex items-center justify-between">
+              <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                <Quote className="w-5 h-5 text-blue-400" />
+                <span>Novo Depoimento de Cliente</span>
+              </h3>
+              <button
+                onClick={() => setIsAddTestimonialModalOpen(false)}
+                className="text-slate-400 hover:text-white p-1 rounded-lg"
+              >
+                ✕
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveTestimonial} className="p-6 space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-slate-300 mb-1">Nome do Cliente *</label>
+                <input
+                  type="text"
+                  required
+                  value={testAuthor}
+                  onChange={(e) => setTestAuthor(e.target.value)}
+                  placeholder="Ex: Carlos Silva"
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-slate-300 mb-1">Cargo</label>
+                  <input
+                    type="text"
+                    value={testRole}
+                    onChange={(e) => setTestRole(e.target.value)}
+                    placeholder="Ex: Diretor de Vendas"
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-300 mb-1">Empresa</label>
+                  <input
+                    type="text"
+                    value={testCompany}
+                    onChange={(e) => setTestCompany(e.target.value)}
+                    placeholder="Ex: Silva Distribuidora"
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-300 mb-1">Depoimento / Texto *</label>
+                <textarea
+                  required
+                  rows={4}
+                  value={testQuote}
+                  onChange={(e) => setTestQuote(e.target.value)}
+                  placeholder="Escreva a avaliação do cliente aqui..."
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-300 mb-1">Tags (Separadas por vírgula)</label>
+                <input
+                  type="text"
+                  value={testTags}
+                  onChange={(e) => setTestTags(e.target.value)}
+                  placeholder="Criação de Site, WhatsApp IA"
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500"
+                />
+              </div>
+
+              <div className="pt-4 border-t border-slate-800 flex items-center justify-end gap-3">
+                <button
+                  type="button"
+                  onClick={() => setIsAddTestimonialModalOpen(false)}
+                  className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-xs font-bold rounded-xl text-slate-300"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2 bg-[#0A4EE4] hover:bg-blue-600 text-xs font-bold rounded-xl text-white shadow-md"
+                >
+                  Salvar Depoimento
+                </button>
+              </div>
             </form>
           </div>
         </div>

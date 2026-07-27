@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Header } from './components/Header';
 import { Hero } from './components/Hero';
-import { StatsBar } from './components/StatsBar';
 import { AiAgentsSection } from './components/AiAgentsSection';
-import { ProductsSection } from './components/ProductsSection';
+import { ServicesSection } from './components/ServicesSection';
 import { PortfolioSection } from './components/PortfolioSection';
-import { Testimonial } from './components/Testimonial';
 import { AboutSection } from './components/AboutSection';
 import { CtaBanner } from './components/CtaBanner';
 import { Footer } from './components/Footer';
@@ -141,28 +139,22 @@ export default function App() {
 
       {/* Main Page Sections */}
       <main>
-        {/* 1. Hero Section with Interactive Platform Dashboard Mockup */}
+        {/* 1. Hero Section */}
         <Hero onNavigateToRegister={navigateToRegister} />
 
-        {/* 2. Stats Bar */}
-        <StatsBar />
+        {/* 2. Serviços Section (Criação de Sites e Estruturação WhatsApp Web) */}
+        <ServicesSection onNavigateToRegister={navigateToRegister} />
 
-        {/* 3. Agentes de IA Section with Interactive Simulator */}
+        {/* 3. Agentes de IA Section */}
         <AiAgentsSection />
 
-        {/* 4. Products Section with Alternating Blocks */}
-        <ProductsSection onNavigateToRegister={navigateToRegister} />
-
-        {/* 5. Trabalhos Realizados & Portfólio Dashboard */}
+        {/* 4. Trabalhos Realizados & Portfólio */}
         <PortfolioSection />
 
-        {/* 6. Customer Testimonial (Diego Costa - Tudo para Moto) */}
-        <Testimonial />
-
-        {/* 7. Sobre Section */}
+        {/* 5. Sobre Section */}
         <AboutSection />
 
-        {/* 8. Final Blue CTA Banner */}
+        {/* 7. Final Blue CTA Banner */}
         <CtaBanner onNavigateToRegister={navigateToRegister} />
       </main>
 

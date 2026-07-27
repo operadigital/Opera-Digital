@@ -1,4 +1,4 @@
-export interface ProductItem {
+export interface ServiceItem {
   id: string;
   title: string;
   category: string;
@@ -7,7 +7,6 @@ export interface ProductItem {
   badge?: string;
   iconName: string;
   highlights: string[];
-  mockupType: 'erp' | 'hub' | 'pdv' | 'bank' | 'shipping';
 }
 
 export interface AiAgentFeature {
@@ -18,16 +17,6 @@ export interface AiAgentFeature {
   badge: string;
   examplePrompt: string;
   sampleResponse: string;
-}
-
-export interface TestimonialData {
-  quote: string;
-  author: string;
-  role: string;
-  company: string;
-  metrics: string;
-  avatarUrl: string;
-  tags: string[];
 }
 
 export interface RegistrationFormData {
@@ -46,12 +35,13 @@ export interface PortfolioProject {
   id: string;
   title: string;
   clientName: string;
-  category: 'E-commerce' | 'ERP & PDV' | 'Automações & IA' | 'Portais & Web Apps';
+  category: string;
   description: string;
-  resultMetric: string;
+  resultMetric?: string;
   resultLink: string;
   imageUrl: string;
   tags: string[];
   completedDate: string;
 }
+
 

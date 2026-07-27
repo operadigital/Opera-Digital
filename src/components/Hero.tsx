@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { 
-  ArrowRight, Sparkles, Play, TrendingUp, 
-  FileCheck2, DollarSign, ShoppingBag, Bot, RefreshCw, BarChart2
+  ArrowRight, Sparkles, Globe, MessageSquare, 
+  Bot, CheckCircle2, Zap, ShieldCheck
 } from 'lucide-react';
 
 interface HeroProps {
@@ -9,8 +9,7 @@ interface HeroProps {
 }
 
 export const Hero: React.FC<HeroProps> = ({ onNavigateToRegister }) => {
-  const [activeTab, setActiveTab] = useState<'visão' | 'pedidos' | 'notas' | 'ia'>('visão');
-  const [timeframe, setTimeframe] = useState<'Hoje' | '7 dias' | '30 dias'>('Hoje');
+  const [activeTab, setActiveTab] = useState<'sites' | 'whatsapp'>('sites');
 
   return (
     <section className="relative pt-8 pb-16 md:pt-12 md:pb-20 overflow-hidden bg-[#F8FAFC]">
@@ -20,7 +19,7 @@ export const Hero: React.FC<HeroProps> = ({ onNavigateToRegister }) => {
           {/* Left Text Column */}
           <div className="space-y-5 text-left">
             <div className="space-y-4">
-              <div className="inline-flex items-center gap-2 bg-blue-50/80 border border-blue-100 text-[#0A4EE4] px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider shadow-xs">
+              <div className="inline-flex items-center gap-2 bg-blue-50/80 border border-blue-100 text-[#0A4EE4] px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider shadow-2xs">
                 <Sparkles className="w-3.5 h-3.5 text-[#0A4EE4]" />
                 <span>Transformação Digital & Vendas Multicanal</span>
               </div>
@@ -46,20 +45,20 @@ export const Hero: React.FC<HeroProps> = ({ onNavigateToRegister }) => {
                 onClick={onNavigateToRegister}
                 className="bg-[#0A4EE4] text-white px-8 py-4 rounded-xl font-bold shadow-xl shadow-blue-100 hover:bg-blue-700 transition-all flex items-center justify-center gap-2 group"
               >
-                <span>Começar agora</span>
+                <span>Solicitar orçamento</span>
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </button>
 
               <a
-                href="#agentes-ia"
+                href="#servicos"
                 className="border-2 border-slate-200 text-slate-700 px-8 py-4 rounded-xl font-bold hover:bg-slate-50 transition-colors text-center"
               >
-                Conhecer plataforma
+                Ver nossas soluções
               </a>
             </div>
           </div>
 
-          {/* Right Visual / Interactive Mockup Column */}
+          {/* Right Interactive Mockup Column */}
           <div className="relative mt-2 lg:mt-0">
             <div className="bg-white rounded-2xl shadow-xl sm:shadow-2xl border border-slate-100 overflow-hidden transform lg:rotate-1 hover:rotate-0 transition-transform duration-300">
               {/* Top Browser Bar */}
@@ -70,95 +69,123 @@ export const Hero: React.FC<HeroProps> = ({ onNavigateToRegister }) => {
                   <div className="w-2.5 h-2.5 rounded-full bg-emerald-400"></div>
                 </div>
 
-                {/* Mockup Tabs */}
-                <div className="flex bg-slate-200/60 p-0.5 rounded-lg text-[10px] sm:text-[11px] font-semibold text-slate-600 overflow-x-auto whitespace-nowrap scrollbar-none">
+                {/* Mockup Service Selector */}
+                <div className="flex bg-slate-200/60 p-0.5 rounded-lg text-[10px] sm:text-[11px] font-semibold text-slate-600">
                   <button
-                    onClick={() => setActiveTab('visão')}
-                    className={`px-2 sm:px-2.5 py-1 rounded-md transition-colors ${
-                      activeTab === 'visão' ? 'bg-[#0A4EE4] text-white shadow-xs' : 'hover:text-slate-900'
+                    onClick={() => setActiveTab('sites')}
+                    className={`px-3 py-1 rounded-md transition-all flex items-center gap-1.5 ${
+                      activeTab === 'sites' ? 'bg-[#0A4EE4] text-white shadow-2xs font-bold' : 'hover:text-slate-900'
                     }`}
                   >
-                    Visão Geral
+                    <Globe className="w-3.5 h-3.5" />
+                    <span>Criação de Sites</span>
                   </button>
                   <button
-                    onClick={() => setActiveTab('pedidos')}
-                    className={`px-2 sm:px-2.5 py-1 rounded-md transition-colors ${
-                      activeTab === 'pedidos' ? 'bg-[#0A4EE4] text-white shadow-xs' : 'hover:text-slate-900'
+                    onClick={() => setActiveTab('whatsapp')}
+                    className={`px-3 py-1 rounded-md transition-all flex items-center gap-1.5 ${
+                      activeTab === 'whatsapp' ? 'bg-emerald-600 text-white shadow-2xs font-bold' : 'hover:text-slate-900'
                     }`}
                   >
-                    Pedidos
-                  </button>
-                  <button
-                    onClick={() => setActiveTab('ia')}
-                    className={`px-2 sm:px-2.5 py-1 rounded-md transition-colors ${
-                      activeTab === 'ia' ? 'bg-[#0A4EE4] text-white shadow-xs' : 'hover:text-slate-900'
-                    }`}
-                  >
-                    Agente IA
+                    <MessageSquare className="w-3.5 h-3.5" />
+                    <span>WhatsApp Web</span>
                   </button>
                 </div>
               </div>
 
-              {/* Dashboard Content inside Sleek Mockup */}
-              <div className="p-4 sm:p-6 space-y-3.5 sm:space-y-4">
-                <div className="flex justify-between items-center gap-2">
-                  <div>
-                    <h3 className="text-xs sm:text-sm font-extrabold text-slate-900">Painel Operacional Opera</h3>
-                    <p className="text-[10px] sm:text-[11px] text-slate-500 truncate">Multicanal • Mercado Livre, Shopee & PDV</p>
-                  </div>
-                  <div className="text-[10px] sm:text-xs font-bold text-[#0A4EE4] bg-blue-50 px-2.5 sm:px-3 py-1 rounded-full shrink-0">
-                    30 canais
-                  </div>
-                </div>
+              {/* Dynamic Content inside Sleek Mockup */}
+              <div className="p-4 sm:p-6 space-y-4">
+                {activeTab === 'sites' ? (
+                  <div className="space-y-3.5">
+                    <div className="flex justify-between items-center border-b border-slate-100 pb-2">
+                      <div>
+                        <span className="text-[10px] font-bold text-[#0A4EE4] bg-blue-50 px-2 py-0.5 rounded">
+                          https://seunegocio.com.br
+                        </span>
+                        <h3 className="text-sm font-black text-slate-900 mt-1">Website Profissional Responsivo</h3>
+                      </div>
+                      <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">
+                        SEO Google OK
+                      </span>
+                    </div>
 
-                {/* Stat Grid */}
-                <div className="grid grid-cols-3 gap-2 sm:gap-3">
-                  <div className="p-2 sm:p-3 bg-slate-50 rounded-lg border border-slate-100">
-                    <span className="text-[9px] sm:text-[10px] text-slate-500 font-bold uppercase block">Faturamento</span>
-                    <span className="text-xs sm:text-base font-extrabold text-slate-900 font-mono">R$ 18.450</span>
-                  </div>
-                  <div className="p-2 sm:p-3 bg-slate-50 rounded-lg border border-slate-100">
-                    <span className="text-[9px] sm:text-[10px] text-slate-500 font-bold uppercase block">Pedidos</span>
-                    <span className="text-xs sm:text-base font-extrabold text-slate-900 font-mono">184 ped.</span>
-                  </div>
-                  <div className="p-2 sm:p-3 bg-[#0A4EE4]/5 rounded-lg border border-[#0A4EE4]/20">
-                    <span className="text-[9px] sm:text-[10px] text-[#0A4EE4] font-bold uppercase block">Sefaz NFe</span>
-                    <span className="text-xs sm:text-base font-extrabold text-[#0A4EE4] font-mono">100% OK</span>
-                  </div>
-                </div>
+                    <div className="bg-slate-900 text-white p-4 rounded-xl space-y-2">
+                      <div className="text-xs font-bold text-blue-400 uppercase tracking-wider">Alta Conversão & Design Exclusivo</div>
+                      <p className="text-xs text-slate-300">
+                        Layout moderno, navegação fluida em dispositivos móveis e integração imediata para os clientes chamarem no WhatsApp.
+                      </p>
+                      <div className="pt-2 flex items-center gap-2">
+                        <span className="text-[10px] bg-[#0A4EE4] text-white px-2.5 py-1 rounded-md font-bold">
+                          Ver Demonstração
+                        </span>
+                        <span className="text-[10px] text-slate-400">100% Personalizado</span>
+                      </div>
+                    </div>
 
-                {/* Graph Representation */}
-                <div className="p-3 sm:p-4 bg-slate-50 rounded-xl border border-slate-100">
-                  <div className="flex justify-between items-center text-[11px] sm:text-xs mb-2">
-                    <span className="font-bold text-slate-700">Ritmo de Vendas Hoje</span>
-                    <span className="text-emerald-600 font-bold">+24.8% vs ontem</span>
+                    <div className="grid grid-cols-2 gap-2 text-xs">
+                      <div className="p-2.5 bg-slate-50 rounded-lg border border-slate-100 font-semibold text-slate-700 flex items-center gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-[#0A4EE4]" />
+                        <span>Carregamento Veloz</span>
+                      </div>
+                      <div className="p-2.5 bg-slate-50 rounded-lg border border-slate-100 font-semibold text-slate-700 flex items-center gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-[#0A4EE4]" />
+                        <span>Domínio Próprio</span>
+                      </div>
+                    </div>
                   </div>
-                  <div className="h-16 sm:h-20 flex items-end gap-1 sm:gap-1.5 pt-2">
-                    {[35, 50, 70, 45, 80, 100, 75, 110, 130, 120, 140, 160].map((val, idx) => (
-                      <div 
-                        key={idx} 
-                        className="flex-1 bg-[#0A4EE4] rounded-t hover:bg-blue-700 transition-colors" 
-                        style={{ height: `${(val / 160) * 100}%` }}
-                      ></div>
-                    ))}
+                ) : (
+                  <div className="space-y-3.5">
+                    <div className="flex justify-between items-center border-b border-slate-100 pb-2">
+                      <div className="flex items-center gap-2">
+                        <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></div>
+                        <h3 className="text-sm font-black text-slate-900">Atendimento WhatsApp Web</h3>
+                      </div>
+                      <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">
+                        Bot + IA Ativo
+                      </span>
+                    </div>
+
+                    <div className="bg-emerald-950 text-white p-4 rounded-xl space-y-2 font-sans text-xs">
+                      <div className="flex items-center gap-1.5 text-emerald-400 font-bold">
+                        <Bot className="w-4 h-4" />
+                        <span>Agente Inteligente Opera</span>
+                      </div>
+                      <p className="text-emerald-100 text-xs">
+                        "Olá! Recebi seu contato pelo site. Como posso ajudar com seu orçamento hoje?"
+                      </p>
+                      <div className="bg-emerald-800/60 p-2 rounded-lg text-[11px] text-emerald-200 border border-emerald-700/60">
+                        ✓ Resposta imediata • Agilidade na qualificação de clientes
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-2 text-xs">
+                      <div className="p-2.5 bg-slate-50 rounded-lg border border-slate-100 font-semibold text-slate-700 flex items-center gap-2">
+                        <Zap className="w-4 h-4 text-emerald-600" />
+                        <span>Respostas 24/7</span>
+                      </div>
+                      <div className="p-2.5 bg-slate-50 rounded-lg border border-slate-100 font-semibold text-slate-700 flex items-center gap-2">
+                        <ShieldCheck className="w-4 h-4 text-emerald-600" />
+                        <span>Multi-Atendentes</span>
+                      </div>
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
             </div>
 
-            {/* Floating Sales Badge */}
+            {/* Floating Badge */}
             <div className="absolute -bottom-4 sm:-bottom-6 right-2 sm:-left-6 bg-white p-3 sm:p-4 rounded-xl shadow-xl border border-slate-100 animate-in fade-in zoom-in-95 duration-300">
               <div className="flex items-center gap-2.5 sm:gap-3">
-                <div className="p-2 sm:p-2.5 bg-emerald-100 text-emerald-600 rounded-lg shrink-0">
-                  <TrendingUp className="w-5 h-5 sm:w-6 sm:h-6" />
+                <div className="p-2 sm:p-2.5 bg-blue-100 text-[#0A4EE4] rounded-lg shrink-0">
+                  <Globe className="w-5 h-5 sm:w-6 sm:h-6" />
                 </div>
                 <div>
-                  <div className="text-[9px] sm:text-[10px] text-slate-500 font-bold uppercase">Vendas hoje</div>
-                  <div className="text-sm sm:text-lg font-bold text-slate-900 leading-none">R$ 12.450,00</div>
+                  <div className="text-[9px] sm:text-[10px] text-slate-500 font-bold uppercase">Aceleração Digital</div>
+                  <div className="text-xs sm:text-sm font-extrabold text-slate-900 leading-none">Sites & WhatsApp Web</div>
                 </div>
               </div>
             </div>
           </div>
+
         </div>
 
       </div>
