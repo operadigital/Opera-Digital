@@ -6,6 +6,39 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
+const STORE_PATH = path.resolve(process.cwd(), 'data_store.json');
+
+interface StoreData {
+  projects: any[];
+  leads: any[];
+}
+
+function loadStore(): StoreData {
+  try {
+    if (fs.existsSync(STORE_PATH)) {
+      const raw = fs.readFileSync(STORE_PATH, 'utf-8');
+      const parsed = JSON.parse(raw);
+      return {
+        projects: Array.isArray(parsed?.projects) ? parsed.projects : [],
+        leads: Array.isArray(parsed?.leads) ? parsed.leads : []
+      };
+    }
+  } catch (e) {
+    console.error('Error reading store file:', e);
+  }
+  return { projects: [], leads: [] };
+}
+
+function saveStore(data: StoreData) {
+  try {
+    fs.writeFileSync(STORE_PATH, JSON.stringify(data, null, 2), 'utf-8');
+  } catch (e) {
+    console.error('Error writing store file:', e);
+  }
+}
+
+let store = loadStore();
+
 function getDistPath(): string {
   if (typeof __dirname !== 'undefined') {
     const indexPathInDir = path.resolve(__dirname, 'index.html');
@@ -99,6 +132,80 @@ async function startServer() {
   const PORT = 3000;
 
   app.use(express.json());
+
+  // REST API Routes for Persistent Portfolio Projects
+  app.get('/api/portfolio', (req, res) => {
+    res.json(store.projects || []);
+  });
+
+  app.post('/api/portfolio', (req, res) => {
+    const project = req.body;
+    if (!project || !project.id) {
+      res.status(400).json({ error: 'Dados do projeto inválidos.' });
+      return;
+    }
+    const idx = store.projects.findIndex((p) => p.id === project.id);
+    if (idx >= 0) {
+      store.projects[idx] = project;
+    } else {
+      store.projects.unshift(project);
+    }
+    saveStore(store);
+    res.json({ success: true, projects: store.projects });
+  });
+
+  app.post('/api/portfolio/sync', (req, res) => {
+    const list = req.body;
+    if (Array.isArray(list)) {
+      store.projects = list;
+      saveStore(store);
+    }
+    res.json({ success: true, projects: store.projects });
+  });
+
+  app.delete('/api/portfolio/:id', (req, res) => {
+    const { id } = req.params;
+    store.projects = store.projects.filter((p) => p.id !== id);
+    saveStore(store);
+    res.json({ success: true, projects: store.projects });
+  });
+
+  // REST API Routes for Persistent Leads & Registrations
+  app.get('/api/leads', (req, res) => {
+    res.json(store.leads || []);
+  });
+
+  app.post('/api/leads', (req, res) => {
+    const lead = req.body;
+    if (!lead || !lead.id) {
+      res.status(400).json({ error: 'Dados do lead inválidos.' });
+      return;
+    }
+    const idx = store.leads.findIndex((l) => String(l.id) === String(lead.id));
+    if (idx >= 0) {
+      store.leads[idx] = lead;
+    } else {
+      store.leads.unshift(lead);
+    }
+    saveStore(store);
+    res.json({ success: true, leads: store.leads });
+  });
+
+  app.post('/api/leads/sync', (req, res) => {
+    const list = req.body;
+    if (Array.isArray(list)) {
+      store.leads = list;
+      saveStore(store);
+    }
+    res.json({ success: true, leads: store.leads });
+  });
+
+  app.delete('/api/leads/:id', (req, res) => {
+    const { id } = req.params;
+    store.leads = store.leads.filter((l) => String(l.id) !== String(id));
+    saveStore(store);
+    res.json({ success: true, leads: store.leads });
+  });
 
   // API Route: AI Generation for Portfolio Projects
   app.post('/api/generate-project-info', async (req, res) => {

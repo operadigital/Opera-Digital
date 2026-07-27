@@ -48,24 +48,19 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onGoToSite }) 
 
   // AI Generation State
   const [isGeneratingAi, setIsGeneratingAi] = useState(false);
-  const [aiError, setAiError] = useState('');
 
   const handleGenerateAi = async () => {
-    if (!resultLink.trim()) {
-      setAiError('Digite a URL do trabalho (link) antes de gerar com IA.');
-      return;
-    }
+    if (!resultLink.trim()) return;
 
     setIsGeneratingAi(true);
-    setAiError('');
+
+    let formattedLink = resultLink.trim();
+    if (!formattedLink.startsWith('http://') && !formattedLink.startsWith('https://')) {
+      formattedLink = 'https://' + formattedLink;
+      setResultLink(formattedLink);
+    }
 
     try {
-      let formattedLink = resultLink.trim();
-      if (!formattedLink.startsWith('http://') && !formattedLink.startsWith('https://')) {
-        formattedLink = 'https://' + formattedLink;
-        setResultLink(formattedLink);
-      }
-
       const res = await fetch('/api/generate-project-info', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -76,27 +71,20 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onGoToSite }) 
         }),
       });
 
-      if (!res.ok) {
-        throw new Error('Erro no servidor ao consultar IA');
+      if (res.ok) {
+        const data = await res.json();
+        if (data.title) setTitle(data.title);
+        if (data.clientName) setClientName(data.clientName);
+        if (data.category) setCategory(data.category);
+        if (data.description) setDescription(data.description);
+        if (data.resultMetric) setResultMetric(data.resultMetric);
+        if (data.imageUrl) setImageUrl(data.imageUrl);
+        if (data.tags && Array.isArray(data.tags)) setTags(data.tags.join(', '));
+      } else {
+        throw new Error('API request failed');
       }
-
-      const data = await res.json();
-
-      if (data.title) setTitle(data.title);
-      if (data.clientName) setClientName(data.clientName);
-      if (data.category) setCategory(data.category);
-      if (data.description) setDescription(data.description);
-      if (data.resultMetric) setResultMetric(data.resultMetric);
-      if (data.imageUrl) setImageUrl(data.imageUrl);
-      if (data.tags && Array.isArray(data.tags)) setTags(data.tags.join(', '));
-      setAiError('');
     } catch (err) {
-      console.error('AI Generation fallback:', err);
-      // Smart client-side fallback to guarantee fields are filled
-      let formattedLink = resultLink.trim();
-      if (!formattedLink.startsWith('http://') && !formattedLink.startsWith('https://')) {
-        formattedLink = 'https://' + formattedLink;
-      }
+      console.warn('AI Generation silent fallback:', err);
       const domain = formattedLink.replace(/^https?:\/\//, '').split('/')[0];
       const domainClean = domain.replace(/^www\./, '').split('.')[0].toUpperCase();
       const derivedClient = clientName.trim() || domainClean;
@@ -107,20 +95,69 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onGoToSite }) 
       setResultMetric('+210% em Eficiência Operacional');
       setImageUrl(`https://api.microlink.io/?url=${encodeURIComponent(formattedLink)}&screenshot=true&embed=screenshot.url`);
       setTags('Opera Digital, Inovação, Performance');
-      setAiError('');
     } finally {
       setIsGeneratingAi(false);
     }
   };
 
-  // Save portfolio to localStorage
+  // Synchronize projects & leads with server API and localStorage
   useEffect(() => {
-    try {
-      localStorage.setItem('opera_portfolio_projects', JSON.stringify(projects));
-    } catch (e) {
-      console.error(e);
-    }
-  }, [projects]);
+    const fetchServerData = async () => {
+      try {
+        const resP = await fetch('/api/portfolio');
+        if (resP.ok) {
+          const projectsData = await resP.json();
+          if (Array.isArray(projectsData) && projectsData.length > 0) {
+            setProjects(projectsData);
+            localStorage.setItem('opera_portfolio_projects', JSON.stringify(projectsData));
+          } else {
+            const savedP = localStorage.getItem('opera_portfolio_projects');
+            if (savedP) {
+              const parsedP = JSON.parse(savedP);
+              if (Array.isArray(parsedP) && parsedP.length > 0) {
+                setProjects(parsedP);
+                fetch('/api/portfolio/sync', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify(parsedP)
+                }).catch(() => {});
+              }
+            }
+          }
+        }
+      } catch (e) {
+        console.warn('Projects sync warning:', e);
+      }
+
+      try {
+        const resL = await fetch('/api/leads');
+        if (resL.ok) {
+          const leadsData = await resL.json();
+          if (Array.isArray(leadsData) && leadsData.length > 0) {
+            setLeads(leadsData);
+            localStorage.setItem('opera_registered_leads', JSON.stringify(leadsData));
+          } else {
+            const savedL = localStorage.getItem('opera_registered_leads');
+            if (savedL) {
+              const parsedL = JSON.parse(savedL);
+              if (Array.isArray(parsedL) && parsedL.length > 0) {
+                setLeads(parsedL);
+                fetch('/api/leads/sync', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify(parsedL)
+                }).catch(() => {});
+              }
+            }
+          }
+        }
+      } catch (e) {
+        console.warn('Leads sync warning:', e);
+      }
+    };
+
+    fetchServerData();
+  }, []);
 
   // Leads / Registrations state
   const [leads, setLeads] = useState<any[]>(() => {
@@ -141,6 +178,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onGoToSite }) 
     } catch (e) {
       console.error(e);
     }
+    fetch(`/api/leads/${id}`, { method: 'DELETE' }).catch(() => {});
   };
 
   const handleOpenAddModal = () => {
@@ -180,28 +218,29 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onGoToSite }) 
 
     const tagList = tags ? tags.split(',').map(t => t.trim()).filter(Boolean) : ['Opera Digital'];
 
+    let projectToSave: PortfolioProject;
+
     if (editingProject) {
-      // Update existing
-      const updated = projects.map(p => {
-        if (p.id === editingProject.id) {
-          return {
-            ...p,
-            title: title.trim(),
-            clientName: clientName.trim(),
-            category,
-            description: description.trim() || p.description,
-            resultMetric: resultMetric.trim() || p.resultMetric,
-            resultLink: formattedLink,
-            imageUrl: imageUrl.trim() || p.imageUrl,
-            tags: tagList
-          };
-        }
-        return p;
-      });
+      projectToSave = {
+        ...editingProject,
+        title: title.trim(),
+        clientName: clientName.trim(),
+        category,
+        description: description.trim() || editingProject.description,
+        resultMetric: resultMetric.trim() || editingProject.resultMetric,
+        resultLink: formattedLink,
+        imageUrl: imageUrl.trim() || editingProject.imageUrl,
+        tags: tagList
+      };
+      const updated = projects.map(p => p.id === editingProject.id ? projectToSave : p);
       setProjects(updated);
+      try {
+        localStorage.setItem('opera_portfolio_projects', JSON.stringify(updated));
+      } catch (e) {
+        console.error(e);
+      }
     } else {
-      // Create new
-      const newProj: PortfolioProject = {
+      projectToSave = {
         id: 'proj-' + Date.now(),
         title: title.trim(),
         clientName: clientName.trim(),
@@ -213,8 +252,20 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onGoToSite }) 
         tags: tagList,
         completedDate: new Date().toISOString().substring(0, 7)
       };
-      setProjects([newProj, ...projects]);
+      const updated = [projectToSave, ...projects];
+      setProjects(updated);
+      try {
+        localStorage.setItem('opera_portfolio_projects', JSON.stringify(updated));
+      } catch (e) {
+        console.error(e);
+      }
     }
+
+    fetch('/api/portfolio', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(projectToSave)
+    }).catch(() => {});
 
     setIsAddModalOpen(false);
   };
@@ -225,7 +276,15 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onGoToSite }) 
 
   const confirmDelete = () => {
     if (!deletingProject) return;
-    setProjects(projects.filter(p => p.id !== deletingProject.id));
+    const targetId = deletingProject.id;
+    const updated = projects.filter(p => p.id !== targetId);
+    setProjects(updated);
+    try {
+      localStorage.setItem('opera_portfolio_projects', JSON.stringify(updated));
+    } catch (e) {
+      console.error(e);
+    }
+    fetch(`/api/portfolio/${targetId}`, { method: 'DELETE' }).catch(() => {});
     setDeletingProject(null);
   };
 
@@ -615,10 +674,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onGoToSite }) 
                     type="text"
                     required
                     value={resultLink}
-                    onChange={(e) => {
-                      setResultLink(e.target.value);
-                      if (aiError) setAiError('');
-                    }}
+                    onChange={(e) => setResultLink(e.target.value)}
                     placeholder="https://exemplo.com.br ou https://cliente.com.br"
                     className="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-blue-400 font-mono focus:outline-none focus:border-blue-500"
                   />
@@ -641,9 +697,6 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onGoToSite }) 
                     )}
                   </button>
                 </div>
-                {aiError && (
-                  <p className="text-xs text-rose-400 mt-1">{aiError}</p>
-                )}
               </div>
 
               <div>

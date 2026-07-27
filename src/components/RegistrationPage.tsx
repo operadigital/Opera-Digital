@@ -108,6 +108,12 @@ export const RegistrationPage: React.FC<RegistrationPageProps> = ({
       const leads = existing ? JSON.parse(existing) : [];
       leads.unshift(newLead);
       localStorage.setItem('opera_registered_leads', JSON.stringify(leads));
+
+      fetch('/api/leads', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newLead)
+      }).catch(() => {});
     } catch (e) {
       console.error(e);
     }
