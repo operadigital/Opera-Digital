@@ -359,17 +359,6 @@ export const PortfolioSection: React.FC = () => {
                     {project.description}
                   </p>
 
-                  {/* Result Metric Banner */}
-                  <div className="bg-blue-50/70 border border-blue-100/80 rounded-xl p-3 flex items-center justify-between">
-                    <div className="flex items-center gap-2 text-xs font-bold text-[#0A4EE4]">
-                      <TrendingUp className="w-4 h-4 text-[#0A4EE4]" />
-                      <span>Métrica do Projeto:</span>
-                    </div>
-                    <span className="text-xs font-black text-slate-900 bg-white px-2.5 py-1 rounded-lg border border-slate-200 shadow-2xs">
-                      {project.resultMetric}
-                    </span>
-                  </div>
-
                   {/* Tags & Action Buttons */}
                   <div className="pt-2 border-t border-slate-100 flex items-center justify-between gap-3">
                     <div className="flex flex-wrap gap-1.5 max-w-[60%]">
@@ -490,35 +479,24 @@ export const PortfolioSection: React.FC = () => {
                 </div>
               </div>
 
-              {/* Result Metric highlight */}
-              <div className="bg-gradient-to-r from-blue-50 to-slate-50 border border-blue-100 rounded-2xl p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div>
-                  <span className="text-xs font-bold uppercase text-slate-500 tracking-wider">
-                    Impacto Alcançado
-                  </span>
-                  <div className="text-2xl font-black text-[#0A4EE4] mt-0.5">
-                    {selectedProject.resultMetric}
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={(e) => handleCopyLink(e, selectedProject.resultLink, selectedProject.id)}
-                    className="bg-white hover:bg-slate-50 text-slate-700 font-bold text-xs px-4 py-2.5 rounded-xl border border-slate-200 shadow-2xs flex items-center gap-2"
-                  >
-                    {copiedId === selectedProject.id ? (
-                      <>
-                        <Check className="w-4 h-4 text-emerald-600" />
-                        <span>Link Copiado!</span>
-                      </>
-                    ) : (
-                      <>
-                        <Copy className="w-4 h-4" />
-                        <span>Copiar URL do Projeto</span>
-                      </>
-                    )}
-                  </button>
-                </div>
+              {/* Copy URL Bar */}
+              <div className="flex justify-end">
+                <button
+                  onClick={(e) => handleCopyLink(e, selectedProject.resultLink, selectedProject.id)}
+                  className="bg-slate-50 hover:bg-slate-100 text-slate-700 font-bold text-xs px-4 py-2.5 rounded-xl border border-slate-200 flex items-center gap-2 transition-colors"
+                >
+                  {copiedId === selectedProject.id ? (
+                    <>
+                      <Check className="w-4 h-4 text-emerald-600" />
+                      <span>Link Copiado!</span>
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="w-4 h-4" />
+                      <span>Copiar URL do Projeto</span>
+                    </>
+                  )}
+                </button>
               </div>
 
               {/* Description */}
@@ -683,19 +661,6 @@ export const PortfolioSection: React.FC = () => {
                     <option value="Portais & Web Apps">Portais & Web Apps</option>
                   </select>
                 </div>
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-slate-800 mb-1">
-                  Métrica Principal de Resultado
-                </label>
-                <input
-                  type="text"
-                  value={newMetric}
-                  onChange={(e) => setNewMetric(e.target.value)}
-                  placeholder="Ex: +250% de faturamento em 3 meses"
-                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-[#0A4EE4]"
-                />
               </div>
 
               <div>

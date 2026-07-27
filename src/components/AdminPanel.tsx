@@ -466,7 +466,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onGoToSite }) 
                     </div>
                   </div>
 
-                  {/* Result Link & Metric Banner */}
+                  {/* Result Link Banner */}
                   <div className="bg-slate-900/80 p-3 rounded-xl border border-slate-800/80 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
                     <div>
                       <span className="text-[10px] uppercase font-bold text-slate-500 block">Link do Resultado:</span>
@@ -478,10 +478,6 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onGoToSite }) 
                       >
                         {p.resultLink}
                       </a>
-                    </div>
-
-                    <div className="bg-blue-600/20 text-blue-300 font-bold px-3 py-1.5 rounded-lg border border-blue-500/30 text-center shrink-0">
-                      {p.resultMetric}
                     </div>
                   </div>
 
