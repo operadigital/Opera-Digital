@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { X, Send, Sparkles, CheckCircle2, MessageSquare, ShieldCheck, Globe, Bot, Building, User, Mail, Phone, FileText } from 'lucide-react';
+import { getStoredWhatsAppNumber } from '../utils/whatsapp';
 
 interface QuoteModalProps {
   isOpen: boolean;
@@ -58,8 +59,8 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({ isOpen, onClose, default
 
     setFormattedMessage(messageLines);
 
-    // Default Opera Digital WhatsApp Number
-    const targetPhone = '5511978253909';
+    // Configured Opera Digital WhatsApp Number
+    const targetPhone = getStoredWhatsAppNumber();
     const encoded = encodeURIComponent(messageLines);
     const url = `https://wa.me/${targetPhone}?text=${encoded}`;
     setWhatsappUrl(url);

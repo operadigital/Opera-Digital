@@ -3,10 +3,11 @@ import {
   Building2, Plus, ExternalLink, Trash2, Edit3, Search, 
   Users, TrendingUp, Sparkles, LogOut, CheckCircle2, ArrowLeft,
   MessageSquare, Globe, Tag, RefreshCw, BarChart3, ShieldCheck, Mail, Phone,
-  Star, Quote
+  Star, Quote, Save, Settings, PhoneCall
 } from 'lucide-react';
 import { INITIAL_PORTFOLIO_PROJECTS } from '../data/mockData';
 import { PortfolioProject } from '../types';
+import { getStoredWhatsAppNumber, saveWhatsAppNumber, formatWhatsAppDisplay } from '../utils/whatsapp';
 
 interface AdminPanelProps {
   onLogout: () => void;
@@ -14,7 +15,7 @@ interface AdminPanelProps {
 }
 
 export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onGoToSite }) => {
-  const [activeTab, setActiveTab] = useState<'portfolio' | 'leads' | 'testimonials' | 'metrics'>('portfolio');
+  const [activeTab, setActiveTab] = useState<'portfolio' | 'leads' | 'testimonials' | 'whatsapp' | 'metrics'>('portfolio');
 
   // Portfolio State
   const [projects, setProjects] = useState<PortfolioProject[]>(() => {
@@ -46,6 +47,20 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onGoToSite }) 
   const [resultLink, setResultLink] = useState('');
   const [imageUrl, setImageUrl] = useState('');
   const [tags, setTags] = useState('');
+
+  // WhatsApp Configuration State
+  const [whatsappNumber, setWhatsappNumber] = useState<string>(() => getStoredWhatsAppNumber());
+  const [whatsappInput, setWhatsappInput] = useState<string>(() => getStoredWhatsAppNumber());
+  const [saveSuccessMsg, setSaveSuccessMsg] = useState(false);
+
+  const handleSaveWhatsapp = (e: React.FormEvent) => {
+    e.preventDefault();
+    const saved = saveWhatsAppNumber(whatsappInput);
+    setWhatsappNumber(saved);
+    setWhatsappInput(saved);
+    setSaveSuccessMsg(true);
+    setTimeout(() => setSaveSuccessMsg(false), 3500);
+  };
 
   // AI Generation State
   const [isGeneratingAi, setIsGeneratingAi] = useState(false);
@@ -154,6 +169,20 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onGoToSite }) 
         }
       } catch (e) {
         console.warn('Leads sync warning:', e);
+      }
+
+      try {
+        const resS = await fetch('/api/settings');
+        if (resS.ok) {
+          const sData = await resS.json();
+          if (sData.whatsappNumber) {
+            setWhatsappNumber(sData.whatsappNumber);
+            setWhatsappInput(sData.whatsappNumber);
+            localStorage.setItem('opera_whatsapp_number', sData.whatsappNumber);
+          }
+        }
+      } catch (e) {
+        console.warn('Settings sync warning:', e);
       }
     };
 
@@ -450,6 +479,18 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onGoToSite }) 
             >
               <Quote className="w-4 h-4" />
               <span>Depoimentos ({testimonials.length})</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('whatsapp')}
+              className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 transition-all ${
+                activeTab === 'whatsapp'
+                  ? 'bg-emerald-600 text-white shadow-md'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              <MessageSquare className="w-4 h-4 text-emerald-400 fill-current" />
+              <span>Config WhatsApp</span>
             </button>
 
             <button
@@ -772,24 +813,124 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onGoToSite }) 
             </div>
 
             <div className="bg-slate-950 p-6 rounded-2xl border border-slate-800 space-y-2">
-              <div className="text-xs text-slate-400 uppercase font-bold">Trabalhos em Exibição</div>
-              <div className="text-3xl font-black text-white">
-                {projects.length} Projetos
+              <div className="text-xs text-slate-400 uppercase font-bold">WhatsApp de Vendas</div>
+              <div className="text-xl font-extrabold text-emerald-400 font-mono truncate">
+                {formatWhatsAppDisplay(whatsappNumber)}
               </div>
               <p className="text-xs text-slate-500 pt-2 border-t border-slate-800">
-                Sincronizado instantaneamente no portfólio do site público.
+                Encaminhamento ativo para recebimento de solicitações.
               </p>
             </div>
 
             <div className="bg-slate-950 p-6 rounded-2xl border border-slate-800 space-y-2">
               <div className="text-xs text-slate-400 uppercase font-bold">Administrador Ativo</div>
               <div className="text-base font-bold text-blue-400 truncate">
-                empwilliamtavares@gmail.com
+                operadigital.link@gmail.com
               </div>
               <p className="text-xs text-slate-500 pt-2 border-t border-slate-800">
                 Acesso total liberado para adição e edição de resultados.
               </p>
             </div>
+          </div>
+        )}
+
+        {/* TAB 4: WHATSAPP CONFIGURATION */}
+        {activeTab === 'whatsapp' && (
+          <div className="max-w-3xl space-y-6">
+            
+            <div className="bg-slate-950 p-6 sm:p-8 rounded-3xl border border-slate-800 shadow-2xl space-y-6">
+              <div className="flex items-center gap-3 border-b border-slate-800 pb-5">
+                <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 flex items-center justify-center shrink-0">
+                  <MessageSquare className="w-6 h-6 fill-current" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                    <span>Configuração do WhatsApp de Vendas</span>
+                    <span className="bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[10px] font-black px-2 py-0.5 rounded-md uppercase">
+                      Ativo
+                    </span>
+                  </h3>
+                  <p className="text-xs text-slate-400 mt-0.5">
+                    Defina o número do WhatsApp da empresa para onde os orçamentos e cadastros de clientes serão direcionados.
+                  </p>
+                </div>
+              </div>
+
+              {/* Status Banner */}
+              <div className="p-4 rounded-2xl bg-slate-900 border border-slate-800 flex items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-3 h-3 rounded-full bg-emerald-400 animate-ping" />
+                  <div>
+                    <div className="text-xs font-bold text-slate-300 uppercase">Número Ativo Atual</div>
+                    <div className="text-xl font-extrabold text-emerald-400 font-mono tracking-wider">
+                      {formatWhatsAppDisplay(whatsappNumber)}
+                    </div>
+                  </div>
+                </div>
+                <a
+                  href={`https://wa.me/${whatsappNumber.replace(/\D/g, '')}?text=${encodeURIComponent('Teste de envio do Painel Admin Opera Digital')}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold px-4 py-2.5 rounded-xl border border-slate-700 transition-colors flex items-center gap-2"
+                >
+                  <ExternalLink className="w-4 h-4 text-emerald-400" />
+                  <span className="hidden sm:inline">Testar no WhatsApp</span>
+                </a>
+              </div>
+
+              {/* Form */}
+              <form onSubmit={handleSaveWhatsapp} className="space-y-5">
+                <div>
+                  <label className="block text-xs font-bold text-slate-300 mb-2">
+                    Número do WhatsApp Comercial (Com código de área / DDD) *
+                  </label>
+                  <div className="relative">
+                    <Phone className="w-5 h-5 text-slate-500 absolute left-3.5 top-3.5" />
+                    <input
+                      type="text"
+                      required
+                      value={whatsappInput}
+                      onChange={(e) => setWhatsappInput(e.target.value)}
+                      placeholder="+5551992379969 ou 51992379969"
+                      className="w-full bg-slate-900 border border-slate-800 text-white font-mono text-base pl-11 pr-4 py-3 rounded-2xl focus:outline-none focus:border-emerald-500"
+                    />
+                  </div>
+                  <p className="text-[11px] text-slate-400 mt-2 flex items-center gap-1.5">
+                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                    <span>Exemplo para Porto Alegre/RS: <strong className="text-slate-300">+5551992379969</strong> ou <strong className="text-slate-300">5551992379969</strong></span>
+                  </p>
+                </div>
+
+                {saveSuccessMsg && (
+                  <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-bold flex items-center gap-2 animate-in fade-in">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                    <span>Número do WhatsApp atualizado e salvo com sucesso! Todos os orçamentos do site já estão apontando para este número.</span>
+                  </div>
+                )}
+
+                <div className="pt-2 flex items-center justify-end gap-3">
+                  <button
+                    type="submit"
+                    className="bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-sm px-7 py-3 rounded-xl shadow-lg shadow-emerald-950/60 transition-all flex items-center gap-2 min-h-[44px]"
+                  >
+                    <Save className="w-4 h-4" />
+                    <span>Salvar Alterações do WhatsApp</span>
+                  </button>
+                </div>
+              </form>
+            </div>
+
+            {/* Explanation card */}
+            <div className="bg-slate-950 p-6 rounded-3xl border border-slate-800 space-y-3">
+              <h4 className="text-xs font-bold uppercase text-slate-400 tracking-wider flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-emerald-400" />
+                <span>Como funciona o encaminhamento de mensagens</span>
+              </h4>
+              <p className="text-xs text-slate-300 leading-relaxed">
+                Quando o cliente preenche o formulário de orçamento no site ou clica nos botões de contato por WhatsApp, a plataforma compõe automaticamente a mensagem com o nome do cliente, empresa, e-mail e detalhes do projeto, e abre a conversa diretamente no WhatsApp do número configurado acima: <strong className="text-emerald-400 font-mono">{formatWhatsAppDisplay(whatsappNumber)}</strong>.
+              </p>
+            </div>
+
           </div>
         )}
 

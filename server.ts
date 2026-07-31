@@ -11,6 +11,9 @@ const STORE_PATH = path.resolve(process.cwd(), 'data_store.json');
 interface StoreData {
   projects: any[];
   leads: any[];
+  settings?: {
+    whatsappNumber?: string;
+  };
 }
 
 function loadStore(): StoreData {
@@ -20,13 +23,14 @@ function loadStore(): StoreData {
       const parsed = JSON.parse(raw);
       return {
         projects: Array.isArray(parsed?.projects) ? parsed.projects : [],
-        leads: Array.isArray(parsed?.leads) ? parsed.leads : []
+        leads: Array.isArray(parsed?.leads) ? parsed.leads : [],
+        settings: parsed?.settings || { whatsappNumber: '5551992379969' }
       };
     }
   } catch (e) {
     console.error('Error reading store file:', e);
   }
-  return { projects: [], leads: [] };
+  return { projects: [], leads: [], settings: { whatsappNumber: '5551992379969' } };
 }
 
 function saveStore(data: StoreData) {
@@ -205,6 +209,29 @@ async function startServer() {
     store.leads = store.leads.filter((l) => String(l.id) !== String(id));
     saveStore(store);
     res.json({ success: true, leads: store.leads });
+  });
+
+  // API Routes: Settings (WhatsApp Number, etc.)
+  app.get('/api/settings', (req, res) => {
+    res.json({
+      whatsappNumber: store.settings?.whatsappNumber || '5551992379969'
+    });
+  });
+
+  app.post('/api/settings', (req, res) => {
+    const { whatsappNumber } = req.body || {};
+    if (whatsappNumber && typeof whatsappNumber === 'string') {
+      const cleaned = whatsappNumber.replace(/\D/g, '');
+      if (cleaned.length >= 10) {
+        if (!store.settings) store.settings = {};
+        store.settings.whatsappNumber = cleaned;
+        saveStore(store);
+      }
+    }
+    res.json({
+      success: true,
+      whatsappNumber: store.settings?.whatsappNumber || '5551992379969'
+    });
   });
 
   // API Route: AI Generation for Portfolio Projects

@@ -4,6 +4,7 @@ import {
   Building, Lock, Mail, Phone, User, Check, AlertCircle, ArrowRight
 } from 'lucide-react';
 import { RegistrationFormData } from '../types';
+import { getStoredWhatsAppNumber } from '../utils/whatsapp';
 
 interface RegistrationPageProps {
   onNavigateHome: () => void;
@@ -118,7 +119,7 @@ export const RegistrationPage: React.FC<RegistrationPageProps> = ({
 
     setFormattedMessage(msg);
 
-    const targetPhone = '5511978253909'; // Official Opera Digital WhatsApp
+    const targetPhone = getStoredWhatsAppNumber(); // Configured Opera Digital WhatsApp
     const url = `https://wa.me/${targetPhone}?text=${encodeURIComponent(msg)}`;
     setWhatsappUrl(url);
 
