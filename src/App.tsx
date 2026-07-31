@@ -101,7 +101,7 @@ export default function App() {
   // If user is on Registration Page (inscricao.html)
   if (currentRoute === 'register') {
     return (
-      <div className="min-h-screen bg-slate-50">
+      <div className="min-h-screen bg-slate-950 text-slate-100">
         <RegistrationPage
           onNavigateHome={navigateToHome}
           onOpenLogin={() => setLoginModalOpen(true)}
@@ -127,7 +127,7 @@ export default function App() {
 
   // Main Institutional Page (index.html)
   return (
-    <div className="min-h-screen bg-slate-50 font-sans text-slate-900 selection:bg-[#0A4EE4]/20 selection:text-[#0A4EE4]">
+    <div className="min-h-screen bg-slate-950 font-sans text-slate-100 selection:bg-blue-600/30 selection:text-blue-300">
       
       {/* Sticky Header */}
       <Header

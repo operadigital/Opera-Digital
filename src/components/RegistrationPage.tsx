@@ -122,13 +122,13 @@ export const RegistrationPage: React.FC<RegistrationPageProps> = ({
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
+    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans">
       
       {/* Top Bar Navigation */}
-      <div className="bg-white border-b border-slate-200 px-4 py-3 flex items-center justify-between">
+      <div className="bg-slate-950 border-b border-slate-800 px-4 py-3 flex items-center justify-between">
         <button
           onClick={onNavigateHome}
-          className="flex items-center gap-2 text-slate-600 hover:text-[#0A4EE4] font-semibold text-xs transition-colors"
+          className="flex items-center gap-2 text-slate-300 hover:text-blue-400 font-semibold text-xs transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Voltar ao site principal</span>
@@ -138,11 +138,11 @@ export const RegistrationPage: React.FC<RegistrationPageProps> = ({
           <img 
             src="https://i.ibb.co/SX9x8b4k/d943fc28-7ed1-4e07-a215-5630a4dea11d.jpg" 
             alt="Opera Digital Logo" 
-            className="h-7 w-auto object-contain rounded-lg"
+            className="h-7 w-auto object-contain rounded-lg bg-white p-0.5"
             referrerPolicy="no-referrer"
           />
-          <span className="font-extrabold text-sm text-slate-900">
-            Opera<span className="text-[#0A4EE4]">Digital</span>
+          <span className="font-extrabold text-sm text-white">
+            Opera<span className="text-blue-500">Digital</span>
           </span>
         </div>
 
@@ -155,7 +155,7 @@ export const RegistrationPage: React.FC<RegistrationPageProps> = ({
       <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 min-h-[calc(100vh-57px)]">
         
         {/* Left Side: Opera Primary Blue with Benefits */}
-        <div className="lg:col-span-5 bg-[#0A4EE4] text-white p-8 sm:p-12 lg:p-16 flex flex-col justify-between relative overflow-hidden">
+        <div className="lg:col-span-5 bg-gradient-to-b from-blue-950 via-slate-900 to-slate-950 text-white p-8 sm:p-12 lg:p-16 flex flex-col justify-between relative overflow-hidden border-r border-slate-800">
           {/* Decorative glow circles */}
           <div className="absolute top-0 right-0 w-80 h-80 bg-blue-400/20 blur-[100px] rounded-full pointer-events-none" />
           <div className="absolute bottom-0 left-0 w-80 h-80 bg-indigo-900/30 blur-[100px] rounded-full pointer-events-none" />
@@ -209,23 +209,23 @@ export const RegistrationPage: React.FC<RegistrationPageProps> = ({
         </div>
 
         {/* Right Side: Sign-Up Form */}
-        <div className="lg:col-span-7 bg-white p-6 sm:p-12 flex items-center justify-center">
-          <div className="w-full max-w-lg space-y-6">
+        <div className="lg:col-span-7 bg-slate-950 p-6 sm:p-12 flex items-center justify-center">
+          <div className="w-full max-w-lg space-y-6 bg-slate-900/90 p-6 sm:p-8 rounded-2xl border border-slate-800 shadow-xl">
             
             {!isSubmitted ? (
               <>
                 <div>
-                  <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+                  <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
                     Crie sua conta
                   </h2>
-                  <p className="text-xs sm:text-sm text-slate-500 mt-1">
+                  <p className="text-xs sm:text-sm text-slate-400 mt-1">
                     Cadastre sua empresa e comece agora mesmo. Leva menos de 2 minutos!
                   </p>
                 </div>
 
                 {/* Error Banner */}
                 {errorMessage && (
-                  <div className="p-3 bg-rose-50 border border-rose-200 text-rose-700 rounded-xl text-xs flex items-center gap-2">
+                  <div className="p-3 bg-rose-950/80 border border-rose-800/80 text-rose-300 rounded-xl text-xs flex items-center gap-2">
                     <AlertCircle className="w-4 h-4 shrink-0" />
                     <span>{errorMessage}</span>
                   </div>
@@ -236,25 +236,25 @@ export const RegistrationPage: React.FC<RegistrationPageProps> = ({
                   
                   {/* Nome Completo */}
                   <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1">
+                    <label className="block text-xs font-bold text-slate-300 mb-1">
                       Nome completo *
                     </label>
                     <div className="relative">
-                      <User className="w-4 h-4 text-slate-400 absolute left-3.5 top-4" />
+                      <User className="w-4 h-4 text-slate-500 absolute left-3.5 top-4" />
                       <input
                         type="text"
                         required
                         placeholder="Ex: João da Silva Santos"
                         value={formData.fullName}
                         onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                        className="w-full text-base sm:text-sm pl-10 pr-3 h-12 rounded-xl border border-slate-200 focus:outline-none focus:border-[#0A4EE4] focus:ring-1 focus:ring-[#0A4EE4]"
+                        className="w-full text-base sm:text-sm pl-10 pr-3 h-12 rounded-xl bg-slate-950 border border-slate-800 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                       />
                     </div>
                   </div>
 
                   {/* Como gostaria de ser chamado */}
                   <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1">
+                    <label className="block text-xs font-bold text-slate-300 mb-1">
                       Como gostaria de ser chamado?
                     </label>
                     <input
@@ -262,24 +262,24 @@ export const RegistrationPage: React.FC<RegistrationPageProps> = ({
                       placeholder="Ex: João"
                       value={formData.preferredName}
                       onChange={(e) => setFormData({ ...formData, preferredName: e.target.value })}
-                      className="w-full text-base sm:text-sm px-3.5 h-12 rounded-xl border border-slate-200 focus:outline-none focus:border-[#0A4EE4] focus:ring-1 focus:ring-[#0A4EE4]"
+                      className="w-full text-base sm:text-sm px-3.5 h-12 rounded-xl bg-slate-950 border border-slate-800 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                     />
                   </div>
 
                   {/* E-mail */}
                   <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1">
+                    <label className="block text-xs font-bold text-slate-300 mb-1">
                       E-mail profissional *
                     </label>
                     <div className="relative">
-                      <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-4" />
+                      <Mail className="w-4 h-4 text-slate-500 absolute left-3.5 top-4" />
                       <input
                         type="email"
                         required
                         placeholder="joao@suaempresa.com.br"
                         value={formData.email}
                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                        className="w-full text-base sm:text-sm pl-10 pr-3 h-12 rounded-xl border border-slate-200 focus:outline-none focus:border-[#0A4EE4] focus:ring-1 focus:ring-[#0A4EE4]"
+                        className="w-full text-base sm:text-sm pl-10 pr-3 h-12 rounded-xl bg-slate-950 border border-slate-800 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                       />
                     </div>
                   </div>
@@ -287,34 +287,34 @@ export const RegistrationPage: React.FC<RegistrationPageProps> = ({
                   {/* Grid for Celular & CNPJ */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-xs font-bold text-slate-700 mb-1">
+                      <label className="block text-xs font-bold text-slate-300 mb-1">
                         Celular / WhatsApp *
                       </label>
                       <div className="relative">
-                        <Phone className="w-4 h-4 text-slate-400 absolute left-3.5 top-4" />
+                        <Phone className="w-4 h-4 text-slate-500 absolute left-3.5 top-4" />
                         <input
                           type="text"
                           required
                           placeholder="(11) 99999-9999"
                           value={formData.phone}
                           onChange={(e) => handlePhoneChange(e.target.value)}
-                          className="w-full text-base sm:text-sm pl-10 pr-3 h-12 rounded-xl border border-slate-200 focus:outline-none focus:border-[#0A4EE4] focus:ring-1 focus:ring-[#0A4EE4]"
+                          className="w-full text-base sm:text-sm pl-10 pr-3 h-12 rounded-xl bg-slate-950 border border-slate-800 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                         />
                       </div>
                     </div>
 
                     <div>
-                      <label className="block text-xs font-bold text-slate-700 mb-1">
+                      <label className="block text-xs font-bold text-slate-300 mb-1">
                         CNPJ da Empresa
                       </label>
                       <div className="relative">
-                        <Building className="w-4 h-4 text-slate-400 absolute left-3.5 top-4" />
+                        <Building className="w-4 h-4 text-slate-500 absolute left-3.5 top-4" />
                         <input
                           type="text"
                           placeholder="00.000.000/0000-00"
                           value={formData.cnpj}
                           onChange={(e) => handleCnpjChange(e.target.value)}
-                          className="w-full text-base sm:text-sm pl-10 pr-3 h-12 rounded-xl border border-slate-200 focus:outline-none focus:border-[#0A4EE4] focus:ring-1 focus:ring-[#0A4EE4]"
+                          className="w-full text-base sm:text-sm pl-10 pr-3 h-12 rounded-xl bg-slate-950 border border-slate-800 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                         />
                       </div>
                     </div>
@@ -322,23 +322,23 @@ export const RegistrationPage: React.FC<RegistrationPageProps> = ({
 
                   {/* Senha */}
                   <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1">
+                    <label className="block text-xs font-bold text-slate-300 mb-1">
                       Crie sua senha *
                     </label>
                     <div className="relative">
-                      <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-4" />
+                      <Lock className="w-4 h-4 text-slate-500 absolute left-3.5 top-4" />
                       <input
                         type={showPassword ? 'text' : 'password'}
                         required
                         placeholder="No mínimo 6 caracteres"
                         value={formData.password}
                         onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                        className="w-full text-base sm:text-sm pl-10 pr-12 h-12 rounded-xl border border-slate-200 focus:outline-none focus:border-[#0A4EE4] focus:ring-1 focus:ring-[#0A4EE4]"
+                        className="w-full text-base sm:text-sm pl-10 pr-12 h-12 rounded-xl bg-slate-950 border border-slate-800 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                       />
                       <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-1 top-1.5 h-9 w-10 flex items-center justify-center text-slate-400 hover:text-slate-600 focus:outline-none"
+                        className="absolute right-1 top-1.5 h-9 w-10 flex items-center justify-center text-slate-400 hover:text-slate-200 focus:outline-none"
                       >
                         {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                       </button>
@@ -352,26 +352,26 @@ export const RegistrationPage: React.FC<RegistrationPageProps> = ({
                             <div
                               key={step}
                               className={`flex-1 rounded-full transition-colors ${
-                                step <= passwordStrength.score ? passwordStrength.color : 'bg-slate-200'
+                                step <= passwordStrength.score ? passwordStrength.color : 'bg-slate-800'
                               }`}
                             />
                           ))}
                         </div>
-                        <span className="text-[10px] text-slate-500 font-medium block">
-                          Força da senha: <strong className="text-slate-700">{passwordStrength.label}</strong>
+                        <span className="text-[10px] text-slate-400 font-medium block">
+                          Força da senha: <strong className="text-slate-200">{passwordStrength.label}</strong>
                         </span>
                       </div>
                     )}
                   </div>
 
                   {/* Opt-in Checkboxes */}
-                  <div className="space-y-2 pt-2 text-xs text-slate-600">
+                  <div className="space-y-2 pt-2 text-xs text-slate-300">
                     <label className="flex items-center gap-2 cursor-pointer">
                       <input
                         type="checkbox"
                         checked={formData.emailOptIn}
                         onChange={(e) => setFormData({ ...formData, emailOptIn: e.target.checked })}
-                        className="rounded border-slate-300 text-[#0A4EE4] focus:ring-[#0A4EE4]"
+                        className="rounded border-slate-700 bg-slate-950 text-blue-500 focus:ring-blue-500"
                       />
                       <span>Desejo receber dicas de gestão e ofertas por e-mail</span>
                     </label>
@@ -381,7 +381,7 @@ export const RegistrationPage: React.FC<RegistrationPageProps> = ({
                         type="checkbox"
                         checked={formData.whatsappOptIn}
                         onChange={(e) => setFormData({ ...formData, whatsappOptIn: e.target.checked })}
-                        className="rounded border-slate-300 text-[#0A4EE4] focus:ring-[#0A4EE4]"
+                        className="rounded border-slate-700 bg-slate-950 text-blue-500 focus:ring-blue-500"
                       />
                       <span>Desejo receber avisos e lembretes via WhatsApp</span>
                     </label>
@@ -393,15 +393,15 @@ export const RegistrationPage: React.FC<RegistrationPageProps> = ({
                         required
                         checked={formData.termsAccepted}
                         onChange={(e) => setFormData({ ...formData, termsAccepted: e.target.checked })}
-                        className="rounded border-slate-300 text-[#0A4EE4] focus:ring-[#0A4EE4] mt-0.5"
+                        className="rounded border-slate-700 bg-slate-950 text-blue-500 focus:ring-blue-500 mt-0.5"
                       />
-                      <span className="text-slate-700">
+                      <span className="text-slate-300">
                         Li e aceito os{' '}
-                        <button type="button" onClick={onOpenTerms} className="text-[#0A4EE4] font-bold hover:underline">
+                        <button type="button" onClick={onOpenTerms} className="text-blue-400 font-bold hover:underline">
                           Termos de Uso
                         </button>{' '}
                         e a{' '}
-                        <button type="button" onClick={onOpenPrivacy} className="text-[#0A4EE4] font-bold hover:underline">
+                        <button type="button" onClick={onOpenPrivacy} className="text-blue-400 font-bold hover:underline">
                           Política de Privacidade
                         </button>
                         . *
@@ -412,7 +412,7 @@ export const RegistrationPage: React.FC<RegistrationPageProps> = ({
                   {/* Submit Button */}
                   <button
                     type="submit"
-                    className="w-full bg-[#0A4EE4] hover:bg-[#083DB4] text-white font-extrabold text-base py-3.5 rounded-xl shadow-md shadow-[#0A4EE4]/25 transition-all duration-200 mt-4 flex items-center justify-center gap-2"
+                    className="w-full bg-[#0A4EE4] hover:bg-blue-600 text-white font-extrabold text-base py-3.5 rounded-xl shadow-lg shadow-blue-950/60 transition-all duration-200 mt-4 flex items-center justify-center gap-2"
                   >
                     <span>Criar conta e começar agora</span>
                     <ArrowRight className="w-5 h-5" />
@@ -422,10 +422,10 @@ export const RegistrationPage: React.FC<RegistrationPageProps> = ({
                 {/* Social Login Divider */}
                 <div className="relative my-6">
                   <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-slate-200"></div>
+                    <div className="w-full border-t border-slate-800"></div>
                   </div>
                   <div className="relative flex justify-center text-xs uppercase">
-                    <span className="bg-white px-3 text-slate-400 font-semibold">
+                    <span className="bg-slate-900 px-3 text-slate-400 font-semibold">
                       Ou cadastre-se com
                     </span>
                   </div>
@@ -436,7 +436,7 @@ export const RegistrationPage: React.FC<RegistrationPageProps> = ({
                   <button
                     type="button"
                     onClick={() => setIsSubmitted(true)}
-                    className="flex items-center justify-center gap-2 py-2.5 px-4 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 transition-colors"
+                    className="flex items-center justify-center gap-2 py-2.5 px-4 bg-slate-950 hover:bg-slate-800 border border-slate-800 rounded-xl text-xs font-semibold text-slate-300 transition-colors"
                   >
                     <svg className="w-4 h-4" viewBox="0 0 24 24">
                       <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z"/>

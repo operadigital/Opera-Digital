@@ -16,22 +16,22 @@ export const AiAgentsSection: React.FC = () => {
   };
 
   return (
-    <section id="agentes-ia" className="py-16 bg-[#F8FAFC] text-slate-900 relative">
+    <section id="agentes-ia" className="py-16 bg-gradient-to-b from-slate-900 via-slate-950 to-black text-slate-100 border-t border-slate-800/80 relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Section Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[#0A4EE4] bg-blue-50 px-3 py-1 rounded-full mb-2">
-              <Sparkles className="w-3.5 h-3.5" />
+            <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-blue-400 bg-blue-950/80 border border-blue-800/60 px-3 py-1 rounded-full mb-2">
+              <Sparkles className="w-3.5 h-3.5 text-blue-400" />
               <span>Agentes de Inteligência Artificial</span>
             </div>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-              Agentes de IA <span className="text-[#0A4EE4] text-xs font-bold align-top ml-1 bg-blue-50 px-2 py-0.5 rounded-full">BETA</span>
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+              Agentes de IA <span className="text-blue-400 text-xs font-bold align-top ml-1 bg-blue-950/80 border border-blue-800/60 px-2 py-0.5 rounded-full">BETA</span>
             </h2>
           </div>
-          <a href="#planos" className="text-sm font-bold text-[#0A4EE4] hover:underline hidden sm:flex items-center gap-1">
-            Ver todos os recursos <ArrowRight className="w-4 h-4" />
+          <a href="#servicos" className="text-sm font-bold text-blue-400 hover:text-blue-300 hidden sm:flex items-center gap-1">
+            Ver todas as automações <ArrowRight className="w-4 h-4" />
           </a>
         </div>
 
@@ -41,15 +41,15 @@ export const AiAgentsSection: React.FC = () => {
             return (
               <div
                 key={feat.id}
-                className="p-5 bg-white rounded-xl border border-slate-100 hover:border-blue-200 shadow-sm transition-all hover:shadow-md group text-left"
+                className="p-5 bg-slate-900/90 rounded-xl border border-slate-800 hover:border-blue-500/50 shadow-lg transition-all hover:shadow-xl group text-left"
               >
-                <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center text-xl mb-3 group-hover:bg-[#0A4EE4] group-hover:text-white transition-colors">
+                <div className="w-10 h-10 bg-blue-950/80 border border-blue-800/60 rounded-lg flex items-center justify-center text-xl mb-3 group-hover:bg-[#0A4EE4] group-hover:text-white transition-colors">
                   {getAgentIcon(feat.iconName)}
                 </div>
-                <h3 className="font-bold text-sm text-slate-900 mb-1 group-hover:text-[#0A4EE4] transition-colors">
+                <h3 className="font-bold text-sm text-white mb-1 group-hover:text-blue-400 transition-colors">
                   {feat.title}
                 </h3>
-                <p className="text-[11px] text-slate-500 leading-relaxed">
+                <p className="text-xs text-slate-400 leading-relaxed">
                   {feat.description}
                 </p>
               </div>

@@ -281,20 +281,20 @@ export const PortfolioSection: React.FC = () => {
   };
 
   return (
-    <section id="trabalhos" className="py-20 bg-slate-50 border-t border-slate-200/80 relative">
+    <section id="trabalhos" className="py-20 bg-gradient-to-b from-black via-slate-950 to-slate-900 text-slate-100 border-t border-slate-800/80 relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Section Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
           <div>
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-50 border border-blue-100 text-[#0A4EE4] text-xs font-bold mb-3 shadow-2xs">
-              <Sparkles className="w-4 h-4 text-[#0A4EE4]" />
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-950/80 border border-blue-800/60 text-blue-400 text-xs font-bold mb-3 shadow-sm">
+              <Sparkles className="w-4 h-4 text-blue-400" />
               <span>Trabalhos Realizados & Portfólio</span>
             </div>
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight uppercase">
+            <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight uppercase">
               VEJA NOSSOS DESENVOLVIMENTOS REALIZADOS
             </h2>
-            <p className="text-sm sm:text-base text-slate-600 mt-2 max-w-2xl">
+            <p className="text-sm sm:text-base text-slate-300 mt-2 max-w-2xl">
               Confira os sistemas, e-commerces e automações implantados. Clique em qualquer trabalho para ver o resultado final ao vivo.
             </p>
           </div>
@@ -302,10 +302,10 @@ export const PortfolioSection: React.FC = () => {
 
         {/* Projects Grid */}
         {filteredProjects.length === 0 ? (
-          <div className="bg-white rounded-2xl border border-slate-200 p-12 text-center max-w-md mx-auto my-8">
-            <Building2 className="w-12 h-12 text-slate-300 mx-auto mb-3" />
-            <h3 className="font-bold text-slate-800 text-base">Nenhum trabalho cadastrado</h3>
-            <p className="text-xs text-slate-500 mt-1">
+          <div className="bg-slate-900/90 rounded-2xl border border-slate-800 p-12 text-center max-w-md mx-auto my-8">
+            <Building2 className="w-12 h-12 text-slate-500 mx-auto mb-3" />
+            <h3 className="font-bold text-slate-200 text-base">Nenhum trabalho cadastrado</h3>
+            <p className="text-xs text-slate-400 mt-1">
               Os trabalhos cadastrados no Painel do Administrador serão exibidos aqui em tempo real.
             </p>
           </div>
@@ -315,21 +315,21 @@ export const PortfolioSection: React.FC = () => {
               <div
                 key={project.id}
                 onClick={() => setSelectedProject(project)}
-                className="bg-white rounded-2xl border border-slate-200/80 shadow-xs hover:shadow-xl hover:border-blue-200 transition-all duration-300 overflow-hidden flex flex-col group cursor-pointer"
+                className="bg-slate-900/90 rounded-2xl border border-slate-800 shadow-xl hover:shadow-2xl hover:border-blue-500/50 transition-all duration-300 overflow-hidden flex flex-col group cursor-pointer"
               >
                 {/* Project Image Header with Overlay */}
-                <div className="relative h-48 sm:h-56 w-full overflow-hidden bg-slate-100">
+                <div className="relative h-48 sm:h-56 w-full overflow-hidden bg-slate-950">
                   <img
                     src={project.imageUrl}
                     alt={project.title}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     referrerPolicy="no-referrer"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-slate-900/20 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/30 to-transparent" />
 
                   {/* Category & Metric Badges */}
                   <div className="absolute top-3 left-3 right-3 flex items-center justify-between">
-                    <span className="bg-white/90 backdrop-blur-md text-[#0A4EE4] text-[11px] font-extrabold px-3 py-1 rounded-full shadow-xs">
+                    <span className="bg-slate-900/90 border border-slate-700/80 backdrop-blur-md text-blue-400 text-[11px] font-extrabold px-3 py-1 rounded-full shadow-md">
                       {project.category}
                     </span>
 
@@ -344,10 +344,10 @@ export const PortfolioSection: React.FC = () => {
 
                   {/* Title & Client inside Image Gradient */}
                   <div className="absolute bottom-3 left-4 right-4 text-white">
-                    <div className="text-[11px] font-medium opacity-90 uppercase tracking-wider">
+                    <div className="text-[11px] font-medium text-blue-300 uppercase tracking-wider">
                       Cliente: {project.clientName}
                     </div>
-                    <h3 className="text-lg font-extrabold leading-snug line-clamp-1 group-hover:text-blue-200 transition-colors">
+                    <h3 className="text-lg font-extrabold leading-snug line-clamp-1 group-hover:text-blue-400 transition-colors">
                       {project.title}
                     </h3>
                   </div>
@@ -355,17 +355,17 @@ export const PortfolioSection: React.FC = () => {
 
                 {/* Card Body */}
                 <div className="p-5 sm:p-6 flex-1 flex flex-col justify-between space-y-4">
-                  <p className="text-xs sm:text-sm text-slate-600 line-clamp-2 leading-relaxed">
+                  <p className="text-xs sm:text-sm text-slate-300 line-clamp-2 leading-relaxed">
                     {project.description}
                   </p>
 
                   {/* Tags & Action Buttons */}
-                  <div className="pt-2 border-t border-slate-100 flex items-center justify-between gap-3">
+                  <div className="pt-2 border-t border-slate-800 flex items-center justify-between gap-3">
                     <div className="flex flex-wrap gap-1.5 max-w-[60%]">
                       {project.tags.map((tag, idx) => (
                         <span
                           key={idx}
-                          className="bg-slate-100 text-slate-600 text-[10px] font-bold px-2 py-0.5 rounded-md"
+                          className="bg-slate-800/80 text-slate-300 border border-slate-700/60 text-[10px] font-bold px-2 py-0.5 rounded-md"
                         >
                           #{tag}
                         </span>
@@ -376,11 +376,11 @@ export const PortfolioSection: React.FC = () => {
                     <div className="flex items-center gap-2">
                       <button
                         onClick={(e) => handleCopyLink(e, project.resultLink, project.id)}
-                        className="p-2 text-slate-400 hover:text-[#0A4EE4] hover:bg-blue-50 rounded-lg transition-colors border border-transparent hover:border-blue-100"
+                        className="p-2 text-slate-400 hover:text-blue-400 hover:bg-slate-800 rounded-lg transition-colors border border-transparent hover:border-slate-700"
                         title="Copiar link direto"
                       >
                         {copiedId === project.id ? (
-                          <Check className="w-4 h-4 text-emerald-600" />
+                          <Check className="w-4 h-4 text-emerald-400" />
                         ) : (
                           <Copy className="w-4 h-4" />
                         )}
@@ -391,7 +391,7 @@ export const PortfolioSection: React.FC = () => {
                           e.stopPropagation();
                           handleOpenLiveLink(project.resultLink);
                         }}
-                        className="bg-[#0A4EE4] hover:bg-blue-700 text-white text-xs font-bold px-3.5 py-2 rounded-xl transition-all flex items-center gap-1.5 shadow-xs"
+                        className="bg-[#0A4EE4] hover:bg-blue-600 text-white text-xs font-bold px-3.5 py-2 rounded-xl transition-all flex items-center gap-1.5 shadow-md"
                       >
                         <span>Ver Resultado</span>
                         <ExternalLink className="w-3.5 h-3.5" />
