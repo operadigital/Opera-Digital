@@ -395,43 +395,43 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onGoToSite }) 
     <div className="min-h-screen bg-slate-900 text-slate-100 flex flex-col font-sans">
       
       {/* Top Navigation Bar */}
-      <header className="bg-slate-950 border-b border-slate-800 px-4 sm:px-8 py-4 sticky top-0 z-30">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <header className="bg-slate-950 border-b border-slate-800 px-3.5 sm:px-8 py-3 sm:py-4 sticky top-0 z-30">
+        <div className="max-w-7xl mx-auto flex flex-row items-center justify-between gap-3 sm:gap-4">
           
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2.5 sm:gap-3">
             <img 
               src="https://i.ibb.co/SX9x8b4k/d943fc28-7ed1-4e07-a215-5630a4dea11d.jpg" 
               alt="Opera Digital Logo" 
-              className="h-9 w-auto rounded-xl bg-white p-0.5"
+              className="h-8 sm:h-9 w-auto rounded-xl bg-white p-0.5 shrink-0"
               referrerPolicy="no-referrer"
             />
             <div>
-              <div className="flex items-center gap-2">
-                <span className="font-extrabold text-base text-white tracking-wide">Painel Administrativo</span>
-                <span className="bg-blue-500/20 text-blue-400 border border-blue-500/30 text-[10px] font-black px-2 py-0.5 rounded-md uppercase">
-                  Admin Master
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <span className="font-extrabold text-xs sm:text-base text-white tracking-wide">Painel Admin</span>
+                <span className="bg-blue-500/20 text-blue-400 border border-blue-500/30 text-[9px] sm:text-[10px] font-black px-1.5 sm:px-2 py-0.5 rounded-md uppercase">
+                  Master
                 </span>
               </div>
-              <p className="text-xs text-slate-400 font-mono">
+              <p className="text-[10px] sm:text-xs text-slate-400 font-mono truncate max-w-[130px] sm:max-w-none">
                 operadigital.link@gmail.com
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
             <button
               onClick={onGoToSite}
-              className="bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold px-4 py-2.5 rounded-xl border border-slate-700 transition-colors flex items-center gap-2"
+              className="bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl border border-slate-700 transition-colors flex items-center gap-1.5"
             >
-              <ArrowLeft className="w-4 h-4" />
-              <span>Ver Site Público</span>
+              <ArrowLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+              <span className="hidden xs:inline sm:inline">Ver Site</span>
             </button>
 
             <button
               onClick={onLogout}
-              className="bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 text-xs font-bold px-4 py-2.5 rounded-xl transition-colors flex items-center gap-2"
+              className="bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 text-xs font-bold px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl transition-colors flex items-center gap-1.5"
             >
-              <LogOut className="w-4 h-4" />
+              <LogOut className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               <span>Sair</span>
             </button>
           </div>
@@ -440,76 +440,78 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onGoToSite }) 
       </header>
 
       {/* Main Content Area */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-8 py-8 space-y-8">
+      <main className="flex-1 max-w-7xl w-full mx-auto px-3.5 sm:px-8 py-5 sm:py-8 space-y-6 sm:space-y-8">
         
-        {/* Navigation Tabs */}
-        <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-800 pb-4">
-          <div className="flex items-center gap-2 bg-slate-950 p-1.5 rounded-2xl border border-slate-800">
-            <button
-              onClick={() => setActiveTab('portfolio')}
-              className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 transition-all ${
-                activeTab === 'portfolio'
-                  ? 'bg-[#0A4EE4] text-white shadow-md'
-                  : 'text-slate-400 hover:text-white'
-              }`}
-            >
-              <Building2 className="w-4 h-4" />
-              <span>Trabalhos Realizados ({projects.length})</span>
-            </button>
+        {/* Navigation Tabs Bar */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 sm:gap-4 border-b border-slate-800 pb-4">
+          <div className="w-full md:w-auto overflow-x-auto pb-1.5 md:pb-0 scrollbar-none">
+            <div className="flex items-center gap-1.5 sm:gap-2 bg-slate-950 p-1.5 rounded-2xl border border-slate-800 min-w-max">
+              <button
+                onClick={() => setActiveTab('portfolio')}
+                className={`px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-1.5 sm:gap-2 transition-all shrink-0 ${
+                  activeTab === 'portfolio'
+                    ? 'bg-[#0A4EE4] text-white shadow-md'
+                    : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                <Building2 className="w-4 h-4" />
+                <span>Trabalhos ({projects.length})</span>
+              </button>
 
-            <button
-              onClick={() => setActiveTab('leads')}
-              className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 transition-all ${
-                activeTab === 'leads'
-                  ? 'bg-[#0A4EE4] text-white shadow-md'
-                  : 'text-slate-400 hover:text-white'
-              }`}
-            >
-              <Users className="w-4 h-4" />
-              <span>Clientes & Leads ({leads.length})</span>
-            </button>
+              <button
+                onClick={() => setActiveTab('leads')}
+                className={`px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-1.5 sm:gap-2 transition-all shrink-0 ${
+                  activeTab === 'leads'
+                    ? 'bg-[#0A4EE4] text-white shadow-md'
+                    : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                <Users className="w-4 h-4" />
+                <span>Leads ({leads.length})</span>
+              </button>
 
-            <button
-              onClick={() => setActiveTab('testimonials')}
-              className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 transition-all ${
-                activeTab === 'testimonials'
-                  ? 'bg-[#0A4EE4] text-white shadow-md'
-                  : 'text-slate-400 hover:text-white'
-              }`}
-            >
-              <Quote className="w-4 h-4" />
-              <span>Depoimentos ({testimonials.length})</span>
-            </button>
+              <button
+                onClick={() => setActiveTab('testimonials')}
+                className={`px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-1.5 sm:gap-2 transition-all shrink-0 ${
+                  activeTab === 'testimonials'
+                    ? 'bg-[#0A4EE4] text-white shadow-md'
+                    : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                <Quote className="w-4 h-4" />
+                <span>Depoimentos ({testimonials.length})</span>
+              </button>
 
-            <button
-              onClick={() => setActiveTab('whatsapp')}
-              className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 transition-all ${
-                activeTab === 'whatsapp'
-                  ? 'bg-emerald-600 text-white shadow-md'
-                  : 'text-slate-400 hover:text-white'
-              }`}
-            >
-              <MessageSquare className="w-4 h-4 text-emerald-400 fill-current" />
-              <span>Config WhatsApp</span>
-            </button>
+              <button
+                onClick={() => setActiveTab('whatsapp')}
+                className={`px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-1.5 sm:gap-2 transition-all shrink-0 ${
+                  activeTab === 'whatsapp'
+                    ? 'bg-emerald-600 text-white shadow-md'
+                    : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                <MessageSquare className="w-4 h-4 text-emerald-400 fill-current" />
+                <span>Config WhatsApp</span>
+              </button>
 
-            <button
-              onClick={() => setActiveTab('metrics')}
-              className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 transition-all ${
-                activeTab === 'metrics'
-                  ? 'bg-[#0A4EE4] text-white shadow-md'
-                  : 'text-slate-400 hover:text-white'
-              }`}
-            >
-              <BarChart3 className="w-4 h-4" />
-              <span>Métricas & Status</span>
-            </button>
+              <button
+                onClick={() => setActiveTab('metrics')}
+                className={`px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-1.5 sm:gap-2 transition-all shrink-0 ${
+                  activeTab === 'metrics'
+                    ? 'bg-[#0A4EE4] text-white shadow-md'
+                    : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                <BarChart3 className="w-4 h-4" />
+                <span>Métricas</span>
+              </button>
+            </div>
           </div>
 
           {activeTab === 'portfolio' && (
             <button
               onClick={handleOpenAddModal}
-              className="bg-[#0A4EE4] hover:bg-blue-600 text-white font-bold text-xs sm:text-sm px-5 py-2.5 rounded-xl transition-all shadow-lg shadow-blue-900/30 flex items-center gap-2"
+              className="w-full md:w-auto bg-[#0A4EE4] hover:bg-blue-600 text-white font-bold text-xs sm:text-sm px-5 py-2.5 sm:py-3 rounded-xl transition-all shadow-lg shadow-blue-900/30 flex items-center justify-center gap-2 min-h-[44px]"
             >
               <Plus className="w-4 h-4" />
               <span>Novo Trabalho / Projeto</span>
@@ -519,7 +521,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onGoToSite }) 
           {activeTab === 'testimonials' && (
             <button
               onClick={() => setIsAddTestimonialModalOpen(true)}
-              className="bg-[#0A4EE4] hover:bg-blue-600 text-white font-bold text-xs sm:text-sm px-5 py-2.5 rounded-xl transition-all shadow-lg shadow-blue-900/30 flex items-center gap-2"
+              className="w-full md:w-auto bg-[#0A4EE4] hover:bg-blue-600 text-white font-bold text-xs sm:text-sm px-5 py-2.5 sm:py-3 rounded-xl transition-all shadow-lg shadow-blue-900/30 flex items-center justify-center gap-2 min-h-[44px]"
             >
               <Plus className="w-4 h-4" />
               <span>Novo Depoimento</span>
@@ -642,10 +644,10 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onGoToSite }) 
         {/* TAB 2: LEADS AND REGISTRATIONS */}
         {activeTab === 'leads' && (
           <div className="bg-slate-950 rounded-2xl border border-slate-800 overflow-hidden shadow-xl">
-            <div className="p-6 border-b border-slate-800 flex items-center justify-between">
+            <div className="p-4 sm:p-6 border-b border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
               <div>
-                <h3 className="font-bold text-white text-lg">Solicitações de Cadastro & Contatos</h3>
-                <p className="text-xs text-slate-400 mt-1">
+                <h3 className="font-bold text-white text-base sm:text-lg">Solicitações de Cadastro & Contatos</h3>
+                <p className="text-xs text-slate-400 mt-0.5 sm:mt-1">
                   Leads registrados via formulário de contratação e demonstração.
                 </p>
               </div>
@@ -655,7 +657,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onGoToSite }) 
             </div>
 
             {leads.length === 0 ? (
-              <div className="p-12 text-center">
+              <div className="p-8 sm:p-12 text-center">
                 <Users className="w-12 h-12 text-slate-700 mx-auto mb-3" />
                 <h4 className="text-white font-bold text-base">Nenhum contato registrado</h4>
                 <p className="text-slate-400 text-xs mt-1 max-w-sm mx-auto">
@@ -663,64 +665,126 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onGoToSite }) 
                 </p>
               </div>
             ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs text-slate-300">
-                  <thead className="bg-slate-900 text-slate-400 font-bold uppercase tracking-wider border-b border-slate-800">
-                    <tr>
-                      <th className="p-4">Cliente / Nome</th>
-                      <th className="p-4">E-mail</th>
-                      <th className="p-4">Telefone</th>
-                      <th className="p-4">Módulo</th>
-                      <th className="p-4">Segmento</th>
-                      <th className="p-4">Data</th>
-                      <th className="p-4">Status</th>
-                      <th className="p-4 text-right">Ações</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-800/60">
-                    {leads.map((lead) => (
-                      <tr key={lead.id} className="hover:bg-slate-900/50 transition-colors">
-                        <td className="p-4 font-bold text-white">{lead.name}</td>
-                        <td className="p-4 font-mono text-slate-400">{lead.email}</td>
-                        <td className="p-4 font-mono">{lead.phone}</td>
-                        <td className="p-4">
-                          <span className="bg-blue-500/20 text-blue-300 px-2.5 py-1 rounded-md font-bold">
-                            {lead.solution || 'Cadastro'}
-                          </span>
-                        </td>
-                        <td className="p-4 text-slate-400">{lead.segment || '-'}</td>
-                        <td className="p-4 text-slate-500">{lead.date}</td>
-                        <td className="p-4">
-                          <span className="bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded text-[11px] font-bold">
-                            {lead.status || 'Novo'}
-                          </span>
-                        </td>
-                        <td className="p-4 text-right">
-                          <div className="inline-flex items-center gap-2">
-                            {lead.phone && lead.phone !== '-' && (
-                              <a
-                                href={`https://wa.me/55${lead.phone.replace(/\D/g, '')}?text=Olá%20${encodeURIComponent(lead.name)},%20sou%20da%20Opera%20Digital!`}
-                                target="_blank"
-                                rel="noreferrer"
-                                className="inline-flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-3 py-1.5 rounded-lg transition-colors"
-                              >
-                                <MessageSquare className="w-3.5 h-3.5" />
-                                <span>WhatsApp</span>
-                              </a>
-                            )}
-                            <button
-                              onClick={() => handleDeleteLead(lead.id)}
-                              className="p-1.5 text-slate-400 hover:text-rose-400 hover:bg-rose-500/20 rounded-lg transition-colors"
-                              title="Excluir Contato"
-                            >
-                              <Trash2 className="w-4 h-4 text-rose-400" />
-                            </button>
-                          </div>
-                        </td>
+              <div>
+                {/* Mobile Cards View (Visible on screens < md) */}
+                <div className="block md:hidden divide-y divide-slate-800/80">
+                  {leads.map((lead) => (
+                    <div key={lead.id} className="p-4 space-y-3 hover:bg-slate-900/40 transition-colors">
+                      <div className="flex items-start justify-between gap-2">
+                        <div>
+                          <h4 className="font-bold text-white text-sm">{lead.name}</h4>
+                          <p className="text-[11px] text-slate-400 font-mono mt-0.5">{lead.email}</p>
+                        </div>
+                        <span className="bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded text-[10px] font-bold shrink-0">
+                          {lead.status || 'Novo'}
+                        </span>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-2 text-xs bg-slate-900/60 p-2.5 rounded-xl border border-slate-800/60">
+                        <div>
+                          <span className="text-[10px] text-slate-500 block uppercase font-bold">Módulo</span>
+                          <span className="text-blue-300 font-semibold">{lead.solution || 'Cadastro'}</span>
+                        </div>
+                        <div>
+                          <span className="text-[10px] text-slate-500 block uppercase font-bold">Segmento</span>
+                          <span className="text-slate-300">{lead.segment || '-'}</span>
+                        </div>
+                        <div>
+                          <span className="text-[10px] text-slate-500 block uppercase font-bold">Telefone</span>
+                          <span className="text-slate-200 font-mono">{lead.phone || '-'}</span>
+                        </div>
+                        <div>
+                          <span className="text-[10px] text-slate-500 block uppercase font-bold">Data</span>
+                          <span className="text-slate-400">{lead.date}</span>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center justify-between gap-2 pt-1">
+                        {lead.phone && lead.phone !== '-' ? (
+                          <a
+                            href={`https://wa.me/55${lead.phone.replace(/\D/g, '')}?text=Olá%20${encodeURIComponent(lead.name)},%20sou%20da%20Opera%20Digital!`}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="flex-1 inline-flex items-center justify-center gap-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 px-3 rounded-xl text-xs transition-colors shadow-sm min-h-[40px]"
+                          >
+                            <MessageSquare className="w-4 h-4" />
+                            <span>Chamar no WhatsApp</span>
+                          </a>
+                        ) : (
+                          <div className="flex-1" />
+                        )}
+                        <button
+                          onClick={() => handleDeleteLead(lead.id)}
+                          className="p-2.5 text-slate-400 hover:text-rose-400 hover:bg-rose-500/20 rounded-xl transition-colors border border-slate-800 min-h-[40px] min-w-[40px] flex items-center justify-center"
+                          title="Excluir Contato"
+                        >
+                          <Trash2 className="w-4 h-4 text-rose-400" />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Desktop Table View (Visible on screens >= md) */}
+                <div className="hidden md:block overflow-x-auto">
+                  <table className="w-full text-left text-xs text-slate-300">
+                    <thead className="bg-slate-900 text-slate-400 font-bold uppercase tracking-wider border-b border-slate-800">
+                      <tr>
+                        <th className="p-4">Cliente / Nome</th>
+                        <th className="p-4">E-mail</th>
+                        <th className="p-4">Telefone</th>
+                        <th className="p-4">Módulo</th>
+                        <th className="p-4">Segmento</th>
+                        <th className="p-4">Data</th>
+                        <th className="p-4">Status</th>
+                        <th className="p-4 text-right">Ações</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody className="divide-y divide-slate-800/60">
+                      {leads.map((lead) => (
+                        <tr key={lead.id} className="hover:bg-slate-900/50 transition-colors">
+                          <td className="p-4 font-bold text-white">{lead.name}</td>
+                          <td className="p-4 font-mono text-slate-400">{lead.email}</td>
+                          <td className="p-4 font-mono">{lead.phone}</td>
+                          <td className="p-4">
+                            <span className="bg-blue-500/20 text-blue-300 px-2.5 py-1 rounded-md font-bold">
+                              {lead.solution || 'Cadastro'}
+                            </span>
+                          </td>
+                          <td className="p-4 text-slate-400">{lead.segment || '-'}</td>
+                          <td className="p-4 text-slate-500">{lead.date}</td>
+                          <td className="p-4">
+                            <span className="bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded text-[11px] font-bold">
+                              {lead.status || 'Novo'}
+                            </span>
+                          </td>
+                          <td className="p-4 text-right">
+                            <div className="inline-flex items-center gap-2">
+                              {lead.phone && lead.phone !== '-' && (
+                                <a
+                                  href={`https://wa.me/55${lead.phone.replace(/\D/g, '')}?text=Olá%20${encodeURIComponent(lead.name)},%20sou%20da%20Opera%20Digital!`}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  className="inline-flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-3 py-1.5 rounded-lg transition-colors"
+                                >
+                                  <MessageSquare className="w-3.5 h-3.5" />
+                                  <span>WhatsApp</span>
+                                </a>
+                              )}
+                              <button
+                                onClick={() => handleDeleteLead(lead.id)}
+                                className="p-1.5 text-slate-400 hover:text-rose-400 hover:bg-rose-500/20 rounded-lg transition-colors"
+                                title="Excluir Contato"
+                              >
+                                <Trash2 className="w-4 h-4 text-rose-400" />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             )}
           </div>
