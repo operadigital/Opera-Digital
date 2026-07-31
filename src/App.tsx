@@ -10,15 +10,27 @@ import { Footer } from './components/Footer';
 import { RegistrationPage } from './components/RegistrationPage';
 import { LoginModal } from './components/LoginModal';
 import { TermsModal } from './components/TermsModal';
+import { QuoteModal } from './components/QuoteModal';
 import { AdminPanel } from './components/AdminPanel';
+import { MessageSquare } from 'lucide-react';
 
 export default function App() {
   const [currentRoute, setCurrentRoute] = useState<'home' | 'register' | 'admin'>('home');
   const [loginModalOpen, setLoginModalOpen] = useState(false);
+  const [quoteModalOpen, setQuoteModalOpen] = useState(false);
+  const [quoteDefaultService, setQuoteDefaultService] = useState('Criação de Site Profissional');
+
   const [termsModal, setTermsModal] = useState<{ isOpen: boolean; type: 'terms' | 'privacy' }>({
     isOpen: false,
     type: 'terms'
   });
+
+  const handleOpenQuoteModal = (serviceName?: string) => {
+    if (serviceName) {
+      setQuoteDefaultService(serviceName);
+    }
+    setQuoteModalOpen(true);
+  };
 
   // Handle URL pathname, hash or search routes (e.g. /admin, #admin, /inscricao.html or #inscricao)
   useEffect(() => {
@@ -135,15 +147,22 @@ export default function App() {
         onOpenLogin={() => setLoginModalOpen(true)}
         currentRoute={currentRoute}
         onNavigateHome={navigateToHome}
+        onOpenQuoteModal={handleOpenQuoteModal}
       />
 
       {/* Main Page Sections */}
       <main>
         {/* 1. Hero Section */}
-        <Hero onNavigateToRegister={navigateToRegister} />
+        <Hero 
+          onNavigateToRegister={navigateToRegister} 
+          onOpenQuoteModal={handleOpenQuoteModal}
+        />
 
         {/* 2. Serviços Section (Criação de Sites e Estruturação WhatsApp Web) */}
-        <ServicesSection onNavigateToRegister={navigateToRegister} />
+        <ServicesSection 
+          onNavigateToRegister={navigateToRegister} 
+          onOpenQuoteModal={handleOpenQuoteModal}
+        />
 
         {/* 3. Agentes de IA Section */}
         <AiAgentsSection />
@@ -155,7 +174,10 @@ export default function App() {
         <AboutSection />
 
         {/* 7. Final Blue CTA Banner */}
-        <CtaBanner onNavigateToRegister={navigateToRegister} />
+        <CtaBanner 
+          onNavigateToRegister={navigateToRegister} 
+          onOpenQuoteModal={handleOpenQuoteModal}
+        />
       </main>
 
       {/* Footer */}
@@ -167,6 +189,12 @@ export default function App() {
       />
 
       {/* Modals */}
+      <QuoteModal
+        isOpen={quoteModalOpen}
+        onClose={() => setQuoteModalOpen(false)}
+        defaultService={quoteDefaultService}
+      />
+
       <LoginModal
         isOpen={loginModalOpen}
         onClose={() => setLoginModalOpen(false)}
@@ -179,6 +207,22 @@ export default function App() {
         type={termsModal.type}
         onClose={() => setTermsModal({ ...termsModal, isOpen: false })}
       />
+
+      {/* Floating WhatsApp Action Button */}
+      <button
+        onClick={() => handleOpenQuoteModal()}
+        className="fixed bottom-6 right-6 z-40 bg-emerald-600 hover:bg-emerald-500 text-white p-3.5 sm:px-5 sm:py-3 rounded-full shadow-2xl flex items-center gap-2.5 transition-all hover:scale-105 active:scale-95 border border-emerald-400/30 group"
+        title="Enviar Orçamento via WhatsApp"
+        aria-label="Orçamento via WhatsApp"
+      >
+        <div className="relative">
+          <MessageSquare className="w-6 h-6 fill-current stroke-none" />
+          <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-emerald-300 rounded-full animate-ping" />
+        </div>
+        <span className="hidden sm:inline font-extrabold text-xs tracking-tight">
+          Orçamento no WhatsApp
+        </span>
+      </button>
 
     </div>
   );

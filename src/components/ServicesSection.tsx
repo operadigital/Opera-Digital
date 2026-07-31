@@ -3,9 +3,10 @@ import { Globe, MessageSquare, Check, ArrowRight, Sparkles, ShieldCheck, Zap, La
 
 interface ServicesSectionProps {
   onNavigateToRegister: () => void;
+  onOpenQuoteModal?: (serviceName?: string) => void;
 }
 
-export const ServicesSection: React.FC<ServicesSectionProps> = ({ onNavigateToRegister }) => {
+export const ServicesSection: React.FC<ServicesSectionProps> = ({ onNavigateToRegister, onOpenQuoteModal }) => {
   return (
     <section id="servicos" className="py-20 bg-gradient-to-b from-black via-slate-950 to-slate-900 text-slate-100 border-t border-slate-800/80">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-20">

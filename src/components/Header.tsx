@@ -10,13 +10,15 @@ interface HeaderProps {
   onOpenLogin: () => void;
   currentRoute: 'home' | 'register';
   onNavigateHome: () => void;
+  onOpenQuoteModal?: (serviceName?: string) => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
   onNavigateToRegister,
   onOpenLogin,
   currentRoute,
-  onNavigateHome
+  onNavigateHome,
+  onOpenQuoteModal
 }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -230,7 +232,7 @@ export const Header: React.FC<HeaderProps> = ({
               </a>
             </div>
 
-            <div className="pt-3 border-t border-slate-800 flex flex-col gap-2.5">
+            <div className="pt-3 border-t border-slate-800">
               <button
                 onClick={() => {
                   setMobileMenuOpen(false);

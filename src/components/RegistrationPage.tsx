@@ -76,6 +76,9 @@ export const RegistrationPage: React.FC<RegistrationPageProps> = ({
     setFormData((prev) => ({ ...prev, cnpj: formatted }));
   };
 
+  const [whatsappUrl, setWhatsappUrl] = useState('');
+  const [formattedMessage, setFormattedMessage] = useState('');
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage('');
@@ -93,13 +96,39 @@ export const RegistrationPage: React.FC<RegistrationPageProps> = ({
       return;
     }
 
+    // Format message for WhatsApp
+    const msg = [
+      `🚀 *SOLICITAÇÃO DE ORÇAMENTO / CADASTRO - OPERA DIGITAL*`,
+      ``,
+      `📋 *DADOS DO CLIENTE:*`,
+      `• *Nome Completo:* ${formData.fullName.trim()}`,
+      formData.preferredName.trim() ? `• *Como gostaria de ser chamado:* ${formData.preferredName.trim()}` : null,
+      `• *E-mail Profissional:* ${formData.email.trim()}`,
+      `• *Celular / WhatsApp:* ${formData.phone.trim() || 'Não informado'}`,
+      formData.cnpj.trim() ? `• *CNPJ / Empresa:* ${formData.cnpj.trim()}` : `• *Tipo:* Pessoa Física`,
+      ``,
+      `📌 *Preferências:*`,
+      `• *Notificações por E-mail:* ${formData.emailOptIn ? 'Sim' : 'Não'}`,
+      `• *Notificações por WhatsApp:* ${formData.whatsappOptIn ? 'Sim' : 'Não'}`,
+      ``,
+      `📅 *Data:* ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`,
+      ``,
+      `Olá! Gostaria de receber atendimento e dar início ao meu projeto com a Opera Digital.`
+    ].filter(Boolean).join('\n');
+
+    setFormattedMessage(msg);
+
+    const targetPhone = '5511978253909'; // Official Opera Digital WhatsApp
+    const url = `https://wa.me/${targetPhone}?text=${encodeURIComponent(msg)}`;
+    setWhatsappUrl(url);
+
     try {
       const newLead = {
         id: Date.now(),
         name: formData.fullName,
         email: formData.email,
         phone: formData.phone || '-',
-        solution: 'Cadastro Plataforma',
+        solution: 'Cadastro & Orçamento Plataforma',
         segment: formData.cnpj ? 'Pessoa Jurídica' : 'Pessoa Física',
         date: new Date().toLocaleDateString('pt-BR'),
         status: 'Novo'
@@ -114,10 +143,12 @@ export const RegistrationPage: React.FC<RegistrationPageProps> = ({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newLead)
       }).catch(() => {});
-    } catch (e) {
-      console.error(e);
+    } catch (err) {
+      console.error(err);
     }
 
+    // Save lead data and redirect directly in the current window
+    window.location.href = url;
     setIsSubmitted(true);
   };
 
@@ -414,7 +445,7 @@ export const RegistrationPage: React.FC<RegistrationPageProps> = ({
                     type="submit"
                     className="w-full bg-[#0A4EE4] hover:bg-blue-600 text-white font-extrabold text-base py-3.5 rounded-xl shadow-lg shadow-blue-950/60 transition-all duration-200 mt-4 flex items-center justify-center gap-2"
                   >
-                    <span>Criar conta e começar agora</span>
+                    <span>Enviar solicitação e abrir WhatsApp</span>
                     <ArrowRight className="w-5 h-5" />
                   </button>
                 </form>
@@ -476,41 +507,49 @@ export const RegistrationPage: React.FC<RegistrationPageProps> = ({
               </>
             ) : (
               /* Success Confirmation Card */
-              <div className="bg-white rounded-2xl p-8 border border-emerald-200 shadow-xl text-center space-y-6 animate-in fade-in duration-300">
-                <div className="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-2xl flex items-center justify-center mx-auto shadow-sm">
+              <div className="bg-slate-900 rounded-2xl p-6 sm:p-8 border border-emerald-500/40 shadow-2xl text-center space-y-5 animate-in fade-in duration-300">
+                <div className="w-16 h-16 bg-emerald-950 text-emerald-400 border border-emerald-800 rounded-2xl flex items-center justify-center mx-auto shadow-lg">
                   <CheckCircle2 className="w-10 h-10 stroke-[2.5]" />
                 </div>
 
                 <div className="space-y-2">
-                  <h3 className="text-2xl font-extrabold text-slate-900">
-                    Conta criada com sucesso!
+                  <h3 className="text-2xl font-extrabold text-white">
+                    Solicitação Registrada!
                   </h3>
-                  <p className="text-xs text-slate-600 max-w-sm mx-auto">
-                    Parabéns, {formData.preferredName || formData.fullName || 'Empreendedor'}! Sua conta na Opera Digital está pronta para uso.
+                  <p className="text-xs text-slate-300 max-w-sm mx-auto leading-relaxed">
+                    Parabéns, {formData.preferredName || formData.fullName || 'Empreendedor'}! Suas informações foram salvas e formatadas para envio direto no WhatsApp.
                   </p>
                 </div>
 
-                <div className="p-4 bg-slate-50 rounded-xl border border-slate-200/80 text-left text-xs space-y-2">
-                  <div className="flex justify-between">
-                    <span className="text-slate-500">Status da Conta:</span>
-                    <span className="font-bold text-emerald-600">Ativa</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-slate-500">E-mail:</span>
-                    <span className="font-semibold text-slate-800">{formData.email || 'usuario@exemplo.com'}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-slate-500">CNPJ:</span>
-                    <span className="font-semibold text-slate-800">{formData.cnpj || 'Não informado'}</span>
+                {/* Message preview box */}
+                <div className="space-y-1.5 text-left">
+                  <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
+                    Mensagem Formatada Enviada:
+                  </span>
+                  <div className="p-3.5 bg-slate-950 rounded-xl border border-slate-800 text-xs font-mono text-emerald-300/90 whitespace-pre-wrap max-h-40 overflow-y-auto leading-relaxed">
+                    {formattedMessage}
                   </div>
                 </div>
 
-                <button
-                  onClick={onNavigateHome}
-                  className="w-full bg-[#0A4EE4] hover:bg-[#083DB4] text-white font-bold py-3.5 rounded-xl shadow-md transition-colors text-sm"
-                >
-                  Acessar Painel Opera Digital
-                </button>
+                <div className="space-y-2.5 pt-1">
+                  {whatsappUrl && (
+                    <a
+                      href={whatsappUrl}
+                      target="_self"
+                      className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-sm py-3.5 rounded-xl shadow-lg shadow-emerald-950/60 transition-all flex items-center justify-center gap-2"
+                    >
+                      <span>Abrir no WhatsApp Agora</span>
+                      <ArrowRight className="w-4 h-4" />
+                    </a>
+                  )}
+
+                  <button
+                    onClick={onNavigateHome}
+                    className="w-full bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold py-3 rounded-xl transition-colors text-xs"
+                  >
+                    Voltar ao site principal
+                  </button>
+                </div>
               </div>
             )}
 

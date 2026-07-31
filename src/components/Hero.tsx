@@ -6,9 +6,10 @@ import {
 
 interface HeroProps {
   onNavigateToRegister: () => void;
+  onOpenQuoteModal?: (serviceName?: string) => void;
 }
 
-export const Hero: React.FC<HeroProps> = ({ onNavigateToRegister }) => {
+export const Hero: React.FC<HeroProps> = ({ onNavigateToRegister, onOpenQuoteModal }) => {
   const [activeTab, setActiveTab] = useState<'sites' | 'whatsapp'>('sites');
 
   return (

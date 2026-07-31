@@ -1,11 +1,12 @@
 import React from 'react';
-import { ArrowRight, CheckCircle2, ShieldCheck, Sparkles } from 'lucide-react';
+import { ArrowRight, CheckCircle2, ShieldCheck, Sparkles, MessageSquare } from 'lucide-react';
 
 interface CtaBannerProps {
   onNavigateToRegister: () => void;
+  onOpenQuoteModal?: (serviceName?: string) => void;
 }
 
-export const CtaBanner: React.FC<CtaBannerProps> = ({ onNavigateToRegister }) => {
+export const CtaBanner: React.FC<CtaBannerProps> = ({ onNavigateToRegister, onOpenQuoteModal }) => {
   return (
     <section className="py-20 bg-gradient-to-r from-slate-950 via-slate-900 to-black text-white relative overflow-hidden border-t border-slate-800">
       {/* Background Glow */}
@@ -28,7 +29,7 @@ export const CtaBanner: React.FC<CtaBannerProps> = ({ onNavigateToRegister }) =>
           Tenha um site profissional de alta conversão e seu WhatsApp Web estruturado para atender e vender 24 horas por dia.
         </p>
 
-        <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
+        <div className="pt-4 flex justify-center">
           <button
             onClick={onNavigateToRegister}
             className="w-full sm:w-auto bg-[#0A4EE4] hover:bg-blue-600 text-white font-extrabold text-base px-9 py-4 rounded-xl shadow-xl shadow-blue-950/60 transition-all duration-200 flex items-center justify-center gap-2.5 group min-h-[52px]"
