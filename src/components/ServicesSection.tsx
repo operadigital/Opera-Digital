@@ -1,5 +1,6 @@
 import React from 'react';
 import { Globe, MessageSquare, Check, ArrowRight, Sparkles, ShieldCheck, Zap, Laptop, Bot, Search, Smartphone, CheckCircle2, Star, Cpu } from 'lucide-react';
+import { getStoredWhatsAppNumber } from '../utils/whatsapp';
 
 interface ServicesSectionProps {
   onNavigateToRegister: () => void;
@@ -85,13 +86,15 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({ onNavigateToRe
               </div>
 
               <div className="pt-4">
-                <button
-                  onClick={onNavigateToRegister}
+                <a
+                  href={`https://wa.me/${getStoredWhatsAppNumber()}?text=${encodeURIComponent('Olá! Gostaria de solicitar a criação de um site profissional de alta conversão para o meu negócio.')}`}
+                  target="_blank"
+                  rel="noreferrer"
                   className="w-full sm:w-auto px-8 py-4 bg-[#0A4EE4] hover:bg-blue-600 text-white font-extrabold text-sm rounded-xl shadow-lg shadow-blue-900/40 transition-all flex items-center justify-center gap-2 group min-h-[48px]"
                 >
                   <span>Solicitar Criação do Meu Site</span>
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                </button>
+                </a>
               </div>
             </div>
 
@@ -348,13 +351,15 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({ onNavigateToRe
               </div>
 
               <div className="pt-4">
-                <button
-                  onClick={onNavigateToRegister}
+                <a
+                  href={`https://wa.me/${getStoredWhatsAppNumber()}?text=${encodeURIComponent('Olá! Gostaria de estruturar o WhatsApp Web da minha empresa.')}`}
+                  target="_blank"
+                  rel="noreferrer"
                   className="w-full sm:w-auto px-8 py-4 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-sm rounded-xl shadow-lg shadow-emerald-950/50 transition-all flex items-center justify-center gap-2 group min-h-[48px]"
                 >
                   <span>Estruturar Meu WhatsApp Web</span>
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                </button>
+                </a>
               </div>
             </div>
 

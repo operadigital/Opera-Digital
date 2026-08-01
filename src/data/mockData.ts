@@ -70,6 +70,19 @@ export const VALUE_PILLARS = [
   { title: 'Suporte & Acompanhamento', description: 'Atendimento próximo para manter suas soluções sempre atualizadas' }
 ];
 
-export const INITIAL_PORTFOLIO_PROJECTS: PortfolioProject[] = [];
+export const INITIAL_PORTFOLIO_PROJECTS: PortfolioProject[] = [
+  {
+    id: 'personalizze-store',
+    title: 'Personalizze Store',
+    clientName: 'Personalizze Store',
+    category: 'E-commerce & Portais',
+    description: 'E-commerce moderno e de alta conversão para produtos e presentes personalizados. Conta com design 100% responsivo, catálogo interativo, checkout otimizado e integração com WhatsApp Web.',
+    resultMetric: 'Loja Virtual de Alta Conversão',
+    resultLink: 'https://personalizze.store/',
+    imageUrl: '/personalizze_mockup.jpg',
+    tags: ['E-commerce', 'Presentes Personalizados', 'Design Responsivo', 'WhatsApp Web', 'Loja Virtual'],
+    completedDate: '2026'
+  }
+];
 
 

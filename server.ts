@@ -16,13 +16,30 @@ interface StoreData {
   };
 }
 
+const DEFAULT_PROJECTS = [
+  {
+    id: 'personalizze-store',
+    title: 'Personalizze Store',
+    clientName: 'Personalizze Store',
+    category: 'E-commerce & Portais',
+    description: 'E-commerce moderno e de alta conversão para produtos e presentes personalizados. Conta com design 100% responsivo, catálogo interativo, checkout otimizado e integração com WhatsApp Web.',
+    resultMetric: 'Loja Virtual de Alta Conversão',
+    resultLink: 'https://personalizze.store/',
+    imageUrl: '/personalizze_mockup.jpg',
+    tags: ['E-commerce', 'Presentes Personalizados', 'Design Responsivo', 'WhatsApp Web', 'Loja Virtual'],
+    completedDate: '2026'
+  }
+];
+
 function loadStore(): StoreData {
   try {
     if (fs.existsSync(STORE_PATH)) {
       const raw = fs.readFileSync(STORE_PATH, 'utf-8');
       const parsed = JSON.parse(raw);
+      const loadedProjects = Array.isArray(parsed?.projects) ? parsed.projects : [];
+      const projects = loadedProjects.length > 0 ? loadedProjects : DEFAULT_PROJECTS;
       return {
-        projects: Array.isArray(parsed?.projects) ? parsed.projects : [],
+        projects,
         leads: Array.isArray(parsed?.leads) ? parsed.leads : [],
         settings: parsed?.settings || { whatsappNumber: '5551992379969' }
       };
@@ -30,7 +47,7 @@ function loadStore(): StoreData {
   } catch (e) {
     console.error('Error reading store file:', e);
   }
-  return { projects: [], leads: [], settings: { whatsappNumber: '5551992379969' } };
+  return { projects: DEFAULT_PROJECTS, leads: [], settings: { whatsappNumber: '5551992379969' } };
 }
 
 function saveStore(data: StoreData) {
