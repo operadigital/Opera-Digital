@@ -3,7 +3,7 @@ import {
   Building2, Plus, ExternalLink, Trash2, Edit3, Search, 
   Users, TrendingUp, Sparkles, LogOut, CheckCircle2, ArrowLeft,
   MessageSquare, Globe, Tag, RefreshCw, BarChart3, ShieldCheck, Mail, Phone,
-  Star, Quote, Save, Settings, PhoneCall
+  Star, Quote, Save, Settings, PhoneCall, Bot, Zap, Clock, Play, Copy, Check, Send
 } from 'lucide-react';
 import { INITIAL_PORTFOLIO_PROJECTS } from '../data/mockData';
 import { PortfolioProject } from '../types';
@@ -55,18 +55,110 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onGoToSite }) 
   const [imageUrl, setImageUrl] = useState('');
   const [tags, setTags] = useState('');
 
-  // WhatsApp Configuration State
+  // WhatsApp Configuration & Automation State
   const [whatsappNumber, setWhatsappNumber] = useState<string>(() => getStoredWhatsAppNumber());
   const [whatsappInput, setWhatsappInput] = useState<string>(() => getStoredWhatsAppNumber());
   const [saveSuccessMsg, setSaveSuccessMsg] = useState(false);
 
-  const handleSaveWhatsapp = (e: React.FormEvent) => {
+  const [autoEnabled, setAutoEnabled] = useState(true);
+  const [welcomeMsg, setWelcomeMsg] = useState('Olá! Seja bem-vindo à Opera Digital. Como posso te ajudar com o crescimento digital da sua empresa hoje?');
+  const [awayMsg, setAwayMsg] = useState('Nosso horário de atendimento é de Segunda a Sexta, das 08h às 18h. Deixe sua mensagem que responderemos logo no início do expediente!');
+  const [triggers, setTriggers] = useState<any[]>([
+    { id: 'trig-1', keyword: 'orçamento', response: 'Com certeza! Para criarmos uma proposta ideal para sua empresa, você pode clicar no botão de Orçamento em nosso site ou nos contar brevemente o seu segmento.', action: 'send_quote_form' },
+    { id: 'trig-2', keyword: 'serviços', response: 'Oferecemos Criação de Websites Profissionais, E-commerces, Portais e Automação do WhatsApp Web com robôs e Agentes Virtuais de IA.', action: 'send_menu' },
+    { id: 'trig-3', keyword: 'horário', response: 'Nosso expediente comercial funciona de Segunda a Sexta-feira, das 08:00 às 18:00 (horário de Brasília). Nosso robô responde 24 horas por dia!', action: 'none' },
+    { id: 'trig-4', keyword: 'humano', response: 'Entendido! Estou notificando a equipe da Opera Digital para um especialista assumir este atendimento diretamente com você em instantes.', action: 'human_transfer' }
+  ]);
+  const [newKeyword, setNewKeyword] = useState('');
+  const [newResponse, setNewResponse] = useState('');
+  const [newAction, setNewAction] = useState<string>('none');
+
+  // Test Sandbox state inside Admin
+  const [sandboxInput, setSandboxInput] = useState('');
+  const [sandboxMessages, setSandboxMessages] = useState<any[]>([
+    { id: 'init', sender: 'bot', text: '🤖 Testador da Automação ativado! Envie uma palavra-chave como "orçamento", "serviços", "horário" ou "humano".' }
+  ]);
+
+  const handleSaveWhatsapp = async (e: React.FormEvent) => {
     e.preventDefault();
     const saved = saveWhatsAppNumber(whatsappInput);
     setWhatsappNumber(saved);
     setWhatsappInput(saved);
+
+    try {
+      await fetch('/api/settings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          whatsappNumber: saved,
+          whatsappAutomation: {
+            enabled: autoEnabled,
+            welcomeMessage: welcomeMsg,
+            awayMessage: awayMsg,
+            workingHours: { start: '08:00', end: '18:00', days: ['seg', 'ter', 'qua', 'qui', 'sex'] },
+            triggers
+          }
+        })
+      });
+    } catch (err) {
+      console.warn('Error saving settings to server:', err);
+    }
+
     setSaveSuccessMsg(true);
     setTimeout(() => setSaveSuccessMsg(false), 3500);
+  };
+
+  const handleAddTrigger = () => {
+    if (!newKeyword.trim() || !newResponse.trim()) return;
+    const newTrig = {
+      id: `trig-${Date.now()}`,
+      keyword: newKeyword.trim().toLowerCase(),
+      response: newResponse.trim(),
+      action: newAction
+    };
+    setTriggers([...triggers, newTrig]);
+    setNewKeyword('');
+    setNewResponse('');
+    setNewAction('none');
+  };
+
+  const handleDeleteTrigger = (id: string) => {
+    setTriggers(triggers.filter((t) => t.id !== id));
+  };
+
+  const handleRunSandboxTest = async (textToSend?: string) => {
+    const text = textToSend || sandboxInput;
+    if (!text.trim()) return;
+
+    const userMsg = { id: `u-${Date.now()}`, sender: 'user', text };
+    setSandboxMessages((prev) => [...prev, userMsg]);
+    if (!textToSend) setSandboxInput('');
+
+    try {
+      const res = await fetch('/api/whatsapp/auto-reply', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: text })
+      });
+      const data = await res.json();
+
+      setSandboxMessages((prev) => [
+        ...prev,
+        {
+          id: `b-${Date.now()}`,
+          sender: 'bot',
+          text: data.reply,
+          matched: data.matched,
+          keywordMatched: data.keywordMatched,
+          action: data.action
+        }
+      ]);
+    } catch (err) {
+      setSandboxMessages((prev) => [
+        ...prev,
+        { id: `b-${Date.now()}`, sender: 'bot', text: 'Resposta simulada para a palavra-chave configurada.' }
+      ]);
+    }
   };
 
   // AI Generation State
@@ -225,6 +317,12 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onGoToSite }) 
             setWhatsappNumber(sData.whatsappNumber);
             setWhatsappInput(sData.whatsappNumber);
             localStorage.setItem('opera_whatsapp_number', sData.whatsappNumber);
+          }
+          if (sData.whatsappAutomation) {
+            setAutoEnabled(sData.whatsappAutomation.enabled ?? true);
+            if (sData.whatsappAutomation.welcomeMessage) setWelcomeMsg(sData.whatsappAutomation.welcomeMessage);
+            if (sData.whatsappAutomation.awayMessage) setAwayMsg(sData.whatsappAutomation.awayMessage);
+            if (Array.isArray(sData.whatsappAutomation.triggers)) setTriggers(sData.whatsappAutomation.triggers);
           }
         }
       } catch (e) {
@@ -947,34 +1045,51 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onGoToSite }) 
           </div>
         )}
 
-        {/* TAB 4: WHATSAPP CONFIGURATION */}
+        {/* TAB 4: WHATSAPP CONFIGURATION & AUTOMATION */}
         {activeTab === 'whatsapp' && (
-          <div className="max-w-3xl space-y-6">
+          <div className="max-w-4xl space-y-8">
             
+            {/* CARD 1: NUMERO PRINCIPAL & DADOS COMERCIAIS */}
             <div className="bg-slate-950 p-6 sm:p-8 rounded-3xl border border-slate-800 shadow-2xl space-y-6">
-              <div className="flex items-center gap-3 border-b border-slate-800 pb-5">
-                <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 flex items-center justify-center shrink-0">
-                  <MessageSquare className="w-6 h-6 fill-current" />
+              <div className="flex items-center justify-between border-b border-slate-800 pb-5">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 flex items-center justify-center shrink-0">
+                    <MessageSquare className="w-6 h-6 fill-current" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                      <span>WhatsApp Business & Automação</span>
+                      <span className="bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[10px] font-black px-2 py-0.5 rounded-md uppercase">
+                        {autoEnabled ? 'Robô Ativo' : 'Pausado'}
+                      </span>
+                    </h3>
+                    <p className="text-xs text-slate-400 mt-0.5">
+                      Configure o número comercial e personalize os robôs e respostas automáticas de atendimento.
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                    <span>Configuração do WhatsApp de Vendas</span>
-                    <span className="bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[10px] font-black px-2 py-0.5 rounded-md uppercase">
-                      Ativo
-                    </span>
-                  </h3>
-                  <p className="text-xs text-slate-400 mt-0.5">
-                    Defina o número do WhatsApp da empresa para onde os orçamentos e cadastros de clientes serão direcionados.
-                  </p>
-                </div>
+
+                {/* Status Toggle */}
+                <button
+                  type="button"
+                  onClick={() => setAutoEnabled(!autoEnabled)}
+                  className={`px-4 py-2 rounded-xl text-xs font-bold border transition-all flex items-center gap-2 ${
+                    autoEnabled
+                      ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40 hover:bg-emerald-500/30'
+                      : 'bg-slate-800 text-slate-400 border-slate-700 hover:text-white'
+                  }`}
+                >
+                  <Bot className="w-4 h-4" />
+                  <span>{autoEnabled ? 'Automação Ativada' : 'Ativar Automação'}</span>
+                </button>
               </div>
 
               {/* Status Banner */}
-              <div className="p-4 rounded-2xl bg-slate-900 border border-slate-800 flex items-center justify-between gap-4">
+              <div className="p-4 rounded-2xl bg-slate-900 border border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-3 h-3 rounded-full bg-emerald-400 animate-ping" />
+                  <div className="w-3 h-3 rounded-full bg-emerald-400 animate-ping shrink-0" />
                   <div>
-                    <div className="text-xs font-bold text-slate-300 uppercase">Número Ativo Atual</div>
+                    <div className="text-xs font-bold text-slate-400 uppercase">Número Ativo no Site</div>
                     <div className="text-xl font-extrabold text-emerald-400 font-mono tracking-wider">
                       {formatWhatsAppDisplay(whatsappNumber)}
                     </div>
@@ -984,18 +1099,18 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onGoToSite }) 
                   href={`https://wa.me/${whatsappNumber.replace(/\D/g, '')}?text=${encodeURIComponent('Teste de envio do Painel Admin Opera Digital')}`}
                   target="_blank"
                   rel="noreferrer"
-                  className="bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold px-4 py-2.5 rounded-xl border border-slate-700 transition-colors flex items-center gap-2"
+                  className="bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold px-4 py-2.5 rounded-xl border border-slate-700 transition-colors flex items-center gap-2 w-fit"
                 >
                   <ExternalLink className="w-4 h-4 text-emerald-400" />
-                  <span className="hidden sm:inline">Testar no WhatsApp</span>
+                  <span>Testar Número no WhatsApp</span>
                 </a>
               </div>
 
-              {/* Form */}
-              <form onSubmit={handleSaveWhatsapp} className="space-y-5">
+              {/* Number Input Form */}
+              <form onSubmit={handleSaveWhatsapp} className="space-y-6">
                 <div>
                   <label className="block text-xs font-bold text-slate-300 mb-2">
-                    Número do WhatsApp Comercial (Com código de área / DDD) *
+                    Número do WhatsApp Comercial (Com DDD) *
                   </label>
                   <div className="relative">
                     <Phone className="w-5 h-5 text-slate-500 absolute left-3.5 top-3.5" />
@@ -1010,38 +1125,239 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onGoToSite }) 
                   </div>
                   <p className="text-[11px] text-slate-400 mt-2 flex items-center gap-1.5">
                     <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                    <span>Exemplo para Porto Alegre/RS: <strong className="text-slate-300">+5551992379969</strong> ou <strong className="text-slate-300">5551992379969</strong></span>
+                    <span>Exemplo para Porto Alegre/RS: <strong className="text-slate-300">5551992379969</strong></span>
                   </p>
+                </div>
+
+                {/* CARD 2: REGRAS E MENSAGENS PADRÃO */}
+                <div className="pt-4 border-t border-slate-800 space-y-4">
+                  <h4 className="text-sm font-bold text-white flex items-center gap-2">
+                    <Bot className="w-4 h-4 text-emerald-400" />
+                    <span>Mensagens Automáticas Principais</span>
+                  </h4>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs font-bold text-slate-300 mb-2">
+                        Mensagem de Boas-Vindas (Primeira Interação)
+                      </label>
+                      <textarea
+                        rows={3}
+                        value={welcomeMsg}
+                        onChange={(e) => setWelcomeMsg(e.target.value)}
+                        className="w-full bg-slate-900 border border-slate-800 text-white text-xs p-3 rounded-xl focus:outline-none focus:border-emerald-500 leading-relaxed"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold text-slate-300 mb-2">
+                        Mensagem de Ausência (Fora do Horário)
+                      </label>
+                      <textarea
+                        rows={3}
+                        value={awayMsg}
+                        onChange={(e) => setAwayMsg(e.target.value)}
+                        className="w-full bg-slate-900 border border-slate-800 text-white text-xs p-3 rounded-xl focus:outline-none focus:border-emerald-500 leading-relaxed"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* CARD 3: GERENCIADOR DE REGRAS E PALAVRAS-CHAVE */}
+                <div className="pt-4 border-t border-slate-800 space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h4 className="text-sm font-bold text-white flex items-center gap-2">
+                      <Zap className="w-4 h-4 text-emerald-400" />
+                      <span>Gatilhos de Palavras-Chave (Respostas Inteligentes)</span>
+                    </h4>
+                    <span className="text-xs text-slate-400 font-medium">
+                      {triggers.length} regras ativas
+                    </span>
+                  </div>
+
+                  {/* Existing Triggers List */}
+                  <div className="space-y-3">
+                    {triggers.map((trig) => (
+                      <div
+                        key={trig.id}
+                        className="p-3.5 rounded-2xl bg-slate-900 border border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+                      >
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2">
+                            <span className="bg-emerald-950 text-emerald-400 font-mono text-xs font-bold px-2.5 py-0.5 rounded-lg border border-emerald-800/60">
+                              g: "{trig.keyword}"
+                            </span>
+                            {trig.action && trig.action !== 'none' && (
+                              <span className="bg-blue-950 text-blue-400 text-[10px] font-bold px-2 py-0.5 rounded-md border border-blue-800/60 uppercase">
+                                Ação: {trig.action}
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-xs text-slate-300 leading-relaxed pt-0.5">
+                            {trig.response}
+                          </p>
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteTrigger(trig.id)}
+                          className="text-slate-500 hover:text-red-400 p-2 rounded-lg hover:bg-slate-800 transition-colors self-end sm:self-center"
+                          title="Excluir Gatilho"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Add New Trigger Form */}
+                  <div className="p-4 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-3">
+                    <div className="text-xs font-bold text-slate-300 flex items-center gap-2">
+                      <Plus className="w-4 h-4 text-emerald-400" />
+                      <span>Adicionar Nova Regra de Resposta Automática</span>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                      <div>
+                        <input
+                          type="text"
+                          placeholder="Palavra-chave (ex: preço)"
+                          value={newKeyword}
+                          onChange={(e) => setNewKeyword(e.target.value)}
+                          className="w-full bg-slate-950 border border-slate-800 text-white text-xs p-2.5 rounded-xl focus:outline-none focus:border-emerald-500"
+                        />
+                      </div>
+
+                      <div className="sm:col-span-2">
+                        <input
+                          type="text"
+                          placeholder="Resposta automática do robô..."
+                          value={newResponse}
+                          onChange={(e) => setNewResponse(e.target.value)}
+                          className="w-full bg-slate-950 border border-slate-800 text-white text-xs p-2.5 rounded-xl focus:outline-none focus:border-emerald-500"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs text-slate-400">Ação pós-resposta:</span>
+                        <select
+                          value={newAction}
+                          onChange={(e) => setNewAction(e.target.value)}
+                          className="bg-slate-950 border border-slate-800 text-slate-200 text-xs p-2 rounded-lg focus:outline-none"
+                        >
+                          <option value="none">Nenhuma ação</option>
+                          <option value="send_quote_form">Abrir Formulário de Orçamento</option>
+                          <option value="send_menu">Exibir Menu de Opções</option>
+                          <option value="human_transfer">Transferir para Humano</option>
+                        </select>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={handleAddTrigger}
+                        disabled={!newKeyword.trim() || !newResponse.trim()}
+                        className="bg-slate-800 hover:bg-slate-700 disabled:opacity-50 text-emerald-400 text-xs font-bold px-4 py-2 rounded-xl border border-slate-700 transition-colors flex items-center justify-center gap-1.5"
+                      >
+                        <Plus className="w-3.5 h-3.5" />
+                        <span>Adicionar Regra</span>
+                      </button>
+                    </div>
+                  </div>
                 </div>
 
                 {saveSuccessMsg && (
                   <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-bold flex items-center gap-2 animate-in fade-in">
                     <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                    <span>Número do WhatsApp atualizado e salvo com sucesso! Todos os orçamentos do site já estão apontando para este número.</span>
+                    <span>Configurações do WhatsApp salvas com sucesso no servidor!</span>
                   </div>
                 )}
 
-                <div className="pt-2 flex items-center justify-end gap-3">
+                <div className="pt-2 flex items-center justify-end">
                   <button
                     type="submit"
-                    className="bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-sm px-7 py-3 rounded-xl shadow-lg shadow-emerald-950/60 transition-all flex items-center gap-2 min-h-[44px]"
+                    className="bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-sm px-7 py-3.5 rounded-xl shadow-lg shadow-emerald-950/60 transition-all flex items-center gap-2"
                   >
                     <Save className="w-4 h-4" />
-                    <span>Salvar Alterações do WhatsApp</span>
+                    <span>Salvar Configurações da Automação</span>
                   </button>
                 </div>
               </form>
             </div>
 
-            {/* Explanation card */}
-            <div className="bg-slate-950 p-6 rounded-3xl border border-slate-800 space-y-3">
-              <h4 className="text-xs font-bold uppercase text-slate-400 tracking-wider flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-emerald-400" />
-                <span>Como funciona o encaminhamento de mensagens</span>
+            {/* CARD 4: TESTADOR DE SIMULAÇÃO DE BOT (SANDBOX INTEGRADO) */}
+            <div className="bg-slate-950 p-6 rounded-3xl border border-slate-800 space-y-4 shadow-xl">
+              <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+                <h4 className="text-sm font-bold text-white flex items-center gap-2">
+                  <Play className="w-4 h-4 text-emerald-400" />
+                  <span>Simulador de Teste da Automação (Sandbox no Painel)</span>
+                </h4>
+                <span className="text-[10px] bg-slate-800 text-slate-300 px-2.5 py-1 rounded-md font-mono">
+                  Ambiente de Teste
+                </span>
+              </div>
+
+              <div className="bg-slate-900/80 rounded-2xl p-4 border border-slate-800 space-y-3 h-64 overflow-y-auto">
+                {sandboxMessages.map((m) => (
+                  <div
+                    key={m.id}
+                    className={`flex flex-col ${m.sender === 'user' ? 'items-end' : 'items-start'}`}
+                  >
+                    <div
+                      className={`max-w-[85%] rounded-2xl px-3.5 py-2.5 text-xs leading-relaxed ${
+                        m.sender === 'user'
+                          ? 'bg-blue-600 text-white rounded-br-none'
+                          : 'bg-slate-800 text-slate-100 border border-slate-700/80 rounded-bl-none'
+                      }`}
+                    >
+                      {m.text}
+                      {m.keywordMatched && (
+                        <div className="text-[9px] text-emerald-400 font-mono mt-1 pt-1 border-t border-slate-700">
+                          Gatilho ativado: "{m.keywordMatched}"
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="flex items-center gap-2">
+                <input
+                  type="text"
+                  placeholder="Digite uma mensagem para testar a resposta do robô..."
+                  value={sandboxInput}
+                  onChange={(e) => setSandboxInput(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleRunSandboxTest()}
+                  className="flex-1 bg-slate-900 border border-slate-800 text-white text-xs px-4 py-3 rounded-xl focus:outline-none focus:border-emerald-500"
+                />
+                <button
+                  type="button"
+                  onClick={() => handleRunSandboxTest()}
+                  className="bg-emerald-600 hover:bg-emerald-500 text-white px-5 py-3 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5"
+                >
+                  <Send className="w-3.5 h-3.5" />
+                  <span>Testar</span>
+                </button>
+              </div>
+            </div>
+
+            {/* CARD 5: WEBHOOK & META WHATSAPP BUSINESS CLOUD API INTEGRATION */}
+            <div className="bg-slate-950 p-6 rounded-3xl border border-slate-800 space-y-4">
+              <h4 className="text-sm font-bold text-white flex items-center gap-2">
+                <Globe className="w-4 h-4 text-blue-400" />
+                <span>Integração com Webhook Meta WhatsApp Business Cloud API</span>
               </h4>
               <p className="text-xs text-slate-300 leading-relaxed">
-                Quando o cliente preenche o formulário de orçamento no site ou clica nos botões de contato por WhatsApp, a plataforma compõe automaticamente a mensagem com o nome do cliente, empresa, e-mail e detalhes do projeto, e abre a conversa diretamente no WhatsApp do número configurado acima: <strong className="text-emerald-400 font-mono">{formatWhatsAppDisplay(whatsappNumber)}</strong>.
+                Para conectar sua conta oficial da Meta (Facebook Business Manager) diretamente ao servidor da Opera Digital, utilize a URL de Webhook abaixo para receber eventos de mensagens e cadastrar leads instantaneamente:
               </p>
+
+              <div className="p-3 bg-slate-900 border border-slate-800 rounded-xl flex items-center justify-between font-mono text-xs text-emerald-400">
+                <span className="truncate pr-2">{typeof window !== 'undefined' ? `${window.location.origin}/api/whatsapp/webhook` : '/api/whatsapp/webhook'}</span>
+                <span className="bg-emerald-950 text-emerald-300 text-[10px] px-2 py-1 rounded font-bold uppercase shrink-0">
+                  GET & POST
+                </span>
+              </div>
             </div>
 
           </div>

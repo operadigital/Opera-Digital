@@ -10,13 +10,15 @@ import { RegistrationPage } from './components/RegistrationPage';
 import { LoginModal } from './components/LoginModal';
 import { TermsModal } from './components/TermsModal';
 import { QuoteModal } from './components/QuoteModal';
+import { WhatsAppBotModal } from './components/WhatsAppBotModal';
 import { AdminPanel } from './components/AdminPanel';
-import { MessageSquare } from 'lucide-react';
+import { MessageSquare, Bot } from 'lucide-react';
 
 export default function App() {
   const [currentRoute, setCurrentRoute] = useState<'home' | 'register' | 'admin'>('home');
   const [loginModalOpen, setLoginModalOpen] = useState(false);
   const [quoteModalOpen, setQuoteModalOpen] = useState(false);
+  const [botModalOpen, setBotModalOpen] = useState(false);
   const [quoteDefaultService, setQuoteDefaultService] = useState('Criação de Site Profissional');
 
   const [termsModal, setTermsModal] = useState<{ isOpen: boolean; type: 'terms' | 'privacy' }>({
@@ -161,6 +163,7 @@ export default function App() {
         <ServicesSection 
           onNavigateToRegister={navigateToRegister} 
           onOpenQuoteModal={handleOpenQuoteModal}
+          onOpenBotModal={() => setBotModalOpen(true)}
         />
 
         {/* 3. Trabalhos Realizados & Portfólio */}
@@ -189,6 +192,12 @@ export default function App() {
         isOpen={quoteModalOpen}
         onClose={() => setQuoteModalOpen(false)}
         defaultService={quoteDefaultService}
+      />
+
+      <WhatsAppBotModal
+        isOpen={botModalOpen}
+        onClose={() => setBotModalOpen(false)}
+        onOpenQuoteModal={() => handleOpenQuoteModal()}
       />
 
       <LoginModal

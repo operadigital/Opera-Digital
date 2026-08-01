@@ -1,19 +1,27 @@
 import React from 'react';
 import { Globe, MessageSquare, Check, ArrowRight, Sparkles, ShieldCheck, Zap, Laptop, Bot, Search, Smartphone, CheckCircle2, Star, Cpu } from 'lucide-react';
+import { motion } from 'motion/react';
 import { getStoredWhatsAppNumber } from '../utils/whatsapp';
 
 interface ServicesSectionProps {
   onNavigateToRegister: () => void;
   onOpenQuoteModal?: (serviceName?: string) => void;
+  onOpenBotModal?: () => void;
 }
 
-export const ServicesSection: React.FC<ServicesSectionProps> = ({ onNavigateToRegister, onOpenQuoteModal }) => {
+export const ServicesSection: React.FC<ServicesSectionProps> = ({ onNavigateToRegister, onOpenQuoteModal, onOpenBotModal }) => {
   return (
     <section id="servicos" className="py-20 bg-gradient-to-b from-black via-slate-950 to-slate-900 text-slate-100 border-t border-slate-800/80">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-20">
         
         {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto space-y-6">
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-50px' }}
+          transition={{ duration: 0.6 }}
+          className="text-center max-w-3xl mx-auto space-y-6"
+        >
           <div>
             <span className="inline-block text-xs font-bold uppercase tracking-wider text-blue-400 bg-blue-950/80 border border-blue-800/60 px-4 py-2 rounded-full shadow-sm mb-4">
               Nossas Especialidades
@@ -28,7 +36,7 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({ onNavigateToRe
           <p className="text-slate-300 text-base sm:text-lg leading-relaxed pt-2">
             Desenvolvemos a presença online ideal para sua empresa e automatizamos seu atendimento para transformar visitantes em clientes satisfeitos.
           </p>
-        </div>
+        </motion.div>
 
         {/* ------------------------------------------------------------- */}
         {/* SERVICE 1: CRIAÇÃO DE SITES PROFISSIONAIS (COM IMAGEM & EXPLICAÇÃO) */}
@@ -352,16 +360,26 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({ onNavigateToRe
                 </div>
               </div>
 
-              <div className="pt-4">
+              <div className="pt-4 flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5">
                 <a
                   href={`https://wa.me/${getStoredWhatsAppNumber()}?text=${encodeURIComponent('Olá! Gostaria de estruturar o WhatsApp Web da minha empresa.')}`}
                   target="_blank"
                   rel="noreferrer"
-                  className="w-full sm:w-auto px-8 py-4 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-sm rounded-xl shadow-lg shadow-emerald-950/50 transition-all flex items-center justify-center gap-2 group min-h-[48px]"
+                  className="px-6 py-4 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-sm rounded-xl shadow-lg shadow-emerald-950/50 transition-all flex items-center justify-center gap-2 group min-h-[48px]"
                 >
                   <span>Estruturar Meu WhatsApp Web</span>
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </a>
+
+                {onOpenBotModal && (
+                  <button
+                    onClick={onOpenBotModal}
+                    className="px-6 py-4 bg-slate-800 hover:bg-slate-700 text-emerald-400 hover:text-emerald-300 border border-emerald-500/40 hover:border-emerald-400 font-extrabold text-sm rounded-xl transition-all flex items-center justify-center gap-2 shadow-md group min-h-[48px]"
+                  >
+                    <Bot className="w-4 h-4 text-emerald-400 group-hover:rotate-12 transition-transform" />
+                    <span>Testar Robô de IA ao Vivo</span>
+                  </button>
+                )}
               </div>
             </div>
 

@@ -3,6 +3,7 @@ import {
   Menu, X, ChevronDown, Globe, MessageSquare, 
   ArrowRight, Sparkles, ShieldCheck
 } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
 import { SERVICES_LIST } from '../data/mockData';
 import { getStoredWhatsAppNumber } from '../utils/whatsapp';
 
@@ -45,7 +46,9 @@ export const Header: React.FC<HeaderProps> = ({
         <div className="flex items-center justify-between">
           
           {/* Logo */}
-          <button 
+          <motion.button 
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
             onClick={onNavigateHome}
             className="flex items-center gap-2.5 group text-left focus:outline-none"
           >
@@ -60,7 +63,7 @@ export const Header: React.FC<HeaderProps> = ({
                 Opera <span className="text-blue-500">Digital</span>
               </span>
             </div>
-          </button>
+          </motion.button>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-300">
@@ -79,45 +82,53 @@ export const Header: React.FC<HeaderProps> = ({
               </button>
 
               {/* Menu Container */}
-              {servicesMenuOpen && (
-                <div className="absolute top-full left-1/2 -translate-x-1/2 w-[calc(100vw-2rem)] max-w-[520px] bg-slate-900 rounded-2xl shadow-2xl border border-slate-800 p-3 sm:p-4 grid grid-cols-1 gap-2.5 mt-1 animate-in fade-in slide-in-from-top-2 duration-200 z-50">
-                  <a
-                    href="#criacao-de-sites"
-                    onClick={() => setServicesMenuOpen(false)}
-                    className="flex items-start gap-3.5 p-3 sm:p-3.5 rounded-xl hover:bg-slate-800/80 transition-colors group border border-transparent hover:border-slate-700/80"
+              <AnimatePresence>
+                {servicesMenuOpen && (
+                  <motion.div 
+                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                    transition={{ duration: 0.2 }}
+                    className="absolute top-full left-1/2 -translate-x-1/2 w-[calc(100vw-2rem)] max-w-[520px] bg-slate-900 rounded-2xl shadow-2xl border border-slate-800 p-3 sm:p-4 grid grid-cols-1 gap-2.5 mt-1 z-50"
                   >
-                    <div className="p-2.5 rounded-xl bg-blue-950/80 text-blue-400 group-hover:bg-[#0A4EE4] group-hover:text-white transition-colors shrink-0 border border-blue-800/50">
-                      <Globe className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <h4 className="font-bold text-white group-hover:text-blue-400 transition-colors text-sm">
-                        Criação de Sites Profissionais
-                      </h4>
-                      <p className="text-xs text-slate-400 mt-0.5 leading-relaxed">
-                        Websites modernos, Landing Pages de alta conversão e portais responsivos.
-                      </p>
-                    </div>
-                  </a>
+                    <a
+                      href="#criacao-de-sites"
+                      onClick={() => setServicesMenuOpen(false)}
+                      className="flex items-start gap-3.5 p-3 sm:p-3.5 rounded-xl hover:bg-slate-800/80 transition-colors group border border-transparent hover:border-slate-700/80"
+                    >
+                      <div className="p-2.5 rounded-xl bg-blue-950/80 text-blue-400 group-hover:bg-[#0A4EE4] group-hover:text-white transition-colors shrink-0 border border-blue-800/50">
+                        <Globe className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-white group-hover:text-blue-400 transition-colors text-sm">
+                          Criação de Sites Profissionais
+                        </h4>
+                        <p className="text-xs text-slate-400 mt-0.5 leading-relaxed">
+                          Websites modernos, Landing Pages de alta conversão e portais responsivos.
+                        </p>
+                      </div>
+                    </a>
 
-                  <a
-                    href="#estruturacao-whatsapp"
-                    onClick={() => setServicesMenuOpen(false)}
-                    className="flex items-start gap-3.5 p-3.5 rounded-xl hover:bg-slate-800/80 transition-colors group border border-transparent hover:border-slate-700/80"
-                  >
-                    <div className="p-2.5 rounded-xl bg-emerald-950/80 text-emerald-400 group-hover:bg-emerald-600 group-hover:text-white transition-colors shrink-0 border border-emerald-800/50">
-                      <MessageSquare className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <h4 className="font-bold text-white group-hover:text-emerald-400 transition-colors text-sm">
-                        Estruturação do WhatsApp Web
-                      </h4>
-                      <p className="text-xs text-slate-400 mt-0.5 leading-relaxed">
-                        Atendimento automatizado, Agentes de IA e funis de vendas inteligentes no chat.
-                      </p>
-                    </div>
-                  </a>
-                </div>
-              )}
+                    <a
+                      href="#estruturacao-whatsapp"
+                      onClick={() => setServicesMenuOpen(false)}
+                      className="flex items-start gap-3.5 p-3.5 rounded-xl hover:bg-slate-800/80 transition-colors group border border-transparent hover:border-slate-700/80"
+                    >
+                      <div className="p-2.5 rounded-xl bg-emerald-950/80 text-emerald-400 group-hover:bg-emerald-600 group-hover:text-white transition-colors shrink-0 border border-emerald-800/50">
+                        <MessageSquare className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-white group-hover:text-emerald-400 transition-colors text-sm">
+                          Estruturação do WhatsApp Web
+                        </h4>
+                        <p className="text-xs text-slate-400 mt-0.5 leading-relaxed">
+                          Atendimento automatizado, Agentes de IA e funis de vendas inteligentes no chat.
+                        </p>
+                      </div>
+                    </a>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
 
             <a 
@@ -137,14 +148,16 @@ export const Header: React.FC<HeaderProps> = ({
 
           {/* Actions */}
           <div className="hidden md:flex items-center gap-4">
-            <a
+            <motion.a
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
               href={`https://wa.me/${getStoredWhatsAppNumber()}?text=${encodeURIComponent('Olá! Gostaria de solicitar um orçamento com a Opera Digital.')}`}
               target="_blank"
               rel="noreferrer"
               className="bg-[#0A4EE4] hover:bg-blue-600 text-white px-5 py-2.5 rounded-full text-sm font-bold shadow-lg shadow-blue-900/40 transition-all duration-200 flex items-center gap-1.5"
             >
               <span>Solicitar Orçamento</span>
-            </a>
+            </motion.a>
           </div>
 
           {/* Mobile Menu Button */}
@@ -159,78 +172,90 @@ export const Header: React.FC<HeaderProps> = ({
       </div>
 
       {/* Mobile Drawer & Backdrop */}
-      {mobileMenuOpen && (
-        <>
-          {/* Backdrop */}
-          <div 
-            className="fixed inset-0 z-40 bg-slate-950/80 backdrop-blur-sm md:hidden"
-            onClick={() => setMobileMenuOpen(false)}
-            aria-hidden="true"
-          />
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <>
+            {/* Backdrop */}
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-40 bg-slate-950/80 backdrop-blur-sm md:hidden"
+              onClick={() => setMobileMenuOpen(false)}
+              aria-hidden="true"
+            />
 
-          {/* Drawer Menu */}
-          <div className="fixed top-[57px] sm:top-[65px] left-0 right-0 bottom-0 z-50 md:hidden bg-slate-950/98 backdrop-blur-xl border-b border-slate-800 px-4 pt-4 pb-8 space-y-4 shadow-2xl animate-in slide-in-from-top duration-200 overflow-y-auto text-slate-100">
-            <div className="space-y-1">
-              <div className="text-xs uppercase font-extrabold tracking-wider text-slate-400 px-3 py-1">
-                Serviços Principais
-              </div>
-              
-              <div className="space-y-1 bg-slate-900 p-2.5 rounded-2xl border border-slate-800 my-2">
+            {/* Drawer Menu */}
+            <motion.div 
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.25 }}
+              className="fixed top-[57px] sm:top-[65px] left-0 right-0 bottom-0 z-50 md:hidden bg-slate-950/98 backdrop-blur-xl border-b border-slate-800 px-4 pt-4 pb-8 space-y-4 shadow-2xl overflow-y-auto text-slate-100"
+            >
+              <div className="space-y-1">
+                <div className="text-xs uppercase font-extrabold tracking-wider text-slate-400 px-3 py-1">
+                  Serviços Principais
+                </div>
+                
+                <div className="space-y-1 bg-slate-900 p-2.5 rounded-2xl border border-slate-800 my-2">
+                  <a
+                    href="#criacao-de-sites"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex items-center gap-3 p-3 text-sm font-semibold text-slate-200 hover:text-blue-400 active:bg-slate-800 rounded-xl transition-colors"
+                  >
+                    <div className="p-2 rounded-lg bg-blue-950 text-blue-400 border border-blue-800/50">
+                      <Globe className="w-4 h-4" />
+                    </div>
+                    <span>Criação de Sites Profissionais</span>
+                  </a>
+
+                  <a
+                    href="#estruturacao-whatsapp"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex items-center gap-3 p-3 text-sm font-semibold text-slate-200 hover:text-emerald-400 active:bg-slate-800 rounded-xl transition-colors"
+                  >
+                    <div className="p-2 rounded-lg bg-emerald-950 text-emerald-400 border border-emerald-800/50">
+                      <MessageSquare className="w-4 h-4" />
+                    </div>
+                    <span>Estruturação do WhatsApp Web</span>
+                  </a>
+                </div>
+
                 <a
-                  href="#criacao-de-sites"
+                  href="#trabalhos"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="flex items-center gap-3 p-3 text-sm font-semibold text-slate-200 hover:text-blue-400 active:bg-slate-800 rounded-xl transition-colors"
+                  className="block px-3 py-3 text-base font-semibold text-slate-200 hover:bg-slate-900 active:bg-slate-800 rounded-xl transition-colors"
                 >
-                  <div className="p-2 rounded-lg bg-blue-950 text-blue-400 border border-blue-800/50">
-                    <Globe className="w-4 h-4" />
-                  </div>
-                  <span>Criação de Sites Profissionais</span>
+                  Trabalhos Realizados
                 </a>
-
                 <a
-                  href="#estruturacao-whatsapp"
+                  href="#sobre"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="flex items-center gap-3 p-3 text-sm font-semibold text-slate-200 hover:text-emerald-400 active:bg-slate-800 rounded-xl transition-colors"
+                  className="block px-3 py-3 text-base font-semibold text-slate-200 hover:bg-slate-900 active:bg-slate-800 rounded-xl transition-colors"
                 >
-                  <div className="p-2 rounded-lg bg-emerald-950 text-emerald-400 border border-emerald-800/50">
-                    <MessageSquare className="w-4 h-4" />
-                  </div>
-                  <span>Estruturação do WhatsApp Web</span>
+                  Sobre a Opera Digital
                 </a>
               </div>
 
-              <a
-                href="#trabalhos"
-                onClick={() => setMobileMenuOpen(false)}
-                className="block px-3 py-3 text-base font-semibold text-slate-200 hover:bg-slate-900 active:bg-slate-800 rounded-xl transition-colors"
-              >
-                Trabalhos Realizados
-              </a>
-              <a
-                href="#sobre"
-                onClick={() => setMobileMenuOpen(false)}
-                className="block px-3 py-3 text-base font-semibold text-slate-200 hover:bg-slate-900 active:bg-slate-800 rounded-xl transition-colors"
-              >
-                Sobre a Opera Digital
-              </a>
-            </div>
-
-            <div className="pt-3 border-t border-slate-800">
-              <a
-                href={`https://wa.me/${getStoredWhatsAppNumber()}?text=${encodeURIComponent('Olá! Gostaria de solicitar um orçamento com a Opera Digital.')}`}
-                target="_blank"
-                rel="noreferrer"
-                onClick={() => setMobileMenuOpen(false)}
-                className="w-full h-12 text-center font-bold text-white bg-[#0A4EE4] hover:bg-blue-600 rounded-xl text-sm shadow-lg shadow-blue-950 transition-colors flex items-center justify-center gap-2"
-              >
-                <span>Solicitar Orçamento</span>
-                <ArrowRight className="w-4 h-4" />
-              </a>
-            </div>
-          </div>
-        </>
-      )}
+              <div className="pt-3 border-t border-slate-800">
+                <a
+                  href={`https://wa.me/${getStoredWhatsAppNumber()}?text=${encodeURIComponent('Olá! Gostaria de solicitar um orçamento com a Opera Digital.')}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="w-full h-12 text-center font-bold text-white bg-[#0A4EE4] hover:bg-blue-600 rounded-xl text-sm shadow-lg shadow-blue-950 transition-colors flex items-center justify-center gap-2"
+                >
+                  <span>Solicitar Orçamento</span>
+                  <ArrowRight className="w-4 h-4" />
+                </a>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </header>
   );
 };
+
 

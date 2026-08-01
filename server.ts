@@ -8,13 +8,80 @@ dotenv.config();
 
 const STORE_PATH = path.resolve(process.cwd(), 'data_store.json');
 
+interface WhatsAppAutomationTrigger {
+  id: string;
+  keyword: string;
+  response: string;
+  action?: 'send_menu' | 'send_quote_form' | 'human_transfer' | 'send_catalog' | 'none';
+}
+
+interface WhatsAppAutomationConfig {
+  enabled: boolean;
+  welcomeMessage: string;
+  awayMessage: string;
+  workingHours: {
+    start: string;
+    end: string;
+    days: string[];
+  };
+  triggers: WhatsAppAutomationTrigger[];
+  webhookConfig?: {
+    verifyToken: string;
+    apiToken?: string;
+    phoneNumberId?: string;
+  };
+}
+
 interface StoreData {
   projects: any[];
   leads: any[];
   settings?: {
     whatsappNumber?: string;
+    whatsappAutomation?: WhatsAppAutomationConfig;
   };
 }
+
+const DEFAULT_WHATSAPP_AUTOMATION: WhatsAppAutomationConfig = {
+  enabled: true,
+  welcomeMessage: 'Olá! Seja bem-vindo à Opera Digital. Como posso te ajudar com o crescimento digital da sua empresa hoje?',
+  awayMessage: 'Nosso horário de atendimento é de Segunda a Sexta, das 08h às 18h. Deixe sua mensagem que responderemos logo no início do expediente!',
+  workingHours: {
+    start: '08:00',
+    end: '18:00',
+    days: ['seg', 'ter', 'qua', 'qui', 'sex']
+  },
+  triggers: [
+    {
+      id: 'trig-1',
+      keyword: 'orçamento',
+      response: 'Com certeza! Para criarmos uma proposta ideal para sua empresa, você pode clicar no botão de Orçamento em nosso site ou nos contar brevemente o seu segmento.',
+      action: 'send_quote_form'
+    },
+    {
+      id: 'trig-2',
+      keyword: 'serviços',
+      response: 'Oferecemos Criação de Websites Profissionais, E-commerces, Portais e Automação do WhatsApp Web com robôs e Agentes Virtuais de IA.',
+      action: 'send_menu'
+    },
+    {
+      id: 'trig-3',
+      keyword: 'horário',
+      response: 'Nosso expediente comercial funciona de Segunda a Sexta-feira, das 08:00 às 18:00 (horário de Brasília). Nosso robô responde 24 horas por dia!',
+      action: 'none'
+    },
+    {
+      id: 'trig-4',
+      keyword: 'humano',
+      response: 'Entendido! Estou notificando a equipe da Opera Digital para um especialista assumir este atendimento diretamente com você em instantes.',
+      action: 'human_transfer'
+    }
+  ],
+  webhookConfig: {
+    verifyToken: 'opera_digital_meta_token_2026',
+    apiToken: '',
+    phoneNumberId: ''
+  }
+};
 
 const DEFAULT_PROJECTS = [
   {
@@ -38,16 +105,27 @@ function loadStore(): StoreData {
       const parsed = JSON.parse(raw);
       const loadedProjects = Array.isArray(parsed?.projects) ? parsed.projects : [];
       const projects = loadedProjects.length > 0 ? loadedProjects : DEFAULT_PROJECTS;
+      const settings = parsed?.settings || {};
+      if (!settings.whatsappNumber) settings.whatsappNumber = '5551992379969';
+      if (!settings.whatsappAutomation) settings.whatsappAutomation = DEFAULT_WHATSAPP_AUTOMATION;
+
       return {
         projects,
         leads: Array.isArray(parsed?.leads) ? parsed.leads : [],
-        settings: parsed?.settings || { whatsappNumber: '5551992379969' }
+        settings
       };
     }
   } catch (e) {
     console.error('Error reading store file:', e);
   }
-  return { projects: DEFAULT_PROJECTS, leads: [], settings: { whatsappNumber: '5551992379969' } };
+  return { 
+    projects: DEFAULT_PROJECTS, 
+    leads: [], 
+    settings: { 
+      whatsappNumber: '5551992379969',
+      whatsappAutomation: DEFAULT_WHATSAPP_AUTOMATION
+    } 
+  };
 }
 
 function saveStore(data: StoreData) {
@@ -228,27 +306,145 @@ async function startServer() {
     res.json({ success: true, leads: store.leads });
   });
 
-  // API Routes: Settings (WhatsApp Number, etc.)
+  // API Routes: Settings (WhatsApp Number, Automation, etc.)
   app.get('/api/settings', (req, res) => {
     res.json({
-      whatsappNumber: store.settings?.whatsappNumber || '5551992379969'
+      whatsappNumber: store.settings?.whatsappNumber || '5551992379969',
+      whatsappAutomation: store.settings?.whatsappAutomation || DEFAULT_WHATSAPP_AUTOMATION
     });
   });
 
   app.post('/api/settings', (req, res) => {
-    const { whatsappNumber } = req.body || {};
+    const { whatsappNumber, whatsappAutomation } = req.body || {};
+    if (!store.settings) store.settings = {};
     if (whatsappNumber && typeof whatsappNumber === 'string') {
       const cleaned = whatsappNumber.replace(/\D/g, '');
       if (cleaned.length >= 10) {
-        if (!store.settings) store.settings = {};
         store.settings.whatsappNumber = cleaned;
-        saveStore(store);
       }
     }
+    if (whatsappAutomation && typeof whatsappAutomation === 'object') {
+      store.settings.whatsappAutomation = whatsappAutomation;
+    }
+    saveStore(store);
     res.json({
       success: true,
-      whatsappNumber: store.settings?.whatsappNumber || '5551992379969'
+      whatsappNumber: store.settings?.whatsappNumber || '5551992379969',
+      whatsappAutomation: store.settings?.whatsappAutomation || DEFAULT_WHATSAPP_AUTOMATION
     });
+  });
+
+  // API Routes: WhatsApp Automation specific
+  app.get('/api/whatsapp/automation', (req, res) => {
+    res.json(store.settings?.whatsappAutomation || DEFAULT_WHATSAPP_AUTOMATION);
+  });
+
+  app.post('/api/whatsapp/automation', (req, res) => {
+    const config = req.body;
+    if (!store.settings) store.settings = {};
+    store.settings.whatsappAutomation = config;
+    saveStore(store);
+    res.json({ success: true, whatsappAutomation: store.settings.whatsappAutomation });
+  });
+
+  // API Route: WhatsApp Auto-Reply Simulator/Engine
+  app.post('/api/whatsapp/auto-reply', (req, res) => {
+    const { message, clientName } = req.body || {};
+    const autoConfig = store.settings?.whatsappAutomation || DEFAULT_WHATSAPP_AUTOMATION;
+
+    if (!autoConfig.enabled) {
+      res.json({
+        enabled: false,
+        reply: 'O robô de atendimento está desativado no momento.'
+      });
+      return;
+    }
+
+    const text = (message || '').toLowerCase().trim();
+    let matchedTrigger = autoConfig.triggers.find((t) => {
+      const kw = t.keyword.toLowerCase().trim();
+      return text.includes(kw);
+    });
+
+    if (matchedTrigger) {
+      res.json({
+        enabled: true,
+        matched: true,
+        keywordMatched: matchedTrigger.keyword,
+        reply: matchedTrigger.response,
+        action: matchedTrigger.action || 'none'
+      });
+    } else if (text === '' || text.includes('oi') || text.includes('ola') || text.includes('olá') || text.includes('bom dia') || text.includes('boa tarde') || text.includes('boa noite')) {
+      res.json({
+        enabled: true,
+        matched: true,
+        keywordMatched: 'saudacao',
+        reply: autoConfig.welcomeMessage,
+        action: 'send_menu'
+      });
+    } else {
+      res.json({
+        enabled: true,
+        matched: false,
+        reply: `Agradecemos sua mensagem! Para atendimento imediato, selecione uma das opções:\n1️⃣ Orçamento de Site / E-commerce\n2️⃣ Nossos Serviços & Soluções\n3️⃣ Horário de Atendimento\n4️⃣ Falar com um Especialista Humano`,
+        action: 'send_menu'
+      });
+    }
+  });
+
+  // Meta WhatsApp Business Cloud API Webhook Integration Endpoint
+  app.get('/api/whatsapp/webhook', (req, res) => {
+    const mode = req.query['hub.mode'];
+    const token = req.query['hub.verify_token'];
+    const challenge = req.query['hub.challenge'];
+
+    const verifyToken = store.settings?.whatsappAutomation?.webhookConfig?.verifyToken || 'opera_digital_meta_token_2026';
+
+    if (mode === 'subscribe' && token === verifyToken) {
+      console.log('WhatsApp Webhook verified successfully!');
+      res.status(200).send(challenge);
+    } else {
+      res.sendStatus(403);
+    }
+  });
+
+  app.post('/api/whatsapp/webhook', (req, res) => {
+    const body = req.body;
+    if (body.object === 'whatsapp_business_account') {
+      console.log('Received WhatsApp Webhook event:', JSON.stringify(body, null, 2));
+      // Auto-register incoming webhook message as a lead
+      try {
+        const entry = body.entry?.[0];
+        const changes = entry?.changes?.[0];
+        const value = changes?.value;
+        const messages = value?.messages;
+        if (messages && messages[0]) {
+          const msg = messages[0];
+          const fromPhone = msg.from;
+          const msgText = msg.text?.body || 'Mensagem via WhatsApp Webhook';
+          const newLead = {
+            id: 'wa-' + Date.now(),
+            fullName: `Contato WhatsApp (${fromPhone})`,
+            companyName: 'Lead WhatsApp',
+            email: `${fromPhone}@whatsapp.user`,
+            phone: fromPhone,
+            segment: 'WhatsApp Automation',
+            projectType: 'Automação WhatsApp',
+            projectDescription: msgText,
+            createdAt: new Date().toISOString(),
+            status: 'novo',
+            whatsappOptIn: true
+          };
+          store.leads.unshift(newLead);
+          saveStore(store);
+        }
+      } catch (err) {
+        console.error('Error parsing WhatsApp webhook payload:', err);
+      }
+      res.status(200).send('EVENT_RECEIVED');
+    } else {
+      res.sendStatus(404);
+    }
   });
 
   // API Route: AI Generation for Portfolio Projects

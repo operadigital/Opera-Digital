@@ -1,5 +1,6 @@
 import React from 'react';
 import { ShieldCheck, Users, Globe, MessageSquare, Sparkles } from 'lucide-react';
+import { motion } from 'motion/react';
 
 export const AboutSection: React.FC = () => {
   return (
@@ -9,7 +10,13 @@ export const AboutSection: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           
           {/* Left Text */}
-          <div className="lg:col-span-7 space-y-6">
+          <motion.div 
+            initial={{ opacity: 0, x: -30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, margin: '-50px' }}
+            transition={{ duration: 0.6 }}
+            className="lg:col-span-7 space-y-6"
+          >
             <div>
               <span className="inline-block text-xs font-bold uppercase tracking-wider text-blue-400 bg-blue-950/80 border border-blue-800/60 px-4 py-2 rounded-full shadow-sm mb-4">
                 Sobre a Opera Digital
@@ -30,7 +37,10 @@ export const AboutSection: React.FC = () => {
 
             {/* Values Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4">
-              <div className="p-4 rounded-xl bg-slate-900/90 border border-slate-800 flex items-start gap-3">
+              <motion.div 
+                whileHover={{ scale: 1.02 }}
+                className="p-4 rounded-xl bg-slate-900/90 border border-slate-800 flex items-start gap-3"
+              >
                 <div className="p-2 rounded-lg bg-blue-950/80 text-blue-400 shrink-0 border border-blue-800/50">
                   <Globe className="w-5 h-5" />
                 </div>
@@ -38,9 +48,12 @@ export const AboutSection: React.FC = () => {
                   <h4 className="font-bold text-sm text-white">Sites de Alta Conversão</h4>
                   <p className="text-xs text-slate-400 mt-0.5">Design exclusivo, responsivo e preparado para o Google (SEO).</p>
                 </div>
-              </div>
+              </motion.div>
 
-              <div className="p-4 rounded-xl bg-slate-900/90 border border-slate-800 flex items-start gap-3">
+              <motion.div 
+                whileHover={{ scale: 1.02 }}
+                className="p-4 rounded-xl bg-slate-900/90 border border-slate-800 flex items-start gap-3"
+              >
                 <div className="p-2 rounded-lg bg-emerald-950/80 text-emerald-400 shrink-0 border border-emerald-800/50">
                   <MessageSquare className="w-5 h-5" />
                 </div>
@@ -48,12 +61,18 @@ export const AboutSection: React.FC = () => {
                   <h4 className="font-bold text-sm text-white">Automação no WhatsApp</h4>
                   <p className="text-xs text-slate-400 mt-0.5">Atendimento 24/7 com Agentes de IA e triagem ágil.</p>
                 </div>
-              </div>
+              </motion.div>
             </div>
-          </div>
+          </motion.div>
 
           {/* Right Visual Card */}
-          <div className="lg:col-span-5">
+          <motion.div 
+            initial={{ opacity: 0, x: 30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, margin: '-50px' }}
+            transition={{ duration: 0.6 }}
+            className="lg:col-span-5"
+          >
             <div className="bg-gradient-to-br from-slate-950 via-slate-900 to-black rounded-3xl p-8 text-white shadow-2xl relative border border-slate-800 space-y-6">
               <div className="flex items-center gap-3">
                 <img 
@@ -87,7 +106,7 @@ export const AboutSection: React.FC = () => {
                 "Nosso compromisso é destacar sua marca na internet e automatizar o atendimento para que você feche mais negócios todos os dias."
               </div>
             </div>
-          </div>
+          </motion.div>
 
         </div>
 
@@ -95,3 +114,4 @@ export const AboutSection: React.FC = () => {
     </section>
   );
 };
+

@@ -4,6 +4,7 @@ import {
   CheckCircle2, ArrowRight, X, Copy, Check, Eye, 
   Building2, TrendingUp, Laptop, Layers, Share2
 } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
 import { INITIAL_PORTFOLIO_PROJECTS } from '../data/mockData';
 import { PortfolioProject } from '../types';
 
@@ -325,7 +326,13 @@ export const PortfolioSection: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-50px' }}
+          transition={{ duration: 0.6 }}
+          className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8"
+        >
           <div>
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-950/80 border border-blue-800/60 text-blue-400 text-xs font-bold mb-4 shadow-sm">
               <Sparkles className="w-4 h-4 text-blue-400" />
@@ -338,7 +345,7 @@ export const PortfolioSection: React.FC = () => {
               Confira os sistemas, e-commerces e automações implantados. Clique em qualquer trabalho para ver o resultado final ao vivo.
             </p>
           </div>
-        </div>
+        </motion.div>
 
         {/* Projects Grid */}
         {filteredProjects.length === 0 ? (
@@ -351,9 +358,14 @@ export const PortfolioSection: React.FC = () => {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 sm:gap-8">
-            {filteredProjects.map((project) => (
-              <div
+            {filteredProjects.map((project, idx) => (
+              <motion.div
                 key={project.id}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: '-30px' }}
+                transition={{ duration: 0.5, delay: idx * 0.1 }}
+                whileHover={{ y: -4 }}
                 onClick={() => setSelectedProject(project)}
                 className="bg-slate-900/90 rounded-2xl border border-slate-800 shadow-xl hover:shadow-2xl hover:border-blue-500/50 transition-all duration-300 overflow-hidden flex flex-col group cursor-pointer"
               >
@@ -435,7 +447,7 @@ export const PortfolioSection: React.FC = () => {
                     </div>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
         )}

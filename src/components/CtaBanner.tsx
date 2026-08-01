@@ -1,5 +1,6 @@
 import React from 'react';
 import { ArrowRight, CheckCircle2, ShieldCheck, Sparkles } from 'lucide-react';
+import { motion } from 'motion/react';
 import { getStoredWhatsAppNumber } from '../utils/whatsapp';
 
 interface CtaBannerProps {
@@ -14,7 +15,13 @@ export const CtaBanner: React.FC<CtaBannerProps> = () => {
       <div className="absolute top-0 right-0 w-96 h-96 bg-blue-600/10 blur-[130px] rounded-full pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-96 h-96 bg-blue-900/20 blur-[130px] rounded-full pointer-events-none" />
 
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10 space-y-6">
+      <motion.div 
+        initial={{ opacity: 0, y: 30, scale: 0.98 }}
+        whileInView={{ opacity: 1, y: 0, scale: 1 }}
+        viewport={{ once: true, margin: '-50px' }}
+        transition={{ duration: 0.6 }}
+        className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10 space-y-6"
+      >
         
         <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-950/80 border border-blue-800/60 text-xs font-semibold text-blue-400">
           <Sparkles className="w-3.5 h-3.5 text-blue-400" />
@@ -31,7 +38,9 @@ export const CtaBanner: React.FC<CtaBannerProps> = () => {
         </p>
 
         <div className="pt-4 flex justify-center">
-          <a
+          <motion.a
+            whileHover={{ scale: 1.04 }}
+            whileTap={{ scale: 0.96 }}
             href={`https://wa.me/${getStoredWhatsAppNumber()}?text=${encodeURIComponent('Olá! Gostaria de solicitar um orçamento com a Opera Digital.')}`}
             target="_blank"
             rel="noreferrer"
@@ -39,7 +48,7 @@ export const CtaBanner: React.FC<CtaBannerProps> = () => {
           >
             <span>Solicitar Orçamento</span>
             <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-          </a>
+          </motion.a>
         </div>
 
         <div className="pt-4 flex flex-wrap items-center justify-center gap-6 text-xs text-slate-300 font-medium">
@@ -57,7 +66,8 @@ export const CtaBanner: React.FC<CtaBannerProps> = () => {
           </span>
         </div>
 
-      </div>
+      </motion.div>
     </section>
   );
 };
+
