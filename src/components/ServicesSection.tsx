@@ -13,17 +13,19 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({ onNavigateToRe
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-20">
         
         {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto space-y-4">
-          <span className="text-xs font-bold uppercase tracking-wider text-blue-400 bg-blue-950/80 border border-blue-800/60 px-3.5 py-1.5 rounded-full shadow-sm">
-            Nossas Especialidades
-          </span>
+        <div className="text-center max-w-3xl mx-auto space-y-6">
+          <div>
+            <span className="inline-block text-xs font-bold uppercase tracking-wider text-blue-400 bg-blue-950/80 border border-blue-800/60 px-4 py-2 rounded-full shadow-sm mb-4">
+              Nossas Especialidades
+            </span>
 
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight">
-            Soluções Digitais que <br className="hidden sm:inline" />
-            <span className="bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600 bg-clip-text text-transparent">Impulsionam seu Negócio</span>
-          </h2>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight">
+              Soluções Digitais que <br className="hidden sm:inline" />
+              <span className="bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600 bg-clip-text text-transparent">Impulsionam seu Negócio</span>
+            </h2>
+          </div>
 
-          <p className="text-slate-300 text-base sm:text-lg leading-relaxed">
+          <p className="text-slate-300 text-base sm:text-lg leading-relaxed pt-2">
             Desenvolvemos a presença online ideal para sua empresa e automatizamos seu atendimento para transformar visitantes em clientes satisfeitos.
           </p>
         </div>

@@ -10,13 +10,15 @@ export const AboutSection: React.FC = () => {
           
           {/* Left Text */}
           <div className="lg:col-span-7 space-y-6">
-            <span className="text-xs font-bold uppercase tracking-wider text-blue-400 bg-blue-950/80 border border-blue-800/60 px-3.5 py-1.5 rounded-full shadow-sm">
-              Sobre a Opera Digital
-            </span>
+            <div>
+              <span className="inline-block text-xs font-bold uppercase tracking-wider text-blue-400 bg-blue-950/80 border border-blue-800/60 px-4 py-2 rounded-full shadow-sm mb-4">
+                Sobre a Opera Digital
+              </span>
 
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight leading-tight">
-              Aceleração Digital e Tecnologia para <span className="bg-gradient-to-r from-blue-400 to-blue-600 bg-clip-text text-transparent">alavancar seu negócio</span>
-            </h2>
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight leading-tight">
+                Aceleração Digital e Tecnologia para <span className="bg-gradient-to-r from-blue-400 to-blue-600 bg-clip-text text-transparent">alavancar seu negócio</span>
+              </h2>
+            </div>
 
             <p className="text-slate-300 text-base sm:text-lg leading-relaxed">
               A Opera Digital é uma agência de tecnologia especializada na construção de presença digital forte e atendimento automatizado de alta performance.
