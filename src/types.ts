@@ -84,6 +84,31 @@ export interface CrmLead {
   notes?: LeadNote[];
   activities?: LeadActivity[];
   whatsappOptIn?: boolean;
+  chatMessages?: WhatsAppChatMessage[];
+}
+
+export interface WhatsAppChatMessage {
+  id: string;
+  sender: 'client' | 'agent' | 'bot';
+  text: string;
+  timestamp: string;
+  status?: 'sent' | 'delivered' | 'read';
+  mediaUrl?: string;
+  mediaType?: 'image' | 'document' | 'audio';
+}
+
+export interface WhatsAppConversation {
+  id: string;
+  leadId: string;
+  clientName: string;
+  clientPhone: string;
+  companyName?: string;
+  avatarUrl?: string;
+  unreadCount: number;
+  lastMessage: string;
+  lastMessageTime: string;
+  status: 'em_atendimento' | 'aguardando' | 'finalizado';
+  messages: WhatsAppChatMessage[];
 }
 
 

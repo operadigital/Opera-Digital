@@ -504,6 +504,132 @@ async function startServer() {
     }
   });
 
+  // API Route: WhatsApp Live Chat Inbox Endpoints
+  app.get('/api/whatsapp/chats', (req, res) => {
+    // Return all chats associated with leads or store
+    const conversations = store.leads.map((lead) => {
+      const messages = lead.chatMessages || [
+        {
+          id: `msg-initial-${lead.id}`,
+          sender: 'client' as const,
+          text: lead.projectDescription || `Olá! Gostaria de mais informações sobre ${lead.projectType || 'seus serviços'}.`,
+          timestamp: lead.createdAt || new Date().toISOString(),
+          status: 'read' as const
+        }
+      ];
+      const lastMsg = messages[messages.length - 1];
+
+      return {
+        id: `chat-${lead.id}`,
+        leadId: lead.id,
+        clientName: lead.fullName,
+        clientPhone: lead.phone,
+        companyName: lead.companyName || '',
+        unreadCount: messages.filter((m) => m.sender === 'client' && m.status !== 'read').length,
+        lastMessage: lastMsg ? lastMsg.text : 'Nenhuma mensagem',
+        lastMessageTime: lastMsg ? lastMsg.timestamp : lead.createdAt,
+        status: (lead.stage === 'ganho' || lead.stage === 'perdido') ? 'finalizado' : 'em_atendimento',
+        messages
+      };
+    });
+
+    res.json(conversations);
+  });
+
+  app.post('/api/whatsapp/chats/message', (req, res) => {
+    const { leadId, text, sender = 'agent', mediaUrl } = req.body || {};
+
+    if (!leadId || !text || !text.trim()) {
+      res.status(400).json({ error: 'leadId e texto da mensagem são obrigatórios.' });
+      return;
+    }
+
+    const idx = store.leads.findIndex((l) => String(l.id) === String(leadId));
+    if (idx < 0) {
+      res.status(404).json({ error: 'Lead não encontrado para o chat.' });
+      return;
+    }
+
+    const lead = store.leads[idx];
+    const newMsg = {
+      id: `msg-${Date.now()}`,
+      sender: sender as 'agent' | 'client' | 'bot',
+      text: text.trim(),
+      timestamp: new Date().toISOString(),
+      status: 'delivered' as const,
+      mediaUrl
+    };
+
+    const chatMessages = [...(lead.chatMessages || []), newMsg];
+    const activities = [
+      {
+        id: `act-${Date.now()}`,
+        type: 'whatsapp' as const,
+        description: `${sender === 'agent' ? 'Resposta enviada no WhatsApp' : 'Mensagem recebida do cliente'}: "${text.trim().substring(0, 60)}${text.trim().length > 60 ? '...' : ''}"`,
+        createdAt: new Date().toISOString(),
+        author: sender === 'agent' ? 'Atendente Opera Digital' : lead.fullName
+      },
+      ...(lead.activities || [])
+    ];
+
+    store.leads[idx] = {
+      ...lead,
+      chatMessages,
+      activities,
+      lastContactDate: new Date().toISOString()
+    };
+
+    saveStore(store);
+
+    res.json({
+      success: true,
+      message: newMsg,
+      lead: store.leads[idx]
+    });
+  });
+
+  app.post('/api/whatsapp/generate-reply', async (req, res) => {
+    try {
+      const { clientName, projectType, conversationHistory } = req.body || {};
+      const apiKey = process.env.GEMINI_API_KEY;
+
+      if (apiKey && apiKey !== 'MY_GEMINI_API_KEY') {
+        const { GoogleGenAI } = await import('@google/genai');
+        const ai = new GoogleGenAI({ apiKey });
+        const prompt = `Você é um atendente especialista e consultor de vendas da agência Opera Digital.
+Seu objetivo é responder mensagens de clientes no WhatsApp de forma extremamente educada, clara, objetiva e persuasiva para fechamento de projetos de tecnologia (sites, e-commerce, automação de WhatsApp).
+
+Cliente: ${clientName || 'Cliente'}
+Interesse do cliente: ${projectType || 'Desenvolvimento Web / Automação'}
+Histórico de conversa recente:
+${conversationHistory || 'O cliente enviou mensagem demonstrando interesse nos serviços.'}
+
+Escreva UMA resposta perfeita para WhatsApp (curta, amigável, com 1 ou 2 emojis adequados e uma pergunta para engajar). Não use formatação em markdown excessiva, apenas texto pronto para enviar no WhatsApp.`;
+
+        const response = await ai.models.generateContent({
+          model: 'gemini-2.5-flash',
+          contents: prompt
+        });
+
+        const replyText = response.text?.trim();
+        if (replyText) {
+          res.json({ reply: replyText });
+          return;
+        }
+      }
+
+      // Smart fallback response
+      res.json({
+        reply: `Olá ${clientName || ''}! 👋 Sou da equipe da Opera Digital. Vi seu interesse em ${projectType || 'nossas soluções'}. Podemos agendar uma rápida conversa de 10 minutos para tirar suas dúvidas e apresentar um orçamento personalizado?`
+      });
+    } catch (err) {
+      console.error('Error generating AI reply:', err);
+      res.json({
+        reply: `Olá! Obrigado pelo contato. Como podemos ajudar no desenvolvimento do seu projeto hoje?`
+      });
+    }
+  });
+
   // Meta WhatsApp Business Cloud API Webhook Integration Endpoint
   app.get('/api/whatsapp/webhook', (req, res) => {
     const mode = req.query['hub.mode'];

@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { CrmLead, CrmStage, LeadPriority, LeadNote, LeadActivity } from '../types';
 import { getStoredWhatsAppNumber } from '../utils/whatsapp';
+import { WhatsAppChatInbox } from './WhatsAppChatInbox';
 
 interface CrmSystemProps {
   leads: CrmLead[];
@@ -40,7 +41,7 @@ export const CrmSystem: React.FC<CrmSystemProps> = ({
   onCreateLead,
   onAddNote
 }) => {
-  const [viewMode, setViewMode] = useState<'kanban' | 'table'>('kanban');
+  const [viewMode, setViewMode] = useState<'kanban' | 'table' | 'inbox'>('kanban');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedStageFilter, setSelectedStageFilter] = useState<string>('all');
   const [selectedPriorityFilter, setSelectedPriorityFilter] = useState<string>('all');
@@ -273,6 +274,18 @@ export const CrmSystem: React.FC<CrmSystemProps> = ({
               >
                 <List className="w-3.5 h-3.5" />
                 <span>Tabela</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setViewMode('inbox')}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${
+                  viewMode === 'inbox'
+                    ? 'bg-emerald-600 text-white shadow-md'
+                    : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                <MessageSquare className="w-3.5 h-3.5 text-emerald-400" />
+                <span>Inbox WhatsApp</span>
               </button>
             </div>
 
@@ -632,6 +645,14 @@ export const CrmSystem: React.FC<CrmSystemProps> = ({
             </table>
           </div>
         </div>
+      )}
+
+      {/* 5. VIEW 3: LIVE WHATSAPP CHAT INBOX */}
+      {viewMode === 'inbox' && (
+        <WhatsAppChatInbox
+          leads={leads}
+          onUpdateLead={onUpdateLead}
+        />
       )}
 
       {/* 5. LEAD DETAIL DRAWER / MODAL */}
