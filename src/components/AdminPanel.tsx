@@ -17,14 +17,21 @@ interface AdminPanelProps {
 export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onGoToSite }) => {
   const [activeTab, setActiveTab] = useState<'portfolio' | 'leads' | 'testimonials' | 'whatsapp' | 'metrics'>('portfolio');
 
+  const sanitizeAndClean = (list: any[]): PortfolioProject[] => {
+    if (!Array.isArray(list)) return [];
+    const dummyIds = ['proj-1', 'proj-2', 'proj-3', 'proj-4'];
+    return list.filter((p) => p && p.id && !dummyIds.includes(p.id));
+  };
+
   // Portfolio State
   const [projects, setProjects] = useState<PortfolioProject[]>(() => {
     try {
       const saved = localStorage.getItem('opera_portfolio_projects');
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed)) {
-          return parsed.filter((p: any) => !['proj-1', 'proj-2', 'proj-3', 'proj-4'].includes(p.id));
+        const cleaned = sanitizeAndClean(parsed);
+        if (cleaned.length > 0) {
+          return cleaned;
         }
       }
     } catch (e) {
@@ -124,7 +131,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onGoToSite }) 
         const savedP = localStorage.getItem('opera_portfolio_projects');
         if (savedP) {
           const parsedP = JSON.parse(savedP);
-          if (Array.isArray(parsedP)) localData = parsedP;
+          localData = sanitizeAndClean(parsedP);
         }
       } catch (e) {
         console.error(e);
@@ -135,7 +142,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onGoToSite }) 
         const resP = await fetch('/api/portfolio');
         if (resP.ok) {
           const data = await resP.json();
-          if (Array.isArray(data)) serverData = data;
+          serverData = sanitizeAndClean(data);
         }
       } catch (e) {
         console.warn('Projects sync warning:', e);
@@ -144,40 +151,45 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onGoToSite }) 
       const MOCKUP_URL = 'https://i.ibb.co/6cGqNQZ3/aea34f64-4935-4dd1-b252-3a08f72e0f90.png';
 
       const projectMap = new Map<string, PortfolioProject>();
+
+      // Seed with INITIAL_PORTFOLIO_PROJECTS as base defaults
+      INITIAL_PORTFOLIO_PROJECTS.forEach((p) => {
+        projectMap.set(p.id, p);
+      });
+
+      // Overlay server projects
       serverData.forEach((p) => {
         if (p && p.id) {
-          if (p.id === 'personalizze-store' || p.imageUrl?.includes('unsplash') || !p.imageUrl) {
+          if (p.id === 'personalizze-store' || !p.imageUrl) {
             p.imageUrl = MOCKUP_URL;
           }
           projectMap.set(p.id, p);
         }
       });
+
+      // Overlay local projects
       localData.forEach((p) => {
         if (p && p.id) {
-          if (p.id === 'personalizze-store' || p.imageUrl?.includes('unsplash') || !p.imageUrl) {
+          if (p.id === 'personalizze-store' && (!p.imageUrl || p.imageUrl.includes('unsplash'))) {
             p.imageUrl = MOCKUP_URL;
           }
-          if (!projectMap.has(p.id)) {
-            projectMap.set(p.id, p);
-          } else {
-            const existing = projectMap.get(p.id)!;
-            if (existing.imageUrl?.includes('unsplash') || !existing.imageUrl) {
-              existing.imageUrl = p.imageUrl || MOCKUP_URL;
-            }
-          }
+          projectMap.set(p.id, p);
         }
       });
 
       const merged = Array.from(projectMap.values());
-      if (merged.length > 0) {
-        setProjects(merged);
-        localStorage.setItem('opera_portfolio_projects', JSON.stringify(merged));
-        fetch('/api/portfolio/sync', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(merged)
-        }).catch(() => {});
-      }
+      const finalProjects = merged.length > 0 ? merged : INITIAL_PORTFOLIO_PROJECTS;
+
+      setProjects(finalProjects);
+      try {
+        localStorage.setItem('opera_portfolio_projects', JSON.stringify(finalProjects));
+      } catch (e) {}
+
+      fetch('/api/portfolio/sync', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(finalProjects)
+      }).catch(() => {});
 
       try {
         const resL = await fetch('/api/leads');
