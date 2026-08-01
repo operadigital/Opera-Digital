@@ -119,30 +119,62 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onGoToSite }) 
   // Synchronize projects & leads with server API and localStorage
   useEffect(() => {
     const fetchServerData = async () => {
+      let localData: PortfolioProject[] = [];
+      try {
+        const savedP = localStorage.getItem('opera_portfolio_projects');
+        if (savedP) {
+          const parsedP = JSON.parse(savedP);
+          if (Array.isArray(parsedP)) localData = parsedP;
+        }
+      } catch (e) {
+        console.error(e);
+      }
+
+      let serverData: PortfolioProject[] = [];
       try {
         const resP = await fetch('/api/portfolio');
         if (resP.ok) {
-          const projectsData = await resP.json();
-          if (Array.isArray(projectsData) && projectsData.length > 0) {
-            setProjects(projectsData);
-            localStorage.setItem('opera_portfolio_projects', JSON.stringify(projectsData));
-          } else {
-            const savedP = localStorage.getItem('opera_portfolio_projects');
-            if (savedP) {
-              const parsedP = JSON.parse(savedP);
-              if (Array.isArray(parsedP) && parsedP.length > 0) {
-                setProjects(parsedP);
-                fetch('/api/portfolio/sync', {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify(parsedP)
-                }).catch(() => {});
-              }
-            }
-          }
+          const data = await resP.json();
+          if (Array.isArray(data)) serverData = data;
         }
       } catch (e) {
         console.warn('Projects sync warning:', e);
+      }
+
+      const projectMap = new Map<string, PortfolioProject>();
+      serverData.forEach((p) => {
+        if (p && p.id) {
+          if (p.id === 'personalizze-store' || p.imageUrl?.includes('unsplash') || !p.imageUrl) {
+            p.imageUrl = '/personalizze_mockup.jpg';
+          }
+          projectMap.set(p.id, p);
+        }
+      });
+      localData.forEach((p) => {
+        if (p && p.id) {
+          if (p.id === 'personalizze-store' || p.imageUrl?.includes('unsplash') || !p.imageUrl) {
+            p.imageUrl = '/personalizze_mockup.jpg';
+          }
+          if (!projectMap.has(p.id)) {
+            projectMap.set(p.id, p);
+          } else {
+            const existing = projectMap.get(p.id)!;
+            if (existing.imageUrl?.includes('unsplash') || !existing.imageUrl) {
+              existing.imageUrl = p.imageUrl || '/personalizze_mockup.jpg';
+            }
+          }
+        }
+      });
+
+      const merged = Array.from(projectMap.values());
+      if (merged.length > 0) {
+        setProjects(merged);
+        localStorage.setItem('opera_portfolio_projects', JSON.stringify(merged));
+        fetch('/api/portfolio/sync', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(merged)
+        }).catch(() => {});
       }
 
       try {
@@ -560,10 +592,13 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onGoToSite }) 
                 >
                   <div className="flex gap-4">
                     <img 
-                      src={p.imageUrl} 
+                      src={p.imageUrl || '/personalizze_mockup.jpg'} 
                       alt={p.title} 
                       className="w-24 h-24 rounded-xl object-cover border border-slate-800 shrink-0"
                       referrerPolicy="no-referrer"
+                      onError={(e) => {
+                        (e.currentTarget as HTMLImageElement).src = '/personalizze_mockup.jpg';
+                      }}
                     />
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between">

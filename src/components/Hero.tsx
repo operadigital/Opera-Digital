@@ -3,6 +3,7 @@ import {
   ArrowRight, Sparkles, Globe, MessageSquare, 
   Bot, CheckCircle2, Zap, ShieldCheck
 } from 'lucide-react';
+import { getStoredWhatsAppNumber } from '../utils/whatsapp';
 
 interface HeroProps {
   onNavigateToRegister: () => void;
@@ -46,13 +47,15 @@ export const Hero: React.FC<HeroProps> = ({ onNavigateToRegister, onOpenQuoteMod
             </p>
 
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 pt-3">
-              <button
-                onClick={onNavigateToRegister}
+              <a
+                href={`https://wa.me/${getStoredWhatsAppNumber()}?text=${encodeURIComponent('Olá! Gostaria de solicitar um orçamento com a Opera Digital.')}`}
+                target="_blank"
+                rel="noreferrer"
                 className="bg-[#0A4EE4] text-white px-8 py-4 rounded-xl font-bold shadow-xl shadow-blue-900/50 hover:bg-blue-600 transition-all flex items-center justify-center gap-2 group min-h-[48px]"
               >
                 <span>Solicitar orçamento</span>
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-              </button>
+              </a>
 
               <a
                 href="#servicos"

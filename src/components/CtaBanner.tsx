@@ -1,12 +1,13 @@
 import React from 'react';
-import { ArrowRight, CheckCircle2, ShieldCheck, Sparkles, MessageSquare } from 'lucide-react';
+import { ArrowRight, CheckCircle2, ShieldCheck, Sparkles } from 'lucide-react';
+import { getStoredWhatsAppNumber } from '../utils/whatsapp';
 
 interface CtaBannerProps {
   onNavigateToRegister: () => void;
   onOpenQuoteModal?: (serviceName?: string) => void;
 }
 
-export const CtaBanner: React.FC<CtaBannerProps> = ({ onNavigateToRegister, onOpenQuoteModal }) => {
+export const CtaBanner: React.FC<CtaBannerProps> = () => {
   return (
     <section className="py-20 bg-gradient-to-r from-slate-950 via-slate-900 to-black text-white relative overflow-hidden border-t border-slate-800">
       {/* Background Glow */}
@@ -30,13 +31,15 @@ export const CtaBanner: React.FC<CtaBannerProps> = ({ onNavigateToRegister, onOp
         </p>
 
         <div className="pt-4 flex justify-center">
-          <button
-            onClick={onNavigateToRegister}
+          <a
+            href={`https://wa.me/${getStoredWhatsAppNumber()}?text=${encodeURIComponent('Olá! Gostaria de solicitar um orçamento com a Opera Digital.')}`}
+            target="_blank"
+            rel="noreferrer"
             className="w-full sm:w-auto bg-[#0A4EE4] hover:bg-blue-600 text-white font-extrabold text-base px-9 py-4 rounded-xl shadow-xl shadow-blue-950/60 transition-all duration-200 flex items-center justify-center gap-2.5 group min-h-[52px]"
           >
             <span>Solicitar Orçamento</span>
             <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-          </button>
+          </a>
         </div>
 
         <div className="pt-4 flex flex-wrap items-center justify-center gap-6 text-xs text-slate-300 font-medium">

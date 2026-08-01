@@ -4,6 +4,7 @@ import {
   ArrowRight, Sparkles, ShieldCheck
 } from 'lucide-react';
 import { SERVICES_LIST } from '../data/mockData';
+import { getStoredWhatsAppNumber } from '../utils/whatsapp';
 
 interface HeaderProps {
   onNavigateToRegister: () => void;
@@ -146,12 +147,14 @@ export const Header: React.FC<HeaderProps> = ({
 
           {/* Actions */}
           <div className="hidden md:flex items-center gap-4">
-            <button
-              onClick={onNavigateToRegister}
+            <a
+              href={`https://wa.me/${getStoredWhatsAppNumber()}?text=${encodeURIComponent('Olá! Gostaria de solicitar um orçamento com a Opera Digital.')}`}
+              target="_blank"
+              rel="noreferrer"
               className="bg-[#0A4EE4] hover:bg-blue-600 text-white px-5 py-2.5 rounded-full text-sm font-bold shadow-lg shadow-blue-900/40 transition-all duration-200 flex items-center gap-1.5"
             >
               <span>Solicitar Orçamento</span>
-            </button>
+            </a>
           </div>
 
           {/* Mobile Menu Button */}
@@ -233,16 +236,16 @@ export const Header: React.FC<HeaderProps> = ({
             </div>
 
             <div className="pt-3 border-t border-slate-800">
-              <button
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  onNavigateToRegister();
-                }}
+              <a
+                href={`https://wa.me/${getStoredWhatsAppNumber()}?text=${encodeURIComponent('Olá! Gostaria de solicitar um orçamento com a Opera Digital.')}`}
+                target="_blank"
+                rel="noreferrer"
+                onClick={() => setMobileMenuOpen(false)}
                 className="w-full h-12 text-center font-bold text-white bg-[#0A4EE4] hover:bg-blue-600 rounded-xl text-sm shadow-lg shadow-blue-950 transition-colors flex items-center justify-center gap-2"
               >
                 <span>Solicitar Orçamento</span>
                 <ArrowRight className="w-4 h-4" />
-              </button>
+              </a>
             </div>
           </div>
         </>

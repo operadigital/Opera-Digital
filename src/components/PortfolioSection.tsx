@@ -94,39 +94,68 @@ export const PortfolioSection: React.FC = () => {
     }
   };
 
-  // Fetch projects from server API on mount & sync with localStorage
+  // Fetch projects from server API on mount & merge with localStorage
   useEffect(() => {
     const fetchServerProjects = async () => {
+      let localData: PortfolioProject[] = [];
+      try {
+        const saved = localStorage.getItem('opera_portfolio_projects');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (Array.isArray(parsed)) localData = parsed;
+        }
+      } catch (e) {
+        console.error(e);
+      }
+
+      let serverData: PortfolioProject[] = [];
       try {
         const res = await fetch('/api/portfolio');
         if (res.ok) {
-          const serverData = await res.json();
-          if (Array.isArray(serverData) && serverData.length > 0) {
-            setProjects(serverData);
-            localStorage.setItem('opera_portfolio_projects', JSON.stringify(serverData));
-            return;
-          }
+          const data = await res.json();
+          if (Array.isArray(data)) serverData = data;
         }
       } catch (e) {
         console.warn('Could not fetch server projects:', e);
       }
 
-      // If server projects empty or unavailable, sync local storage to server
-      try {
-        const saved = localStorage.getItem('opera_portfolio_projects');
-        if (saved) {
-          const parsed = JSON.parse(saved);
-          if (Array.isArray(parsed) && parsed.length > 0) {
-            setProjects(parsed);
-            fetch('/api/portfolio/sync', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(parsed)
-            }).catch(() => {});
+      // Combine serverData and localData so no posts are lost
+      const projectMap = new Map<string, PortfolioProject>();
+      serverData.forEach((p) => {
+        if (p && p.id) {
+          if (p.id === 'personalizze-store' || p.imageUrl?.includes('unsplash') || !p.imageUrl) {
+            p.imageUrl = '/personalizze_mockup.jpg';
+          }
+          projectMap.set(p.id, p);
+        }
+      });
+      localData.forEach((p) => {
+        if (p && p.id) {
+          if (p.id === 'personalizze-store' || p.imageUrl?.includes('unsplash') || !p.imageUrl) {
+            p.imageUrl = '/personalizze_mockup.jpg';
+          }
+          if (!projectMap.has(p.id)) {
+            projectMap.set(p.id, p);
+          } else {
+            // Update existing if it has better data
+            const existing = projectMap.get(p.id)!;
+            if (existing.imageUrl?.includes('unsplash') || !existing.imageUrl) {
+              existing.imageUrl = p.imageUrl || '/personalizze_mockup.jpg';
+            }
           }
         }
-      } catch (e) {
-        console.error(e);
+      });
+
+      const merged = Array.from(projectMap.values());
+      if (merged.length > 0) {
+        setProjects(merged);
+        localStorage.setItem('opera_portfolio_projects', JSON.stringify(merged));
+        // Sync merged list to server
+        fetch('/api/portfolio/sync', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(merged)
+        }).catch(() => {});
       }
     };
 
@@ -320,10 +349,13 @@ export const PortfolioSection: React.FC = () => {
                 {/* Project Image Header with Overlay */}
                 <div className="relative h-48 sm:h-56 w-full overflow-hidden bg-slate-950">
                   <img
-                    src={project.imageUrl}
+                    src={project.imageUrl || '/personalizze_mockup.jpg'}
                     alt={project.title}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     referrerPolicy="no-referrer"
+                    onError={(e) => {
+                      (e.currentTarget as HTMLImageElement).src = '/personalizze_mockup.jpg';
+                    }}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/30 to-transparent" />
 
@@ -463,10 +495,13 @@ export const PortfolioSection: React.FC = () => {
               {/* Preview Image Banner */}
               <div className="relative rounded-2xl overflow-hidden border border-slate-200 h-64 sm:h-80 bg-slate-100">
                 <img
-                  src={selectedProject.imageUrl}
+                  src={selectedProject.imageUrl || '/personalizze_mockup.jpg'}
                   alt={selectedProject.title}
                   className="w-full h-full object-cover"
                   referrerPolicy="no-referrer"
+                  onError={(e) => {
+                    (e.currentTarget as HTMLImageElement).src = '/personalizze_mockup.jpg';
+                  }}
                 />
                 <div className="absolute inset-0 bg-slate-900/30 flex items-center justify-center">
                   <button
