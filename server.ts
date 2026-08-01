@@ -271,7 +271,16 @@ async function startServer() {
 
   // REST API Routes for Persistent Leads & Registrations
   app.get('/api/leads', (req, res) => {
-    res.json(store.leads || []);
+    const formattedLeads = (store.leads || []).map((l) => ({
+      ...l,
+      stage: l.stage || l.status || 'novo',
+      priority: l.priority || 'media',
+      estimatedValue: l.estimatedValue || (l.projectType?.includes('E-commerce') ? 12000 : l.projectType?.includes('Automação') ? 8500 : 5000),
+      notes: l.notes || [],
+      activities: l.activities || [],
+      source: l.source || 'Formulário Site'
+    }));
+    res.json(formattedLeads);
   });
 
   app.post('/api/leads', (req, res) => {
@@ -280,14 +289,117 @@ async function startServer() {
       res.status(400).json({ error: 'Dados do lead inválidos.' });
       return;
     }
+    const formatted = {
+      ...lead,
+      stage: lead.stage || lead.status || 'novo',
+      priority: lead.priority || 'media',
+      estimatedValue: lead.estimatedValue || 5000,
+      createdAt: lead.createdAt || new Date().toISOString(),
+      notes: lead.notes || [],
+      activities: lead.activities || [
+        {
+          id: `act-${Date.now()}`,
+          type: 'system',
+          description: 'Lead cadastrado no sistema CRM',
+          createdAt: new Date().toISOString()
+        }
+      ],
+      source: lead.source || 'Formulário Site'
+    };
+
     const idx = store.leads.findIndex((l) => String(l.id) === String(lead.id));
     if (idx >= 0) {
-      store.leads[idx] = lead;
+      store.leads[idx] = { ...store.leads[idx], ...formatted };
     } else {
-      store.leads.unshift(lead);
+      store.leads.unshift(formatted);
     }
     saveStore(store);
     res.json({ success: true, leads: store.leads });
+  });
+
+  app.patch('/api/leads/:id', (req, res) => {
+    const { id } = req.params;
+    const updates = req.body || {};
+    const idx = store.leads.findIndex((l) => String(l.id) === String(id));
+    if (idx < 0) {
+      res.status(404).json({ error: 'Lead não encontrado.' });
+      return;
+    }
+
+    const currentLead = store.leads[idx];
+    const oldStage = currentLead.stage || currentLead.status || 'novo';
+    const newStage = updates.stage || oldStage;
+
+    const activities = [...(currentLead.activities || [])];
+    if (newStage !== oldStage) {
+      const stageNames: Record<string, string> = {
+        novo: 'Novo Lead',
+        qualificacao: 'Em Qualificação',
+        proposta: 'Proposta Enviada',
+        negociacao: 'Em Negociação',
+        ganho: 'Fechado / Ganho',
+        perdido: 'Perdido'
+      };
+      activities.unshift({
+        id: `act-${Date.now()}`,
+        type: 'stage_change',
+        description: `Estágio alterado de "${stageNames[oldStage] || oldStage}" para "${stageNames[newStage] || newStage}"`,
+        createdAt: new Date().toISOString(),
+        author: updates.author || 'Administrador'
+      });
+    }
+
+    const updatedLead = {
+      ...currentLead,
+      ...updates,
+      stage: newStage,
+      status: newStage,
+      activities,
+      lastContactDate: updates.lastContactDate || new Date().toISOString()
+    };
+
+    store.leads[idx] = updatedLead;
+    saveStore(store);
+    res.json({ success: true, lead: updatedLead, leads: store.leads });
+  });
+
+  app.post('/api/leads/:id/notes', (req, res) => {
+    const { id } = req.params;
+    const { text, author } = req.body || {};
+    if (!text || !text.trim()) {
+      res.status(400).json({ error: 'Texto da nota é obrigatório.' });
+      return;
+    }
+
+    const idx = store.leads.findIndex((l) => String(l.id) === String(id));
+    if (idx < 0) {
+      res.status(404).json({ error: 'Lead não encontrado.' });
+      return;
+    }
+
+    const lead = store.leads[idx];
+    const newNote = {
+      id: `note-${Date.now()}`,
+      text: text.trim(),
+      author: author || 'Equipe Opera Digital',
+      createdAt: new Date().toISOString()
+    };
+
+    const notes = [newNote, ...(lead.notes || [])];
+    const activities = [
+      {
+        id: `act-${Date.now()}`,
+        type: 'note' as const,
+        description: `Nova anotação registrada: "${text.trim().substring(0, 60)}${text.trim().length > 60 ? '...' : ''}"`,
+        createdAt: new Date().toISOString(),
+        author: author || 'Equipe Opera Digital'
+      },
+      ...(lead.activities || [])
+    ];
+
+    store.leads[idx] = { ...lead, notes, activities, lastContactDate: new Date().toISOString() };
+    saveStore(store);
+    res.json({ success: true, lead: store.leads[idx], note: newNote });
   });
 
   app.post('/api/leads/sync', (req, res) => {

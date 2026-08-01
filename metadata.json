@@ -1,6 +1,6 @@
 {
-  "name": "Copy of Opera Digital",
-  "description": "Plataforma de gestão completa para empreendedores brasileiros",
+  "name": "Opera Digital",
+  "description": "Plataforma de criação de sites, automação de WhatsApp Web e sistema completo de CRM para empresas",
   "requestFramePermissions": [],
   "majorCapabilities": [
     "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"

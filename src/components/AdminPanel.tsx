@@ -6,8 +6,9 @@ import {
   Star, Quote, Save, Settings, PhoneCall, Bot, Zap, Clock, Play, Copy, Check, Send
 } from 'lucide-react';
 import { INITIAL_PORTFOLIO_PROJECTS } from '../data/mockData';
-import { PortfolioProject } from '../types';
+import { PortfolioProject, CrmLead } from '../types';
 import { getStoredWhatsAppNumber, saveWhatsAppNumber, formatWhatsAppDisplay } from '../utils/whatsapp';
+import { CrmSystem } from './CrmSystem';
 
 interface AdminPanelProps {
   onLogout: () => void;
@@ -333,19 +334,157 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onGoToSite }) 
     fetchServerData();
   }, []);
 
+  // Normalize lead objects for CRM compatibility
+  const formatLeadForCrm = (l: any): CrmLead => {
+    return {
+      id: String(l.id || `lead-${Date.now()}`),
+      fullName: l.fullName || l.name || 'Cliente',
+      companyName: l.companyName || l.company || '',
+      email: l.email || '',
+      phone: l.phone || '',
+      cnpj: l.cnpj || '',
+      segment: l.segment || 'Geral',
+      projectType: l.projectType || l.solution || 'Criação de Site Profissional',
+      projectDescription: l.projectDescription || l.description || '',
+      stage: l.stage || l.status || 'novo',
+      priority: l.priority || 'media',
+      estimatedValue: l.estimatedValue || 5000,
+      assignedTo: l.assignedTo || 'Equipe Vendas',
+      tags: l.tags || [],
+      source: l.source || 'Formulário Site',
+      createdAt: l.createdAt || l.date || new Date().toISOString(),
+      notes: l.notes || [],
+      activities: l.activities || []
+    };
+  };
+
   // Leads / Registrations state
-  const [leads, setLeads] = useState<any[]>(() => {
+  const [leads, setLeads] = useState<CrmLead[]>(() => {
     try {
       const saved = localStorage.getItem('opera_registered_leads');
-      if (saved) return JSON.parse(saved);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) return parsed.map(formatLeadForCrm);
+      }
     } catch (e) {
       console.error(e);
     }
-    return [];
+    return [
+      {
+        id: 'lead-demo-1',
+        fullName: 'Carlos Henrique Mendes',
+        companyName: 'Mendes Advocacia & Consultoria',
+        email: 'carlos@mendesadv.com.br',
+        phone: '51992379969',
+        cnpj: '12.345.678/0001-90',
+        segment: 'Serviços Jurídicos',
+        projectType: 'Criação de Site Profissional',
+        projectDescription: 'Reformulação total da identidade digital e captação de clientes via WhatsApp.',
+        stage: 'proposta',
+        priority: 'alta',
+        estimatedValue: 8500,
+        source: 'Formulário Site',
+        createdAt: new Date().toISOString(),
+        notes: [
+          { id: 'n1', text: 'Enviada proposta comercial detalhada com módulo de agendamento.', author: 'Consultor Vendas', createdAt: new Date().toISOString() }
+        ],
+        activities: [
+          { id: 'a1', type: 'stage_change', description: 'Lead avançado para Proposta Enviada', createdAt: new Date().toISOString() }
+        ]
+      },
+      {
+        id: 'lead-demo-2',
+        fullName: 'Mariana Duarte',
+        companyName: 'Boutique Bella Moda',
+        email: 'mariana@bellamoda.com.br',
+        phone: '51988887777',
+        cnpj: '98.765.432/0001-10',
+        segment: 'Varejo / Moda',
+        projectType: 'E-commerce Completo',
+        projectDescription: 'Loja virtual integrada com PagSeguro e catálogo no WhatsApp Web.',
+        stage: 'negociacao',
+        priority: 'urgente',
+        estimatedValue: 14000,
+        source: 'WhatsApp Bot',
+        createdAt: new Date().toISOString(),
+        notes: [],
+        activities: []
+      }
+    ];
   });
 
+  const handleUpdateLead = (updatedLead: CrmLead) => {
+    const updatedList = leads.map((l) => (l.id === updatedLead.id ? updatedLead : l));
+    setLeads(updatedList);
+    try {
+      localStorage.setItem('opera_registered_leads', JSON.stringify(updatedList));
+    } catch (e) {
+      console.error(e);
+    }
+    fetch(`/api/leads/${updatedLead.id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(updatedLead)
+    }).catch(() => {});
+  };
+
+  const handleCreateLead = (newLeadData: Partial<CrmLead>) => {
+    const formatted = formatLeadForCrm(newLeadData);
+    const updatedList = [formatted, ...leads];
+    setLeads(updatedList);
+    try {
+      localStorage.setItem('opera_registered_leads', JSON.stringify(updatedList));
+    } catch (e) {
+      console.error(e);
+    }
+    fetch('/api/leads', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(formatted)
+    }).catch(() => {});
+  };
+
+  const handleAddNote = async (leadId: string, noteText: string) => {
+    try {
+      const res = await fetch(`/api/leads/${leadId}/notes`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: noteText, author: 'Equipe Opera Digital' })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.lead) {
+          handleUpdateLead(data.lead);
+          return;
+        }
+      }
+    } catch (e) {
+      console.warn('Error adding note to server:', e);
+    }
+
+    // Fallback local update
+    const target = leads.find((l) => l.id === leadId);
+    if (target) {
+      const newNote = {
+        id: `note-${Date.now()}`,
+        text: noteText,
+        author: 'Equipe Opera Digital',
+        createdAt: new Date().toISOString()
+      };
+      const updated = {
+        ...target,
+        notes: [newNote, ...(target.notes || [])],
+        activities: [
+          { id: `act-${Date.now()}`, type: 'note' as const, description: `Nota: "${noteText}"`, createdAt: new Date().toISOString() },
+          ...(target.activities || [])
+        ]
+      };
+      handleUpdateLead(updated);
+    }
+  };
+
   const handleDeleteLead = (id: number | string) => {
-    const updated = leads.filter((l) => l.id !== id);
+    const updated = leads.filter((l) => String(l.id) !== String(id));
     setLeads(updated);
     try {
       localStorage.setItem('opera_registered_leads', JSON.stringify(updated));
@@ -611,7 +750,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onGoToSite }) 
                 }`}
               >
                 <Users className="w-4 h-4" />
-                <span>Leads ({leads.length})</span>
+                <span>CRM & Leads ({leads.length})</span>
               </button>
 
               <button
@@ -788,154 +927,17 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onGoToSite }) 
           </div>
         )}
 
-        {/* TAB 2: LEADS AND REGISTRATIONS */}
+        {/* TAB 2: CRM & LEADS MANAGEMENT */}
         {activeTab === 'leads' && (
-          <div className="bg-slate-950 rounded-2xl border border-slate-800 overflow-hidden shadow-xl">
-            <div className="p-4 sm:p-6 border-b border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-              <div>
-                <h3 className="font-bold text-white text-base sm:text-lg">Solicitações de Cadastro & Contatos</h3>
-                <p className="text-xs text-slate-400 mt-0.5 sm:mt-1">
-                  Leads registrados via formulário de contratação e demonstração.
-                </p>
-              </div>
-              <span className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs font-bold px-3 py-1 rounded-full">
-                {leads.length} {leads.length === 1 ? 'Registro' : 'Registros'}
-              </span>
-            </div>
-
-            {leads.length === 0 ? (
-              <div className="p-8 sm:p-12 text-center">
-                <Users className="w-12 h-12 text-slate-700 mx-auto mb-3" />
-                <h4 className="text-white font-bold text-base">Nenhum contato registrado</h4>
-                <p className="text-slate-400 text-xs mt-1 max-w-sm mx-auto">
-                  Os cadastros e solicitações de demonstração realizados pelos clientes no site aparecerão aqui.
-                </p>
-              </div>
-            ) : (
-              <div>
-                {/* Mobile Cards View (Visible on screens < md) */}
-                <div className="block md:hidden divide-y divide-slate-800/80">
-                  {leads.map((lead) => (
-                    <div key={lead.id} className="p-4 space-y-3 hover:bg-slate-900/40 transition-colors">
-                      <div className="flex items-start justify-between gap-2">
-                        <div>
-                          <h4 className="font-bold text-white text-sm">{lead.name}</h4>
-                          <p className="text-[11px] text-slate-400 font-mono mt-0.5">{lead.email}</p>
-                        </div>
-                        <span className="bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded text-[10px] font-bold shrink-0">
-                          {lead.status || 'Novo'}
-                        </span>
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-2 text-xs bg-slate-900/60 p-2.5 rounded-xl border border-slate-800/60">
-                        <div>
-                          <span className="text-[10px] text-slate-500 block uppercase font-bold">Módulo</span>
-                          <span className="text-blue-300 font-semibold">{lead.solution || 'Cadastro'}</span>
-                        </div>
-                        <div>
-                          <span className="text-[10px] text-slate-500 block uppercase font-bold">Segmento</span>
-                          <span className="text-slate-300">{lead.segment || '-'}</span>
-                        </div>
-                        <div>
-                          <span className="text-[10px] text-slate-500 block uppercase font-bold">Telefone</span>
-                          <span className="text-slate-200 font-mono">{lead.phone || '-'}</span>
-                        </div>
-                        <div>
-                          <span className="text-[10px] text-slate-500 block uppercase font-bold">Data</span>
-                          <span className="text-slate-400">{lead.date}</span>
-                        </div>
-                      </div>
-
-                      <div className="flex items-center justify-between gap-2 pt-1">
-                        {lead.phone && lead.phone !== '-' ? (
-                          <a
-                            href={`https://wa.me/55${lead.phone.replace(/\D/g, '')}?text=Olá%20${encodeURIComponent(lead.name)},%20sou%20da%20Opera%20Digital!`}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="flex-1 inline-flex items-center justify-center gap-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 px-3 rounded-xl text-xs transition-colors shadow-sm min-h-[40px]"
-                          >
-                            <MessageSquare className="w-4 h-4" />
-                            <span>Chamar no WhatsApp</span>
-                          </a>
-                        ) : (
-                          <div className="flex-1" />
-                        )}
-                        <button
-                          onClick={() => handleDeleteLead(lead.id)}
-                          className="p-2.5 text-slate-400 hover:text-rose-400 hover:bg-rose-500/20 rounded-xl transition-colors border border-slate-800 min-h-[40px] min-w-[40px] flex items-center justify-center"
-                          title="Excluir Contato"
-                        >
-                          <Trash2 className="w-4 h-4 text-rose-400" />
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                {/* Desktop Table View (Visible on screens >= md) */}
-                <div className="hidden md:block overflow-x-auto">
-                  <table className="w-full text-left text-xs text-slate-300">
-                    <thead className="bg-slate-900 text-slate-400 font-bold uppercase tracking-wider border-b border-slate-800">
-                      <tr>
-                        <th className="p-4">Cliente / Nome</th>
-                        <th className="p-4">E-mail</th>
-                        <th className="p-4">Telefone</th>
-                        <th className="p-4">Módulo</th>
-                        <th className="p-4">Segmento</th>
-                        <th className="p-4">Data</th>
-                        <th className="p-4">Status</th>
-                        <th className="p-4 text-right">Ações</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-800/60">
-                      {leads.map((lead) => (
-                        <tr key={lead.id} className="hover:bg-slate-900/50 transition-colors">
-                          <td className="p-4 font-bold text-white">{lead.name}</td>
-                          <td className="p-4 font-mono text-slate-400">{lead.email}</td>
-                          <td className="p-4 font-mono">{lead.phone}</td>
-                          <td className="p-4">
-                            <span className="bg-blue-500/20 text-blue-300 px-2.5 py-1 rounded-md font-bold">
-                              {lead.solution || 'Cadastro'}
-                            </span>
-                          </td>
-                          <td className="p-4 text-slate-400">{lead.segment || '-'}</td>
-                          <td className="p-4 text-slate-500">{lead.date}</td>
-                          <td className="p-4">
-                            <span className="bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded text-[11px] font-bold">
-                              {lead.status || 'Novo'}
-                            </span>
-                          </td>
-                          <td className="p-4 text-right">
-                            <div className="inline-flex items-center gap-2">
-                              {lead.phone && lead.phone !== '-' && (
-                                <a
-                                  href={`https://wa.me/55${lead.phone.replace(/\D/g, '')}?text=Olá%20${encodeURIComponent(lead.name)},%20sou%20da%20Opera%20Digital!`}
-                                  target="_blank"
-                                  rel="noreferrer"
-                                  className="inline-flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-3 py-1.5 rounded-lg transition-colors"
-                                >
-                                  <MessageSquare className="w-3.5 h-3.5" />
-                                  <span>WhatsApp</span>
-                                </a>
-                              )}
-                              <button
-                                onClick={() => handleDeleteLead(lead.id)}
-                                className="p-1.5 text-slate-400 hover:text-rose-400 hover:bg-rose-500/20 rounded-lg transition-colors"
-                                title="Excluir Contato"
-                              >
-                                <Trash2 className="w-4 h-4 text-rose-400" />
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            )}
-          </div>
+          <CrmSystem
+            leads={leads}
+            onUpdateLead={handleUpdateLead}
+            onDeleteLead={handleDeleteLead}
+            onCreateLead={handleCreateLead}
+            onAddNote={handleAddNote}
+          />
         )}
+
 
         {/* TAB: TESTIMONIALS MANAGEMENT */}
         {activeTab === 'testimonials' && (
