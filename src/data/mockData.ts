@@ -79,7 +79,7 @@ export const INITIAL_PORTFOLIO_PROJECTS: PortfolioProject[] = [
     description: 'E-commerce moderno e de alta conversão para produtos e presentes personalizados. Conta com design 100% responsivo, catálogo interativo, checkout otimizado e integração com WhatsApp Web.',
     resultMetric: 'Loja Virtual de Alta Conversão',
     resultLink: 'https://personalizze.store/',
-    imageUrl: '/personalizze_mockup.jpg',
+    imageUrl: 'https://i.ibb.co/6cGqNQZ3/aea34f64-4935-4dd1-b252-3a08f72e0f90.png',
     tags: ['E-commerce', 'Presentes Personalizados', 'Design Responsivo', 'WhatsApp Web', 'Loja Virtual'],
     completedDate: '2026'
   }

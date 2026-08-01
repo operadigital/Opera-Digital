@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   ExternalLink, Plus, Search, Filter, Sparkles, Globe, 
-  CheckCircle2, ArrowRight, X, Copy, Check, Eye, Trash2, 
+  CheckCircle2, ArrowRight, X, Copy, Check, Eye, 
   Building2, TrendingUp, Laptop, Layers, Share2
 } from 'lucide-react';
 import { INITIAL_PORTFOLIO_PROJECTS } from '../data/mockData';
@@ -119,12 +119,14 @@ export const PortfolioSection: React.FC = () => {
         console.warn('Could not fetch server projects:', e);
       }
 
+      const MOCKUP_URL = 'https://i.ibb.co/6cGqNQZ3/aea34f64-4935-4dd1-b252-3a08f72e0f90.png';
+
       // Combine serverData and localData so no posts are lost
       const projectMap = new Map<string, PortfolioProject>();
       serverData.forEach((p) => {
         if (p && p.id) {
           if (p.id === 'personalizze-store' || p.imageUrl?.includes('unsplash') || !p.imageUrl) {
-            p.imageUrl = '/personalizze_mockup.jpg';
+            p.imageUrl = MOCKUP_URL;
           }
           projectMap.set(p.id, p);
         }
@@ -132,7 +134,7 @@ export const PortfolioSection: React.FC = () => {
       localData.forEach((p) => {
         if (p && p.id) {
           if (p.id === 'personalizze-store' || p.imageUrl?.includes('unsplash') || !p.imageUrl) {
-            p.imageUrl = '/personalizze_mockup.jpg';
+            p.imageUrl = MOCKUP_URL;
           }
           if (!projectMap.has(p.id)) {
             projectMap.set(p.id, p);
@@ -140,7 +142,7 @@ export const PortfolioSection: React.FC = () => {
             // Update existing if it has better data
             const existing = projectMap.get(p.id)!;
             if (existing.imageUrl?.includes('unsplash') || !existing.imageUrl) {
-              existing.imageUrl = p.imageUrl || '/personalizze_mockup.jpg';
+              existing.imageUrl = p.imageUrl || MOCKUP_URL;
             }
           }
         }
@@ -349,7 +351,7 @@ export const PortfolioSection: React.FC = () => {
                 {/* Project Image Header with Overlay */}
                 <div className="relative h-48 sm:h-56 w-full overflow-hidden bg-slate-950">
                   <img
-                    src={project.imageUrl || '/personalizze_mockup.jpg'}
+                    src={project.imageUrl || 'https://i.ibb.co/6cGqNQZ3/aea34f64-4935-4dd1-b252-3a08f72e0f90.png'}
                     alt={project.title}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     referrerPolicy="no-referrer"
@@ -359,19 +361,11 @@ export const PortfolioSection: React.FC = () => {
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/30 to-transparent" />
 
-                  {/* Category & Metric Badges */}
+                  {/* Category Badge */}
                   <div className="absolute top-3 left-3 right-3 flex items-center justify-between">
                     <span className="bg-slate-900/90 border border-slate-700/80 backdrop-blur-md text-blue-400 text-[11px] font-extrabold px-3 py-1 rounded-full shadow-md">
                       {project.category}
                     </span>
-
-                    <button
-                      onClick={(e) => handleDeleteProject(e, project)}
-                      className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 bg-rose-600 hover:bg-rose-700 text-white p-2 rounded-xl transition-all shadow-md z-10 flex items-center justify-center min-h-[36px] min-w-[36px]"
-                      title="Excluir trabalho"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
                   </div>
 
                   {/* Title & Client inside Image Gradient */}
@@ -495,7 +489,7 @@ export const PortfolioSection: React.FC = () => {
               {/* Preview Image Banner */}
               <div className="relative rounded-2xl overflow-hidden border border-slate-200 h-64 sm:h-80 bg-slate-100">
                 <img
-                  src={selectedProject.imageUrl || '/personalizze_mockup.jpg'}
+                  src={selectedProject.imageUrl || 'https://i.ibb.co/6cGqNQZ3/aea34f64-4935-4dd1-b252-3a08f72e0f90.png'}
                   alt={selectedProject.title}
                   className="w-full h-full object-cover"
                   referrerPolicy="no-referrer"
@@ -754,39 +748,6 @@ export const PortfolioSection: React.FC = () => {
               </div>
 
             </form>
-          </div>
-        </div>
-      )}
-
-      {/* DELETE CONFIRMATION MODAL */}
-      {deletingProject && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-xs">
-          <div className="bg-white rounded-3xl max-w-md w-full p-6 space-y-4 shadow-2xl border border-slate-100 text-slate-800">
-            <div className="w-12 h-12 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center mx-auto">
-              <Trash2 className="w-6 h-6" />
-            </div>
-            <div className="text-center space-y-2">
-              <h3 className="text-lg font-bold text-slate-900">Excluir Trabalho?</h3>
-              <p className="text-xs text-slate-500">
-                Tem certeza que deseja remover o trabalho <strong className="text-slate-800">"{deletingProject.title}"</strong> ({deletingProject.clientName}) do seu portfólio? Esta ação é imediata.
-              </p>
-            </div>
-            <div className="flex items-center gap-3 pt-2">
-              <button
-                type="button"
-                onClick={() => setDeletingProject(null)}
-                className="flex-1 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-colors min-h-[44px]"
-              >
-                Cancelar
-              </button>
-              <button
-                type="button"
-                onClick={confirmDelete}
-                className="flex-1 py-3 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-xl shadow-md transition-colors min-h-[44px]"
-              >
-                Sim, Excluir
-              </button>
-            </div>
           </div>
         </div>
       )}

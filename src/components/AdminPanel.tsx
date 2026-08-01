@@ -141,11 +141,13 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onGoToSite }) 
         console.warn('Projects sync warning:', e);
       }
 
+      const MOCKUP_URL = 'https://i.ibb.co/6cGqNQZ3/aea34f64-4935-4dd1-b252-3a08f72e0f90.png';
+
       const projectMap = new Map<string, PortfolioProject>();
       serverData.forEach((p) => {
         if (p && p.id) {
           if (p.id === 'personalizze-store' || p.imageUrl?.includes('unsplash') || !p.imageUrl) {
-            p.imageUrl = '/personalizze_mockup.jpg';
+            p.imageUrl = MOCKUP_URL;
           }
           projectMap.set(p.id, p);
         }
@@ -153,14 +155,14 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onGoToSite }) 
       localData.forEach((p) => {
         if (p && p.id) {
           if (p.id === 'personalizze-store' || p.imageUrl?.includes('unsplash') || !p.imageUrl) {
-            p.imageUrl = '/personalizze_mockup.jpg';
+            p.imageUrl = MOCKUP_URL;
           }
           if (!projectMap.has(p.id)) {
             projectMap.set(p.id, p);
           } else {
             const existing = projectMap.get(p.id)!;
             if (existing.imageUrl?.includes('unsplash') || !existing.imageUrl) {
-              existing.imageUrl = p.imageUrl || '/personalizze_mockup.jpg';
+              existing.imageUrl = p.imageUrl || MOCKUP_URL;
             }
           }
         }
@@ -592,7 +594,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onGoToSite }) 
                 >
                   <div className="flex gap-4">
                     <img 
-                      src={p.imageUrl || '/personalizze_mockup.jpg'} 
+                      src={p.imageUrl || 'https://i.ibb.co/6cGqNQZ3/aea34f64-4935-4dd1-b252-3a08f72e0f90.png'} 
                       alt={p.title} 
                       className="w-24 h-24 rounded-xl object-cover border border-slate-800 shrink-0"
                       referrerPolicy="no-referrer"
