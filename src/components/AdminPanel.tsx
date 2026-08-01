@@ -3,12 +3,11 @@ import {
   Building2, Plus, ExternalLink, Trash2, Edit3, Search, 
   Users, TrendingUp, Sparkles, LogOut, CheckCircle2, ArrowLeft,
   MessageSquare, Globe, Tag, RefreshCw, BarChart3, ShieldCheck, Mail, Phone,
-  Star, Quote, Save, Settings, PhoneCall, Bot, Zap, Clock, Play, Copy, Check, Send
+  Star, Quote, Save, Settings, PhoneCall
 } from 'lucide-react';
 import { INITIAL_PORTFOLIO_PROJECTS } from '../data/mockData';
-import { PortfolioProject, CrmLead } from '../types';
+import { PortfolioProject } from '../types';
 import { getStoredWhatsAppNumber, saveWhatsAppNumber, formatWhatsAppDisplay } from '../utils/whatsapp';
-import { CrmSystem } from './CrmSystem';
 
 interface AdminPanelProps {
   onLogout: () => void;
@@ -56,110 +55,18 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onGoToSite }) 
   const [imageUrl, setImageUrl] = useState('');
   const [tags, setTags] = useState('');
 
-  // WhatsApp Configuration & Automation State
+  // WhatsApp Configuration State
   const [whatsappNumber, setWhatsappNumber] = useState<string>(() => getStoredWhatsAppNumber());
   const [whatsappInput, setWhatsappInput] = useState<string>(() => getStoredWhatsAppNumber());
   const [saveSuccessMsg, setSaveSuccessMsg] = useState(false);
 
-  const [autoEnabled, setAutoEnabled] = useState(true);
-  const [welcomeMsg, setWelcomeMsg] = useState('Olá! Seja bem-vindo à Opera Digital. Como posso te ajudar com o crescimento digital da sua empresa hoje?');
-  const [awayMsg, setAwayMsg] = useState('Nosso horário de atendimento é de Segunda a Sexta, das 08h às 18h. Deixe sua mensagem que responderemos logo no início do expediente!');
-  const [triggers, setTriggers] = useState<any[]>([
-    { id: 'trig-1', keyword: 'orçamento', response: 'Com certeza! Para criarmos uma proposta ideal para sua empresa, você pode clicar no botão de Orçamento em nosso site ou nos contar brevemente o seu segmento.', action: 'send_quote_form' },
-    { id: 'trig-2', keyword: 'serviços', response: 'Oferecemos Criação de Websites Profissionais, E-commerces, Portais e Automação do WhatsApp Web com robôs e Agentes Virtuais de IA.', action: 'send_menu' },
-    { id: 'trig-3', keyword: 'horário', response: 'Nosso expediente comercial funciona de Segunda a Sexta-feira, das 08:00 às 18:00 (horário de Brasília). Nosso robô responde 24 horas por dia!', action: 'none' },
-    { id: 'trig-4', keyword: 'humano', response: 'Entendido! Estou notificando a equipe da Opera Digital para um especialista assumir este atendimento diretamente com você em instantes.', action: 'human_transfer' }
-  ]);
-  const [newKeyword, setNewKeyword] = useState('');
-  const [newResponse, setNewResponse] = useState('');
-  const [newAction, setNewAction] = useState<string>('none');
-
-  // Test Sandbox state inside Admin
-  const [sandboxInput, setSandboxInput] = useState('');
-  const [sandboxMessages, setSandboxMessages] = useState<any[]>([
-    { id: 'init', sender: 'bot', text: '🤖 Testador da Automação ativado! Envie uma palavra-chave como "orçamento", "serviços", "horário" ou "humano".' }
-  ]);
-
-  const handleSaveWhatsapp = async (e: React.FormEvent) => {
+  const handleSaveWhatsapp = (e: React.FormEvent) => {
     e.preventDefault();
     const saved = saveWhatsAppNumber(whatsappInput);
     setWhatsappNumber(saved);
     setWhatsappInput(saved);
-
-    try {
-      await fetch('/api/settings', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          whatsappNumber: saved,
-          whatsappAutomation: {
-            enabled: autoEnabled,
-            welcomeMessage: welcomeMsg,
-            awayMessage: awayMsg,
-            workingHours: { start: '08:00', end: '18:00', days: ['seg', 'ter', 'qua', 'qui', 'sex'] },
-            triggers
-          }
-        })
-      });
-    } catch (err) {
-      console.warn('Error saving settings to server:', err);
-    }
-
     setSaveSuccessMsg(true);
     setTimeout(() => setSaveSuccessMsg(false), 3500);
-  };
-
-  const handleAddTrigger = () => {
-    if (!newKeyword.trim() || !newResponse.trim()) return;
-    const newTrig = {
-      id: `trig-${Date.now()}`,
-      keyword: newKeyword.trim().toLowerCase(),
-      response: newResponse.trim(),
-      action: newAction
-    };
-    setTriggers([...triggers, newTrig]);
-    setNewKeyword('');
-    setNewResponse('');
-    setNewAction('none');
-  };
-
-  const handleDeleteTrigger = (id: string) => {
-    setTriggers(triggers.filter((t) => t.id !== id));
-  };
-
-  const handleRunSandboxTest = async (textToSend?: string) => {
-    const text = textToSend || sandboxInput;
-    if (!text.trim()) return;
-
-    const userMsg = { id: `u-${Date.now()}`, sender: 'user', text };
-    setSandboxMessages((prev) => [...prev, userMsg]);
-    if (!textToSend) setSandboxInput('');
-
-    try {
-      const res = await fetch('/api/whatsapp/auto-reply', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: text })
-      });
-      const data = await res.json();
-
-      setSandboxMessages((prev) => [
-        ...prev,
-        {
-          id: `b-${Date.now()}`,
-          sender: 'bot',
-          text: data.reply,
-          matched: data.matched,
-          keywordMatched: data.keywordMatched,
-          action: data.action
-        }
-      ]);
-    } catch (err) {
-      setSandboxMessages((prev) => [
-        ...prev,
-        { id: `b-${Date.now()}`, sender: 'bot', text: 'Resposta simulada para a palavra-chave configurada.' }
-      ]);
-    }
   };
 
   // AI Generation State
@@ -319,12 +226,6 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onGoToSite }) 
             setWhatsappInput(sData.whatsappNumber);
             localStorage.setItem('opera_whatsapp_number', sData.whatsappNumber);
           }
-          if (sData.whatsappAutomation) {
-            setAutoEnabled(sData.whatsappAutomation.enabled ?? true);
-            if (sData.whatsappAutomation.welcomeMessage) setWelcomeMsg(sData.whatsappAutomation.welcomeMessage);
-            if (sData.whatsappAutomation.awayMessage) setAwayMsg(sData.whatsappAutomation.awayMessage);
-            if (Array.isArray(sData.whatsappAutomation.triggers)) setTriggers(sData.whatsappAutomation.triggers);
-          }
         }
       } catch (e) {
         console.warn('Settings sync warning:', e);
@@ -334,157 +235,19 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onGoToSite }) 
     fetchServerData();
   }, []);
 
-  // Normalize lead objects for CRM compatibility
-  const formatLeadForCrm = (l: any): CrmLead => {
-    return {
-      id: String(l.id || `lead-${Date.now()}`),
-      fullName: l.fullName || l.name || 'Cliente',
-      companyName: l.companyName || l.company || '',
-      email: l.email || '',
-      phone: l.phone || '',
-      cnpj: l.cnpj || '',
-      segment: l.segment || 'Geral',
-      projectType: l.projectType || l.solution || 'Criação de Site Profissional',
-      projectDescription: l.projectDescription || l.description || '',
-      stage: l.stage || l.status || 'novo',
-      priority: l.priority || 'media',
-      estimatedValue: l.estimatedValue || 5000,
-      assignedTo: l.assignedTo || 'Equipe Vendas',
-      tags: l.tags || [],
-      source: l.source || 'Formulário Site',
-      createdAt: l.createdAt || l.date || new Date().toISOString(),
-      notes: l.notes || [],
-      activities: l.activities || []
-    };
-  };
-
   // Leads / Registrations state
-  const [leads, setLeads] = useState<CrmLead[]>(() => {
+  const [leads, setLeads] = useState<any[]>(() => {
     try {
       const saved = localStorage.getItem('opera_registered_leads');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed)) return parsed.map(formatLeadForCrm);
-      }
+      if (saved) return JSON.parse(saved);
     } catch (e) {
       console.error(e);
     }
-    return [
-      {
-        id: 'lead-demo-1',
-        fullName: 'Carlos Henrique Mendes',
-        companyName: 'Mendes Advocacia & Consultoria',
-        email: 'carlos@mendesadv.com.br',
-        phone: '51992379969',
-        cnpj: '12.345.678/0001-90',
-        segment: 'Serviços Jurídicos',
-        projectType: 'Criação de Site Profissional',
-        projectDescription: 'Reformulação total da identidade digital e captação de clientes via WhatsApp.',
-        stage: 'proposta',
-        priority: 'alta',
-        estimatedValue: 8500,
-        source: 'Formulário Site',
-        createdAt: new Date().toISOString(),
-        notes: [
-          { id: 'n1', text: 'Enviada proposta comercial detalhada com módulo de agendamento.', author: 'Consultor Vendas', createdAt: new Date().toISOString() }
-        ],
-        activities: [
-          { id: 'a1', type: 'stage_change', description: 'Lead avançado para Proposta Enviada', createdAt: new Date().toISOString() }
-        ]
-      },
-      {
-        id: 'lead-demo-2',
-        fullName: 'Mariana Duarte',
-        companyName: 'Boutique Bella Moda',
-        email: 'mariana@bellamoda.com.br',
-        phone: '51988887777',
-        cnpj: '98.765.432/0001-10',
-        segment: 'Varejo / Moda',
-        projectType: 'E-commerce Completo',
-        projectDescription: 'Loja virtual integrada com PagSeguro e catálogo no WhatsApp Web.',
-        stage: 'negociacao',
-        priority: 'urgente',
-        estimatedValue: 14000,
-        source: 'WhatsApp Bot',
-        createdAt: new Date().toISOString(),
-        notes: [],
-        activities: []
-      }
-    ];
+    return [];
   });
 
-  const handleUpdateLead = (updatedLead: CrmLead) => {
-    const updatedList = leads.map((l) => (l.id === updatedLead.id ? updatedLead : l));
-    setLeads(updatedList);
-    try {
-      localStorage.setItem('opera_registered_leads', JSON.stringify(updatedList));
-    } catch (e) {
-      console.error(e);
-    }
-    fetch(`/api/leads/${updatedLead.id}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(updatedLead)
-    }).catch(() => {});
-  };
-
-  const handleCreateLead = (newLeadData: Partial<CrmLead>) => {
-    const formatted = formatLeadForCrm(newLeadData);
-    const updatedList = [formatted, ...leads];
-    setLeads(updatedList);
-    try {
-      localStorage.setItem('opera_registered_leads', JSON.stringify(updatedList));
-    } catch (e) {
-      console.error(e);
-    }
-    fetch('/api/leads', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(formatted)
-    }).catch(() => {});
-  };
-
-  const handleAddNote = async (leadId: string, noteText: string) => {
-    try {
-      const res = await fetch(`/api/leads/${leadId}/notes`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: noteText, author: 'Equipe Opera Digital' })
-      });
-      if (res.ok) {
-        const data = await res.json();
-        if (data.lead) {
-          handleUpdateLead(data.lead);
-          return;
-        }
-      }
-    } catch (e) {
-      console.warn('Error adding note to server:', e);
-    }
-
-    // Fallback local update
-    const target = leads.find((l) => l.id === leadId);
-    if (target) {
-      const newNote = {
-        id: `note-${Date.now()}`,
-        text: noteText,
-        author: 'Equipe Opera Digital',
-        createdAt: new Date().toISOString()
-      };
-      const updated = {
-        ...target,
-        notes: [newNote, ...(target.notes || [])],
-        activities: [
-          { id: `act-${Date.now()}`, type: 'note' as const, description: `Nota: "${noteText}"`, createdAt: new Date().toISOString() },
-          ...(target.activities || [])
-        ]
-      };
-      handleUpdateLead(updated);
-    }
-  };
-
   const handleDeleteLead = (id: number | string) => {
-    const updated = leads.filter((l) => String(l.id) !== String(id));
+    const updated = leads.filter((l) => l.id !== id);
     setLeads(updated);
     try {
       localStorage.setItem('opera_registered_leads', JSON.stringify(updated));
@@ -750,7 +513,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onGoToSite }) 
                 }`}
               >
                 <Users className="w-4 h-4" />
-                <span>CRM & Leads ({leads.length})</span>
+                <span>Leads ({leads.length})</span>
               </button>
 
               <button
@@ -927,17 +690,154 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onGoToSite }) 
           </div>
         )}
 
-        {/* TAB 2: CRM & LEADS MANAGEMENT */}
+        {/* TAB 2: LEADS AND REGISTRATIONS */}
         {activeTab === 'leads' && (
-          <CrmSystem
-            leads={leads}
-            onUpdateLead={handleUpdateLead}
-            onDeleteLead={handleDeleteLead}
-            onCreateLead={handleCreateLead}
-            onAddNote={handleAddNote}
-          />
-        )}
+          <div className="bg-slate-950 rounded-2xl border border-slate-800 overflow-hidden shadow-xl">
+            <div className="p-4 sm:p-6 border-b border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+              <div>
+                <h3 className="font-bold text-white text-base sm:text-lg">Solicitações de Cadastro & Contatos</h3>
+                <p className="text-xs text-slate-400 mt-0.5 sm:mt-1">
+                  Leads registrados via formulário de contratação e demonstração.
+                </p>
+              </div>
+              <span className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs font-bold px-3 py-1 rounded-full">
+                {leads.length} {leads.length === 1 ? 'Registro' : 'Registros'}
+              </span>
+            </div>
 
+            {leads.length === 0 ? (
+              <div className="p-8 sm:p-12 text-center">
+                <Users className="w-12 h-12 text-slate-700 mx-auto mb-3" />
+                <h4 className="text-white font-bold text-base">Nenhum contato registrado</h4>
+                <p className="text-slate-400 text-xs mt-1 max-w-sm mx-auto">
+                  Os cadastros e solicitações de demonstração realizados pelos clientes no site aparecerão aqui.
+                </p>
+              </div>
+            ) : (
+              <div>
+                {/* Mobile Cards View (Visible on screens < md) */}
+                <div className="block md:hidden divide-y divide-slate-800/80">
+                  {leads.map((lead) => (
+                    <div key={lead.id} className="p-4 space-y-3 hover:bg-slate-900/40 transition-colors">
+                      <div className="flex items-start justify-between gap-2">
+                        <div>
+                          <h4 className="font-bold text-white text-sm">{lead.name}</h4>
+                          <p className="text-[11px] text-slate-400 font-mono mt-0.5">{lead.email}</p>
+                        </div>
+                        <span className="bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded text-[10px] font-bold shrink-0">
+                          {lead.status || 'Novo'}
+                        </span>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-2 text-xs bg-slate-900/60 p-2.5 rounded-xl border border-slate-800/60">
+                        <div>
+                          <span className="text-[10px] text-slate-500 block uppercase font-bold">Módulo</span>
+                          <span className="text-blue-300 font-semibold">{lead.solution || 'Cadastro'}</span>
+                        </div>
+                        <div>
+                          <span className="text-[10px] text-slate-500 block uppercase font-bold">Segmento</span>
+                          <span className="text-slate-300">{lead.segment || '-'}</span>
+                        </div>
+                        <div>
+                          <span className="text-[10px] text-slate-500 block uppercase font-bold">Telefone</span>
+                          <span className="text-slate-200 font-mono">{lead.phone || '-'}</span>
+                        </div>
+                        <div>
+                          <span className="text-[10px] text-slate-500 block uppercase font-bold">Data</span>
+                          <span className="text-slate-400">{lead.date}</span>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center justify-between gap-2 pt-1">
+                        {lead.phone && lead.phone !== '-' ? (
+                          <a
+                            href={`https://wa.me/55${lead.phone.replace(/\D/g, '')}?text=Olá%20${encodeURIComponent(lead.name)},%20sou%20da%20Opera%20Digital!`}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="flex-1 inline-flex items-center justify-center gap-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 px-3 rounded-xl text-xs transition-colors shadow-sm min-h-[40px]"
+                          >
+                            <MessageSquare className="w-4 h-4" />
+                            <span>Chamar no WhatsApp</span>
+                          </a>
+                        ) : (
+                          <div className="flex-1" />
+                        )}
+                        <button
+                          onClick={() => handleDeleteLead(lead.id)}
+                          className="p-2.5 text-slate-400 hover:text-rose-400 hover:bg-rose-500/20 rounded-xl transition-colors border border-slate-800 min-h-[40px] min-w-[40px] flex items-center justify-center"
+                          title="Excluir Contato"
+                        >
+                          <Trash2 className="w-4 h-4 text-rose-400" />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Desktop Table View (Visible on screens >= md) */}
+                <div className="hidden md:block overflow-x-auto">
+                  <table className="w-full text-left text-xs text-slate-300">
+                    <thead className="bg-slate-900 text-slate-400 font-bold uppercase tracking-wider border-b border-slate-800">
+                      <tr>
+                        <th className="p-4">Cliente / Nome</th>
+                        <th className="p-4">E-mail</th>
+                        <th className="p-4">Telefone</th>
+                        <th className="p-4">Módulo</th>
+                        <th className="p-4">Segmento</th>
+                        <th className="p-4">Data</th>
+                        <th className="p-4">Status</th>
+                        <th className="p-4 text-right">Ações</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-800/60">
+                      {leads.map((lead) => (
+                        <tr key={lead.id} className="hover:bg-slate-900/50 transition-colors">
+                          <td className="p-4 font-bold text-white">{lead.name}</td>
+                          <td className="p-4 font-mono text-slate-400">{lead.email}</td>
+                          <td className="p-4 font-mono">{lead.phone}</td>
+                          <td className="p-4">
+                            <span className="bg-blue-500/20 text-blue-300 px-2.5 py-1 rounded-md font-bold">
+                              {lead.solution || 'Cadastro'}
+                            </span>
+                          </td>
+                          <td className="p-4 text-slate-400">{lead.segment || '-'}</td>
+                          <td className="p-4 text-slate-500">{lead.date}</td>
+                          <td className="p-4">
+                            <span className="bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded text-[11px] font-bold">
+                              {lead.status || 'Novo'}
+                            </span>
+                          </td>
+                          <td className="p-4 text-right">
+                            <div className="inline-flex items-center gap-2">
+                              {lead.phone && lead.phone !== '-' && (
+                                <a
+                                  href={`https://wa.me/55${lead.phone.replace(/\D/g, '')}?text=Olá%20${encodeURIComponent(lead.name)},%20sou%20da%20Opera%20Digital!`}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  className="inline-flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-3 py-1.5 rounded-lg transition-colors"
+                                >
+                                  <MessageSquare className="w-3.5 h-3.5" />
+                                  <span>WhatsApp</span>
+                                </a>
+                              )}
+                              <button
+                                onClick={() => handleDeleteLead(lead.id)}
+                                className="p-1.5 text-slate-400 hover:text-rose-400 hover:bg-rose-500/20 rounded-lg transition-colors"
+                                title="Excluir Contato"
+                              >
+                                <Trash2 className="w-4 h-4 text-rose-400" />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* TAB: TESTIMONIALS MANAGEMENT */}
         {activeTab === 'testimonials' && (
@@ -1047,51 +947,34 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onGoToSite }) 
           </div>
         )}
 
-        {/* TAB 4: WHATSAPP CONFIGURATION & AUTOMATION */}
+        {/* TAB 4: WHATSAPP CONFIGURATION */}
         {activeTab === 'whatsapp' && (
-          <div className="max-w-4xl space-y-8">
+          <div className="max-w-3xl space-y-6">
             
-            {/* CARD 1: NUMERO PRINCIPAL & DADOS COMERCIAIS */}
             <div className="bg-slate-950 p-6 sm:p-8 rounded-3xl border border-slate-800 shadow-2xl space-y-6">
-              <div className="flex items-center justify-between border-b border-slate-800 pb-5">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 flex items-center justify-center shrink-0">
-                    <MessageSquare className="w-6 h-6 fill-current" />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                      <span>WhatsApp Business & Automação</span>
-                      <span className="bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[10px] font-black px-2 py-0.5 rounded-md uppercase">
-                        {autoEnabled ? 'Robô Ativo' : 'Pausado'}
-                      </span>
-                    </h3>
-                    <p className="text-xs text-slate-400 mt-0.5">
-                      Configure o número comercial e personalize os robôs e respostas automáticas de atendimento.
-                    </p>
-                  </div>
+              <div className="flex items-center gap-3 border-b border-slate-800 pb-5">
+                <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 flex items-center justify-center shrink-0">
+                  <MessageSquare className="w-6 h-6 fill-current" />
                 </div>
-
-                {/* Status Toggle */}
-                <button
-                  type="button"
-                  onClick={() => setAutoEnabled(!autoEnabled)}
-                  className={`px-4 py-2 rounded-xl text-xs font-bold border transition-all flex items-center gap-2 ${
-                    autoEnabled
-                      ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40 hover:bg-emerald-500/30'
-                      : 'bg-slate-800 text-slate-400 border-slate-700 hover:text-white'
-                  }`}
-                >
-                  <Bot className="w-4 h-4" />
-                  <span>{autoEnabled ? 'Automação Ativada' : 'Ativar Automação'}</span>
-                </button>
+                <div>
+                  <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                    <span>Configuração do WhatsApp de Vendas</span>
+                    <span className="bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[10px] font-black px-2 py-0.5 rounded-md uppercase">
+                      Ativo
+                    </span>
+                  </h3>
+                  <p className="text-xs text-slate-400 mt-0.5">
+                    Defina o número do WhatsApp da empresa para onde os orçamentos e cadastros de clientes serão direcionados.
+                  </p>
+                </div>
               </div>
 
               {/* Status Banner */}
-              <div className="p-4 rounded-2xl bg-slate-900 border border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="p-4 rounded-2xl bg-slate-900 border border-slate-800 flex items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-3 h-3 rounded-full bg-emerald-400 animate-ping shrink-0" />
+                  <div className="w-3 h-3 rounded-full bg-emerald-400 animate-ping" />
                   <div>
-                    <div className="text-xs font-bold text-slate-400 uppercase">Número Ativo no Site</div>
+                    <div className="text-xs font-bold text-slate-300 uppercase">Número Ativo Atual</div>
                     <div className="text-xl font-extrabold text-emerald-400 font-mono tracking-wider">
                       {formatWhatsAppDisplay(whatsappNumber)}
                     </div>
@@ -1101,18 +984,18 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onGoToSite }) 
                   href={`https://wa.me/${whatsappNumber.replace(/\D/g, '')}?text=${encodeURIComponent('Teste de envio do Painel Admin Opera Digital')}`}
                   target="_blank"
                   rel="noreferrer"
-                  className="bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold px-4 py-2.5 rounded-xl border border-slate-700 transition-colors flex items-center gap-2 w-fit"
+                  className="bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold px-4 py-2.5 rounded-xl border border-slate-700 transition-colors flex items-center gap-2"
                 >
                   <ExternalLink className="w-4 h-4 text-emerald-400" />
-                  <span>Testar Número no WhatsApp</span>
+                  <span className="hidden sm:inline">Testar no WhatsApp</span>
                 </a>
               </div>
 
-              {/* Number Input Form */}
-              <form onSubmit={handleSaveWhatsapp} className="space-y-6">
+              {/* Form */}
+              <form onSubmit={handleSaveWhatsapp} className="space-y-5">
                 <div>
                   <label className="block text-xs font-bold text-slate-300 mb-2">
-                    Número do WhatsApp Comercial (Com DDD) *
+                    Número do WhatsApp Comercial (Com código de área / DDD) *
                   </label>
                   <div className="relative">
                     <Phone className="w-5 h-5 text-slate-500 absolute left-3.5 top-3.5" />
@@ -1127,239 +1010,38 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onGoToSite }) 
                   </div>
                   <p className="text-[11px] text-slate-400 mt-2 flex items-center gap-1.5">
                     <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                    <span>Exemplo para Porto Alegre/RS: <strong className="text-slate-300">5551992379969</strong></span>
+                    <span>Exemplo para Porto Alegre/RS: <strong className="text-slate-300">+5551992379969</strong> ou <strong className="text-slate-300">5551992379969</strong></span>
                   </p>
-                </div>
-
-                {/* CARD 2: REGRAS E MENSAGENS PADRÃO */}
-                <div className="pt-4 border-t border-slate-800 space-y-4">
-                  <h4 className="text-sm font-bold text-white flex items-center gap-2">
-                    <Bot className="w-4 h-4 text-emerald-400" />
-                    <span>Mensagens Automáticas Principais</span>
-                  </h4>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-xs font-bold text-slate-300 mb-2">
-                        Mensagem de Boas-Vindas (Primeira Interação)
-                      </label>
-                      <textarea
-                        rows={3}
-                        value={welcomeMsg}
-                        onChange={(e) => setWelcomeMsg(e.target.value)}
-                        className="w-full bg-slate-900 border border-slate-800 text-white text-xs p-3 rounded-xl focus:outline-none focus:border-emerald-500 leading-relaxed"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-xs font-bold text-slate-300 mb-2">
-                        Mensagem de Ausência (Fora do Horário)
-                      </label>
-                      <textarea
-                        rows={3}
-                        value={awayMsg}
-                        onChange={(e) => setAwayMsg(e.target.value)}
-                        className="w-full bg-slate-900 border border-slate-800 text-white text-xs p-3 rounded-xl focus:outline-none focus:border-emerald-500 leading-relaxed"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                {/* CARD 3: GERENCIADOR DE REGRAS E PALAVRAS-CHAVE */}
-                <div className="pt-4 border-t border-slate-800 space-y-4">
-                  <div className="flex items-center justify-between">
-                    <h4 className="text-sm font-bold text-white flex items-center gap-2">
-                      <Zap className="w-4 h-4 text-emerald-400" />
-                      <span>Gatilhos de Palavras-Chave (Respostas Inteligentes)</span>
-                    </h4>
-                    <span className="text-xs text-slate-400 font-medium">
-                      {triggers.length} regras ativas
-                    </span>
-                  </div>
-
-                  {/* Existing Triggers List */}
-                  <div className="space-y-3">
-                    {triggers.map((trig) => (
-                      <div
-                        key={trig.id}
-                        className="p-3.5 rounded-2xl bg-slate-900 border border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
-                      >
-                        <div className="space-y-1">
-                          <div className="flex items-center gap-2">
-                            <span className="bg-emerald-950 text-emerald-400 font-mono text-xs font-bold px-2.5 py-0.5 rounded-lg border border-emerald-800/60">
-                              g: "{trig.keyword}"
-                            </span>
-                            {trig.action && trig.action !== 'none' && (
-                              <span className="bg-blue-950 text-blue-400 text-[10px] font-bold px-2 py-0.5 rounded-md border border-blue-800/60 uppercase">
-                                Ação: {trig.action}
-                              </span>
-                            )}
-                          </div>
-                          <p className="text-xs text-slate-300 leading-relaxed pt-0.5">
-                            {trig.response}
-                          </p>
-                        </div>
-
-                        <button
-                          type="button"
-                          onClick={() => handleDeleteTrigger(trig.id)}
-                          className="text-slate-500 hover:text-red-400 p-2 rounded-lg hover:bg-slate-800 transition-colors self-end sm:self-center"
-                          title="Excluir Gatilho"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Add New Trigger Form */}
-                  <div className="p-4 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-3">
-                    <div className="text-xs font-bold text-slate-300 flex items-center gap-2">
-                      <Plus className="w-4 h-4 text-emerald-400" />
-                      <span>Adicionar Nova Regra de Resposta Automática</span>
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                      <div>
-                        <input
-                          type="text"
-                          placeholder="Palavra-chave (ex: preço)"
-                          value={newKeyword}
-                          onChange={(e) => setNewKeyword(e.target.value)}
-                          className="w-full bg-slate-950 border border-slate-800 text-white text-xs p-2.5 rounded-xl focus:outline-none focus:border-emerald-500"
-                        />
-                      </div>
-
-                      <div className="sm:col-span-2">
-                        <input
-                          type="text"
-                          placeholder="Resposta automática do robô..."
-                          value={newResponse}
-                          onChange={(e) => setNewResponse(e.target.value)}
-                          className="w-full bg-slate-950 border border-slate-800 text-white text-xs p-2.5 rounded-xl focus:outline-none focus:border-emerald-500"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs text-slate-400">Ação pós-resposta:</span>
-                        <select
-                          value={newAction}
-                          onChange={(e) => setNewAction(e.target.value)}
-                          className="bg-slate-950 border border-slate-800 text-slate-200 text-xs p-2 rounded-lg focus:outline-none"
-                        >
-                          <option value="none">Nenhuma ação</option>
-                          <option value="send_quote_form">Abrir Formulário de Orçamento</option>
-                          <option value="send_menu">Exibir Menu de Opções</option>
-                          <option value="human_transfer">Transferir para Humano</option>
-                        </select>
-                      </div>
-
-                      <button
-                        type="button"
-                        onClick={handleAddTrigger}
-                        disabled={!newKeyword.trim() || !newResponse.trim()}
-                        className="bg-slate-800 hover:bg-slate-700 disabled:opacity-50 text-emerald-400 text-xs font-bold px-4 py-2 rounded-xl border border-slate-700 transition-colors flex items-center justify-center gap-1.5"
-                      >
-                        <Plus className="w-3.5 h-3.5" />
-                        <span>Adicionar Regra</span>
-                      </button>
-                    </div>
-                  </div>
                 </div>
 
                 {saveSuccessMsg && (
                   <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-bold flex items-center gap-2 animate-in fade-in">
                     <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                    <span>Configurações do WhatsApp salvas com sucesso no servidor!</span>
+                    <span>Número do WhatsApp atualizado e salvo com sucesso! Todos os orçamentos do site já estão apontando para este número.</span>
                   </div>
                 )}
 
-                <div className="pt-2 flex items-center justify-end">
+                <div className="pt-2 flex items-center justify-end gap-3">
                   <button
                     type="submit"
-                    className="bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-sm px-7 py-3.5 rounded-xl shadow-lg shadow-emerald-950/60 transition-all flex items-center gap-2"
+                    className="bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-sm px-7 py-3 rounded-xl shadow-lg shadow-emerald-950/60 transition-all flex items-center gap-2 min-h-[44px]"
                   >
                     <Save className="w-4 h-4" />
-                    <span>Salvar Configurações da Automação</span>
+                    <span>Salvar Alterações do WhatsApp</span>
                   </button>
                 </div>
               </form>
             </div>
 
-            {/* CARD 4: TESTADOR DE SIMULAÇÃO DE BOT (SANDBOX INTEGRADO) */}
-            <div className="bg-slate-950 p-6 rounded-3xl border border-slate-800 space-y-4 shadow-xl">
-              <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-                <h4 className="text-sm font-bold text-white flex items-center gap-2">
-                  <Play className="w-4 h-4 text-emerald-400" />
-                  <span>Simulador de Teste da Automação (Sandbox no Painel)</span>
-                </h4>
-                <span className="text-[10px] bg-slate-800 text-slate-300 px-2.5 py-1 rounded-md font-mono">
-                  Ambiente de Teste
-                </span>
-              </div>
-
-              <div className="bg-slate-900/80 rounded-2xl p-4 border border-slate-800 space-y-3 h-64 overflow-y-auto">
-                {sandboxMessages.map((m) => (
-                  <div
-                    key={m.id}
-                    className={`flex flex-col ${m.sender === 'user' ? 'items-end' : 'items-start'}`}
-                  >
-                    <div
-                      className={`max-w-[85%] rounded-2xl px-3.5 py-2.5 text-xs leading-relaxed ${
-                        m.sender === 'user'
-                          ? 'bg-blue-600 text-white rounded-br-none'
-                          : 'bg-slate-800 text-slate-100 border border-slate-700/80 rounded-bl-none'
-                      }`}
-                    >
-                      {m.text}
-                      {m.keywordMatched && (
-                        <div className="text-[9px] text-emerald-400 font-mono mt-1 pt-1 border-t border-slate-700">
-                          Gatilho ativado: "{m.keywordMatched}"
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              <div className="flex items-center gap-2">
-                <input
-                  type="text"
-                  placeholder="Digite uma mensagem para testar a resposta do robô..."
-                  value={sandboxInput}
-                  onChange={(e) => setSandboxInput(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleRunSandboxTest()}
-                  className="flex-1 bg-slate-900 border border-slate-800 text-white text-xs px-4 py-3 rounded-xl focus:outline-none focus:border-emerald-500"
-                />
-                <button
-                  type="button"
-                  onClick={() => handleRunSandboxTest()}
-                  className="bg-emerald-600 hover:bg-emerald-500 text-white px-5 py-3 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5"
-                >
-                  <Send className="w-3.5 h-3.5" />
-                  <span>Testar</span>
-                </button>
-              </div>
-            </div>
-
-            {/* CARD 5: WEBHOOK & META WHATSAPP BUSINESS CLOUD API INTEGRATION */}
-            <div className="bg-slate-950 p-6 rounded-3xl border border-slate-800 space-y-4">
-              <h4 className="text-sm font-bold text-white flex items-center gap-2">
-                <Globe className="w-4 h-4 text-blue-400" />
-                <span>Integração com Webhook Meta WhatsApp Business Cloud API</span>
+            {/* Explanation card */}
+            <div className="bg-slate-950 p-6 rounded-3xl border border-slate-800 space-y-3">
+              <h4 className="text-xs font-bold uppercase text-slate-400 tracking-wider flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-emerald-400" />
+                <span>Como funciona o encaminhamento de mensagens</span>
               </h4>
               <p className="text-xs text-slate-300 leading-relaxed">
-                Para conectar sua conta oficial da Meta (Facebook Business Manager) diretamente ao servidor da Opera Digital, utilize a URL de Webhook abaixo para receber eventos de mensagens e cadastrar leads instantaneamente:
+                Quando o cliente preenche o formulário de orçamento no site ou clica nos botões de contato por WhatsApp, a plataforma compõe automaticamente a mensagem com o nome do cliente, empresa, e-mail e detalhes do projeto, e abre a conversa diretamente no WhatsApp do número configurado acima: <strong className="text-emerald-400 font-mono">{formatWhatsAppDisplay(whatsappNumber)}</strong>.
               </p>
-
-              <div className="p-3 bg-slate-900 border border-slate-800 rounded-xl flex items-center justify-between font-mono text-xs text-emerald-400">
-                <span className="truncate pr-2">{typeof window !== 'undefined' ? `${window.location.origin}/api/whatsapp/webhook` : '/api/whatsapp/webhook'}</span>
-                <span className="bg-emerald-950 text-emerald-300 text-[10px] px-2 py-1 rounded font-bold uppercase shrink-0">
-                  GET & POST
-                </span>
-              </div>
             </div>
 
           </div>

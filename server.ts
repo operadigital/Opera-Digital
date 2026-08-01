@@ -8,80 +8,13 @@ dotenv.config();
 
 const STORE_PATH = path.resolve(process.cwd(), 'data_store.json');
 
-interface WhatsAppAutomationTrigger {
-  id: string;
-  keyword: string;
-  response: string;
-  action?: 'send_menu' | 'send_quote_form' | 'human_transfer' | 'send_catalog' | 'none';
-}
-
-interface WhatsAppAutomationConfig {
-  enabled: boolean;
-  welcomeMessage: string;
-  awayMessage: string;
-  workingHours: {
-    start: string;
-    end: string;
-    days: string[];
-  };
-  triggers: WhatsAppAutomationTrigger[];
-  webhookConfig?: {
-    verifyToken: string;
-    apiToken?: string;
-    phoneNumberId?: string;
-  };
-}
-
 interface StoreData {
   projects: any[];
   leads: any[];
   settings?: {
     whatsappNumber?: string;
-    whatsappAutomation?: WhatsAppAutomationConfig;
   };
 }
-
-const DEFAULT_WHATSAPP_AUTOMATION: WhatsAppAutomationConfig = {
-  enabled: true,
-  welcomeMessage: 'Olá! Seja bem-vindo à Opera Digital. Como posso te ajudar com o crescimento digital da sua empresa hoje?',
-  awayMessage: 'Nosso horário de atendimento é de Segunda a Sexta, das 08h às 18h. Deixe sua mensagem que responderemos logo no início do expediente!',
-  workingHours: {
-    start: '08:00',
-    end: '18:00',
-    days: ['seg', 'ter', 'qua', 'qui', 'sex']
-  },
-  triggers: [
-    {
-      id: 'trig-1',
-      keyword: 'orçamento',
-      response: 'Com certeza! Para criarmos uma proposta ideal para sua empresa, você pode clicar no botão de Orçamento em nosso site ou nos contar brevemente o seu segmento.',
-      action: 'send_quote_form'
-    },
-    {
-      id: 'trig-2',
-      keyword: 'serviços',
-      response: 'Oferecemos Criação de Websites Profissionais, E-commerces, Portais e Automação do WhatsApp Web com robôs e Agentes Virtuais de IA.',
-      action: 'send_menu'
-    },
-    {
-      id: 'trig-3',
-      keyword: 'horário',
-      response: 'Nosso expediente comercial funciona de Segunda a Sexta-feira, das 08:00 às 18:00 (horário de Brasília). Nosso robô responde 24 horas por dia!',
-      action: 'none'
-    },
-    {
-      id: 'trig-4',
-      keyword: 'humano',
-      response: 'Entendido! Estou notificando a equipe da Opera Digital para um especialista assumir este atendimento diretamente com você em instantes.',
-      action: 'human_transfer'
-    }
-  ],
-  webhookConfig: {
-    verifyToken: 'opera_digital_meta_token_2026',
-    apiToken: '',
-    phoneNumberId: ''
-  }
-};
 
 const DEFAULT_PROJECTS = [
   {
@@ -105,27 +38,16 @@ function loadStore(): StoreData {
       const parsed = JSON.parse(raw);
       const loadedProjects = Array.isArray(parsed?.projects) ? parsed.projects : [];
       const projects = loadedProjects.length > 0 ? loadedProjects : DEFAULT_PROJECTS;
-      const settings = parsed?.settings || {};
-      if (!settings.whatsappNumber) settings.whatsappNumber = '5551992379969';
-      if (!settings.whatsappAutomation) settings.whatsappAutomation = DEFAULT_WHATSAPP_AUTOMATION;
-
       return {
         projects,
         leads: Array.isArray(parsed?.leads) ? parsed.leads : [],
-        settings
+        settings: parsed?.settings || { whatsappNumber: '5551992379969' }
       };
     }
   } catch (e) {
     console.error('Error reading store file:', e);
   }
-  return { 
-    projects: DEFAULT_PROJECTS, 
-    leads: [], 
-    settings: { 
-      whatsappNumber: '5551992379969',
-      whatsappAutomation: DEFAULT_WHATSAPP_AUTOMATION
-    } 
-  };
+  return { projects: DEFAULT_PROJECTS, leads: [], settings: { whatsappNumber: '5551992379969' } };
 }
 
 function saveStore(data: StoreData) {
@@ -271,16 +193,7 @@ async function startServer() {
 
   // REST API Routes for Persistent Leads & Registrations
   app.get('/api/leads', (req, res) => {
-    const formattedLeads = (store.leads || []).map((l) => ({
-      ...l,
-      stage: l.stage || l.status || 'novo',
-      priority: l.priority || 'media',
-      estimatedValue: l.estimatedValue || (l.projectType?.includes('E-commerce') ? 12000 : l.projectType?.includes('Automação') ? 8500 : 5000),
-      notes: l.notes || [],
-      activities: l.activities || [],
-      source: l.source || 'Formulário Site'
-    }));
-    res.json(formattedLeads);
+    res.json(store.leads || []);
   });
 
   app.post('/api/leads', (req, res) => {
@@ -289,117 +202,14 @@ async function startServer() {
       res.status(400).json({ error: 'Dados do lead inválidos.' });
       return;
     }
-    const formatted = {
-      ...lead,
-      stage: lead.stage || lead.status || 'novo',
-      priority: lead.priority || 'media',
-      estimatedValue: lead.estimatedValue || 5000,
-      createdAt: lead.createdAt || new Date().toISOString(),
-      notes: lead.notes || [],
-      activities: lead.activities || [
-        {
-          id: `act-${Date.now()}`,
-          type: 'system',
-          description: 'Lead cadastrado no sistema CRM',
-          createdAt: new Date().toISOString()
-        }
-      ],
-      source: lead.source || 'Formulário Site'
-    };
-
     const idx = store.leads.findIndex((l) => String(l.id) === String(lead.id));
     if (idx >= 0) {
-      store.leads[idx] = { ...store.leads[idx], ...formatted };
+      store.leads[idx] = lead;
     } else {
-      store.leads.unshift(formatted);
+      store.leads.unshift(lead);
     }
     saveStore(store);
     res.json({ success: true, leads: store.leads });
-  });
-
-  app.patch('/api/leads/:id', (req, res) => {
-    const { id } = req.params;
-    const updates = req.body || {};
-    const idx = store.leads.findIndex((l) => String(l.id) === String(id));
-    if (idx < 0) {
-      res.status(404).json({ error: 'Lead não encontrado.' });
-      return;
-    }
-
-    const currentLead = store.leads[idx];
-    const oldStage = currentLead.stage || currentLead.status || 'novo';
-    const newStage = updates.stage || oldStage;
-
-    const activities = [...(currentLead.activities || [])];
-    if (newStage !== oldStage) {
-      const stageNames: Record<string, string> = {
-        novo: 'Novo Lead',
-        qualificacao: 'Em Qualificação',
-        proposta: 'Proposta Enviada',
-        negociacao: 'Em Negociação',
-        ganho: 'Fechado / Ganho',
-        perdido: 'Perdido'
-      };
-      activities.unshift({
-        id: `act-${Date.now()}`,
-        type: 'stage_change',
-        description: `Estágio alterado de "${stageNames[oldStage] || oldStage}" para "${stageNames[newStage] || newStage}"`,
-        createdAt: new Date().toISOString(),
-        author: updates.author || 'Administrador'
-      });
-    }
-
-    const updatedLead = {
-      ...currentLead,
-      ...updates,
-      stage: newStage,
-      status: newStage,
-      activities,
-      lastContactDate: updates.lastContactDate || new Date().toISOString()
-    };
-
-    store.leads[idx] = updatedLead;
-    saveStore(store);
-    res.json({ success: true, lead: updatedLead, leads: store.leads });
-  });
-
-  app.post('/api/leads/:id/notes', (req, res) => {
-    const { id } = req.params;
-    const { text, author } = req.body || {};
-    if (!text || !text.trim()) {
-      res.status(400).json({ error: 'Texto da nota é obrigatório.' });
-      return;
-    }
-
-    const idx = store.leads.findIndex((l) => String(l.id) === String(id));
-    if (idx < 0) {
-      res.status(404).json({ error: 'Lead não encontrado.' });
-      return;
-    }
-
-    const lead = store.leads[idx];
-    const newNote = {
-      id: `note-${Date.now()}`,
-      text: text.trim(),
-      author: author || 'Equipe Opera Digital',
-      createdAt: new Date().toISOString()
-    };
-
-    const notes = [newNote, ...(lead.notes || [])];
-    const activities = [
-      {
-        id: `act-${Date.now()}`,
-        type: 'note' as const,
-        description: `Nova anotação registrada: "${text.trim().substring(0, 60)}${text.trim().length > 60 ? '...' : ''}"`,
-        createdAt: new Date().toISOString(),
-        author: author || 'Equipe Opera Digital'
-      },
-      ...(lead.activities || [])
-    ];
-
-    store.leads[idx] = { ...lead, notes, activities, lastContactDate: new Date().toISOString() };
-    saveStore(store);
-    res.json({ success: true, lead: store.leads[idx], note: newNote });
   });
 
   app.post('/api/leads/sync', (req, res) => {
@@ -418,271 +228,27 @@ async function startServer() {
     res.json({ success: true, leads: store.leads });
   });
 
-  // API Routes: Settings (WhatsApp Number, Automation, etc.)
+  // API Routes: Settings (WhatsApp Number, etc.)
   app.get('/api/settings', (req, res) => {
     res.json({
-      whatsappNumber: store.settings?.whatsappNumber || '5551992379969',
-      whatsappAutomation: store.settings?.whatsappAutomation || DEFAULT_WHATSAPP_AUTOMATION
+      whatsappNumber: store.settings?.whatsappNumber || '5551992379969'
     });
   });
 
   app.post('/api/settings', (req, res) => {
-    const { whatsappNumber, whatsappAutomation } = req.body || {};
-    if (!store.settings) store.settings = {};
+    const { whatsappNumber } = req.body || {};
     if (whatsappNumber && typeof whatsappNumber === 'string') {
       const cleaned = whatsappNumber.replace(/\D/g, '');
       if (cleaned.length >= 10) {
+        if (!store.settings) store.settings = {};
         store.settings.whatsappNumber = cleaned;
+        saveStore(store);
       }
     }
-    if (whatsappAutomation && typeof whatsappAutomation === 'object') {
-      store.settings.whatsappAutomation = whatsappAutomation;
-    }
-    saveStore(store);
     res.json({
       success: true,
-      whatsappNumber: store.settings?.whatsappNumber || '5551992379969',
-      whatsappAutomation: store.settings?.whatsappAutomation || DEFAULT_WHATSAPP_AUTOMATION
+      whatsappNumber: store.settings?.whatsappNumber || '5551992379969'
     });
-  });
-
-  // API Routes: WhatsApp Automation specific
-  app.get('/api/whatsapp/automation', (req, res) => {
-    res.json(store.settings?.whatsappAutomation || DEFAULT_WHATSAPP_AUTOMATION);
-  });
-
-  app.post('/api/whatsapp/automation', (req, res) => {
-    const config = req.body;
-    if (!store.settings) store.settings = {};
-    store.settings.whatsappAutomation = config;
-    saveStore(store);
-    res.json({ success: true, whatsappAutomation: store.settings.whatsappAutomation });
-  });
-
-  // API Route: WhatsApp Auto-Reply Simulator/Engine
-  app.post('/api/whatsapp/auto-reply', (req, res) => {
-    const { message, clientName } = req.body || {};
-    const autoConfig = store.settings?.whatsappAutomation || DEFAULT_WHATSAPP_AUTOMATION;
-
-    if (!autoConfig.enabled) {
-      res.json({
-        enabled: false,
-        reply: 'O robô de atendimento está desativado no momento.'
-      });
-      return;
-    }
-
-    const text = (message || '').toLowerCase().trim();
-    let matchedTrigger = autoConfig.triggers.find((t) => {
-      const kw = t.keyword.toLowerCase().trim();
-      return text.includes(kw);
-    });
-
-    if (matchedTrigger) {
-      res.json({
-        enabled: true,
-        matched: true,
-        keywordMatched: matchedTrigger.keyword,
-        reply: matchedTrigger.response,
-        action: matchedTrigger.action || 'none'
-      });
-    } else if (text === '' || text.includes('oi') || text.includes('ola') || text.includes('olá') || text.includes('bom dia') || text.includes('boa tarde') || text.includes('boa noite')) {
-      res.json({
-        enabled: true,
-        matched: true,
-        keywordMatched: 'saudacao',
-        reply: autoConfig.welcomeMessage,
-        action: 'send_menu'
-      });
-    } else {
-      res.json({
-        enabled: true,
-        matched: false,
-        reply: `Agradecemos sua mensagem! Para atendimento imediato, selecione uma das opções:\n1️⃣ Orçamento de Site / E-commerce\n2️⃣ Nossos Serviços & Soluções\n3️⃣ Horário de Atendimento\n4️⃣ Falar com um Especialista Humano`,
-        action: 'send_menu'
-      });
-    }
-  });
-
-  // API Route: WhatsApp Live Chat Inbox Endpoints
-  app.get('/api/whatsapp/chats', (req, res) => {
-    // Return all chats associated with leads or store
-    const conversations = store.leads.map((lead) => {
-      const messages = lead.chatMessages || [
-        {
-          id: `msg-initial-${lead.id}`,
-          sender: 'client' as const,
-          text: lead.projectDescription || `Olá! Gostaria de mais informações sobre ${lead.projectType || 'seus serviços'}.`,
-          timestamp: lead.createdAt || new Date().toISOString(),
-          status: 'read' as const
-        }
-      ];
-      const lastMsg = messages[messages.length - 1];
-
-      return {
-        id: `chat-${lead.id}`,
-        leadId: lead.id,
-        clientName: lead.fullName,
-        clientPhone: lead.phone,
-        companyName: lead.companyName || '',
-        unreadCount: messages.filter((m) => m.sender === 'client' && m.status !== 'read').length,
-        lastMessage: lastMsg ? lastMsg.text : 'Nenhuma mensagem',
-        lastMessageTime: lastMsg ? lastMsg.timestamp : lead.createdAt,
-        status: (lead.stage === 'ganho' || lead.stage === 'perdido') ? 'finalizado' : 'em_atendimento',
-        messages
-      };
-    });
-
-    res.json(conversations);
-  });
-
-  app.post('/api/whatsapp/chats/message', (req, res) => {
-    const { leadId, text, sender = 'agent', mediaUrl } = req.body || {};
-
-    if (!leadId || !text || !text.trim()) {
-      res.status(400).json({ error: 'leadId e texto da mensagem são obrigatórios.' });
-      return;
-    }
-
-    const idx = store.leads.findIndex((l) => String(l.id) === String(leadId));
-    if (idx < 0) {
-      res.status(404).json({ error: 'Lead não encontrado para o chat.' });
-      return;
-    }
-
-    const lead = store.leads[idx];
-    const newMsg = {
-      id: `msg-${Date.now()}`,
-      sender: sender as 'agent' | 'client' | 'bot',
-      text: text.trim(),
-      timestamp: new Date().toISOString(),
-      status: 'delivered' as const,
-      mediaUrl
-    };
-
-    const chatMessages = [...(lead.chatMessages || []), newMsg];
-    const activities = [
-      {
-        id: `act-${Date.now()}`,
-        type: 'whatsapp' as const,
-        description: `${sender === 'agent' ? 'Resposta enviada no WhatsApp' : 'Mensagem recebida do cliente'}: "${text.trim().substring(0, 60)}${text.trim().length > 60 ? '...' : ''}"`,
-        createdAt: new Date().toISOString(),
-        author: sender === 'agent' ? 'Atendente Opera Digital' : lead.fullName
-      },
-      ...(lead.activities || [])
-    ];
-
-    store.leads[idx] = {
-      ...lead,
-      chatMessages,
-      activities,
-      lastContactDate: new Date().toISOString()
-    };
-
-    saveStore(store);
-
-    res.json({
-      success: true,
-      message: newMsg,
-      lead: store.leads[idx]
-    });
-  });
-
-  app.post('/api/whatsapp/generate-reply', async (req, res) => {
-    try {
-      const { clientName, projectType, conversationHistory } = req.body || {};
-      const apiKey = process.env.GEMINI_API_KEY;
-
-      if (apiKey && apiKey !== 'MY_GEMINI_API_KEY') {
-        const { GoogleGenAI } = await import('@google/genai');
-        const ai = new GoogleGenAI({ apiKey });
-        const prompt = `Você é um atendente especialista e consultor de vendas da agência Opera Digital.
-Seu objetivo é responder mensagens de clientes no WhatsApp de forma extremamente educada, clara, objetiva e persuasiva para fechamento de projetos de tecnologia (sites, e-commerce, automação de WhatsApp).
-
-Cliente: ${clientName || 'Cliente'}
-Interesse do cliente: ${projectType || 'Desenvolvimento Web / Automação'}
-Histórico de conversa recente:
-${conversationHistory || 'O cliente enviou mensagem demonstrando interesse nos serviços.'}
-
-Escreva UMA resposta perfeita para WhatsApp (curta, amigável, com 1 ou 2 emojis adequados e uma pergunta para engajar). Não use formatação em markdown excessiva, apenas texto pronto para enviar no WhatsApp.`;
-
-        const response = await ai.models.generateContent({
-          model: 'gemini-2.5-flash',
-          contents: prompt
-        });
-
-        const replyText = response.text?.trim();
-        if (replyText) {
-          res.json({ reply: replyText });
-          return;
-        }
-      }
-
-      // Smart fallback response
-      res.json({
-        reply: `Olá ${clientName || ''}! 👋 Sou da equipe da Opera Digital. Vi seu interesse em ${projectType || 'nossas soluções'}. Podemos agendar uma rápida conversa de 10 minutos para tirar suas dúvidas e apresentar um orçamento personalizado?`
-      });
-    } catch (err) {
-      console.error('Error generating AI reply:', err);
-      res.json({
-        reply: `Olá! Obrigado pelo contato. Como podemos ajudar no desenvolvimento do seu projeto hoje?`
-      });
-    }
-  });
-
-  // Meta WhatsApp Business Cloud API Webhook Integration Endpoint
-  app.get('/api/whatsapp/webhook', (req, res) => {
-    const mode = req.query['hub.mode'];
-    const token = req.query['hub.verify_token'];
-    const challenge = req.query['hub.challenge'];
-
-    const verifyToken = store.settings?.whatsappAutomation?.webhookConfig?.verifyToken || 'opera_digital_meta_token_2026';
-
-    if (mode === 'subscribe' && token === verifyToken) {
-      console.log('WhatsApp Webhook verified successfully!');
-      res.status(200).send(challenge);
-    } else {
-      res.sendStatus(403);
-    }
-  });
-
-  app.post('/api/whatsapp/webhook', (req, res) => {
-    const body = req.body;
-    if (body.object === 'whatsapp_business_account') {
-      console.log('Received WhatsApp Webhook event:', JSON.stringify(body, null, 2));
-      // Auto-register incoming webhook message as a lead
-      try {
-        const entry = body.entry?.[0];
-        const changes = entry?.changes?.[0];
-        const value = changes?.value;
-        const messages = value?.messages;
-        if (messages && messages[0]) {
-          const msg = messages[0];
-          const fromPhone = msg.from;
-          const msgText = msg.text?.body || 'Mensagem via WhatsApp Webhook';
-          const newLead = {
-            id: 'wa-' + Date.now(),
-            fullName: `Contato WhatsApp (${fromPhone})`,
-            companyName: 'Lead WhatsApp',
-            email: `${fromPhone}@whatsapp.user`,
-            phone: fromPhone,
-            segment: 'WhatsApp Automation',
-            projectType: 'Automação WhatsApp',
-            projectDescription: msgText,
-            createdAt: new Date().toISOString(),
-            status: 'novo',
-            whatsappOptIn: true
-          };
-          store.leads.unshift(newLead);
-          saveStore(store);
-        }
-      } catch (err) {
-        console.error('Error parsing WhatsApp webhook payload:', err);
-      }
-      res.status(200).send('EVENT_RECEIVED');
-    } else {
-      res.sendStatus(404);
-    }
   });
 
   // API Route: AI Generation for Portfolio Projects

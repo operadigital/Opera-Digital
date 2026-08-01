@@ -6,10 +6,9 @@ import { getStoredWhatsAppNumber } from '../utils/whatsapp';
 interface ServicesSectionProps {
   onNavigateToRegister: () => void;
   onOpenQuoteModal?: (serviceName?: string) => void;
-  onOpenBotModal?: () => void;
 }
 
-export const ServicesSection: React.FC<ServicesSectionProps> = ({ onNavigateToRegister, onOpenQuoteModal, onOpenBotModal }) => {
+export const ServicesSection: React.FC<ServicesSectionProps> = ({ onNavigateToRegister, onOpenQuoteModal }) => {
   return (
     <section id="servicos" className="py-20 bg-gradient-to-b from-black via-slate-950 to-slate-900 text-slate-100 border-t border-slate-800/80">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-20">
@@ -360,26 +359,16 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({ onNavigateToRe
                 </div>
               </div>
 
-              <div className="pt-4 flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5">
+              <div className="pt-4">
                 <a
                   href={`https://wa.me/${getStoredWhatsAppNumber()}?text=${encodeURIComponent('Olá! Gostaria de estruturar o WhatsApp Web da minha empresa.')}`}
                   target="_blank"
                   rel="noreferrer"
-                  className="px-6 py-4 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-sm rounded-xl shadow-lg shadow-emerald-950/50 transition-all flex items-center justify-center gap-2 group min-h-[48px]"
+                  className="w-full sm:w-auto px-8 py-4 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-sm rounded-xl shadow-lg shadow-emerald-950/50 transition-all flex items-center justify-center gap-2 group min-h-[48px]"
                 >
                   <span>Estruturar Meu WhatsApp Web</span>
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </a>
-
-                {onOpenBotModal && (
-                  <button
-                    onClick={onOpenBotModal}
-                    className="px-6 py-4 bg-slate-800 hover:bg-slate-700 text-emerald-400 hover:text-emerald-300 border border-emerald-500/40 hover:border-emerald-400 font-extrabold text-sm rounded-xl transition-all flex items-center justify-center gap-2 shadow-md group min-h-[48px]"
-                  >
-                    <Bot className="w-4 h-4 text-emerald-400 group-hover:rotate-12 transition-transform" />
-                    <span>Testar Robô de IA ao Vivo</span>
-                  </button>
-                )}
               </div>
             </div>
 
