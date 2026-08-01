@@ -128,13 +128,6 @@ export const Header: React.FC<HeaderProps> = ({
             </a>
 
             <a 
-              href="#agentes-ia" 
-              className="hover:text-blue-400 transition-colors flex items-center gap-1.5 font-semibold"
-            >
-              <span>Agentes de IA</span>
-            </a>
-
-            <a 
               href="#sobre" 
               className="hover:text-blue-400 transition-colors font-semibold"
             >
@@ -212,13 +205,6 @@ export const Header: React.FC<HeaderProps> = ({
                 className="block px-3 py-3 text-base font-semibold text-slate-200 hover:bg-slate-900 active:bg-slate-800 rounded-xl transition-colors"
               >
                 Trabalhos Realizados
-              </a>
-              <a
-                href="#agentes-ia"
-                onClick={() => setMobileMenuOpen(false)}
-                className="block px-3 py-3 text-base font-semibold text-slate-200 hover:bg-slate-900 active:bg-slate-800 rounded-xl transition-colors"
-              >
-                Agentes de IA
               </a>
               <a
                 href="#sobre"

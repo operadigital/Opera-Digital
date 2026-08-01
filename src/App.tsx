@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Header } from './components/Header';
 import { Hero } from './components/Hero';
-import { AiAgentsSection } from './components/AiAgentsSection';
 import { ServicesSection } from './components/ServicesSection';
 import { PortfolioSection } from './components/PortfolioSection';
 import { AboutSection } from './components/AboutSection';
@@ -164,10 +163,7 @@ export default function App() {
           onOpenQuoteModal={handleOpenQuoteModal}
         />
 
-        {/* 3. Agentes de IA Section */}
-        <AiAgentsSection />
-
-        {/* 4. Trabalhos Realizados & Portfólio */}
+        {/* 3. Trabalhos Realizados & Portfólio */}
         <PortfolioSection />
 
         {/* 5. Sobre Section */}

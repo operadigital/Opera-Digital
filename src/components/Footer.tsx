@@ -98,7 +98,6 @@ export const Footer: React.FC<FooterProps> = ({
               <li><a href="#criacao-de-sites" className="hover:text-white transition-colors">Landing Pages de Alta Conversão</a></li>
               <li><a href="#estruturacao-whatsapp" className="hover:text-white transition-colors">Robôs & Agentes virtuais de IA</a></li>
               <li><a href="#trabalhos" className="hover:text-white transition-colors">Trabalhos Realizados</a></li>
-              <li><a href="#agentes-ia" className="hover:text-white transition-colors font-medium text-blue-400">Simulador de Agente IA</a></li>
             </ul>
           </div>
 
