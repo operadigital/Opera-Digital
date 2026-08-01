@@ -70,7 +70,7 @@ export const Hero: React.FC<HeroProps> = ({ onNavigateToRegister, onOpenQuoteMod
           <div className="relative mt-2 lg:mt-0">
             <div className="bg-slate-900/90 rounded-2xl shadow-2xl border border-slate-800 overflow-hidden transform lg:rotate-1 hover:rotate-0 transition-transform duration-300">
               {/* Top Browser Bar */}
-              <div className="bg-slate-950 px-3 sm:px-4 py-2.5 sm:py-3 border-b border-slate-800 flex items-center justify-between gap-2">
+              <div className="bg-slate-950 px-3 sm:px-4 py-2.5 sm:py-3 border-b border-slate-800 flex items-center justify-between gap-2 overflow-x-auto no-scrollbar">
                 <div className="flex items-center gap-1.5 shrink-0">
                   <div className="w-2.5 h-2.5 rounded-full bg-red-500/80"></div>
                   <div className="w-2.5 h-2.5 rounded-full bg-amber-500/80"></div>
@@ -78,23 +78,23 @@ export const Hero: React.FC<HeroProps> = ({ onNavigateToRegister, onOpenQuoteMod
                 </div>
 
                 {/* Mockup Service Selector */}
-                <div className="flex bg-slate-900 p-0.5 rounded-lg text-[10px] sm:text-[11px] font-semibold text-slate-400 border border-slate-800">
+                <div className="flex bg-slate-900 p-0.5 rounded-lg text-[10px] sm:text-[11px] font-semibold text-slate-400 border border-slate-800 shrink-0">
                   <button
                     onClick={() => setActiveTab('sites')}
-                    className={`px-3 py-1 rounded-md transition-all flex items-center gap-1.5 ${
+                    className={`px-2.5 sm:px-3 py-1 rounded-md transition-all flex items-center gap-1 sm:gap-1.5 whitespace-nowrap ${
                       activeTab === 'sites' ? 'bg-[#0A4EE4] text-white shadow-xs font-bold' : 'hover:text-white'
                     }`}
                   >
-                    <Globe className="w-3.5 h-3.5" />
+                    <Globe className="w-3.5 h-3.5 shrink-0" />
                     <span>Criação de Sites</span>
                   </button>
                   <button
                     onClick={() => setActiveTab('whatsapp')}
-                    className={`px-3 py-1 rounded-md transition-all flex items-center gap-1.5 ${
+                    className={`px-2.5 sm:px-3 py-1 rounded-md transition-all flex items-center gap-1 sm:gap-1.5 whitespace-nowrap ${
                       activeTab === 'whatsapp' ? 'bg-emerald-600 text-white shadow-xs font-bold' : 'hover:text-white'
                     }`}
                   >
-                    <MessageSquare className="w-3.5 h-3.5" />
+                    <MessageSquare className="w-3.5 h-3.5 shrink-0" />
                     <span>WhatsApp Web</span>
                   </button>
                 </div>

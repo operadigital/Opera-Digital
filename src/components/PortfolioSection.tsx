@@ -386,8 +386,8 @@ export const PortfolioSection: React.FC = () => {
                   </p>
 
                   {/* Tags & Action Buttons */}
-                  <div className="pt-2 border-t border-slate-800 flex items-center justify-between gap-3">
-                    <div className="flex flex-wrap gap-1.5 max-w-[60%]">
+                  <div className="pt-3 border-t border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                    <div className="flex flex-wrap gap-1.5 min-w-0 flex-1">
                       {project.tags.map((tag, idx) => (
                         <span
                           key={idx}
@@ -399,10 +399,10 @@ export const PortfolioSection: React.FC = () => {
                     </div>
 
                     {/* View Result Actions */}
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center justify-between sm:justify-end gap-2 w-full sm:w-auto shrink-0 pt-1 sm:pt-0 border-t sm:border-t-0 border-slate-800/60">
                       <button
                         onClick={(e) => handleCopyLink(e, project.resultLink, project.id)}
-                        className="p-2 text-slate-400 hover:text-blue-400 hover:bg-slate-800 rounded-lg transition-colors border border-transparent hover:border-slate-700"
+                        className="p-2 text-slate-400 hover:text-blue-400 hover:bg-slate-800 rounded-lg transition-colors border border-slate-800 sm:border-transparent hover:border-slate-700 flex items-center gap-1 text-xs"
                         title="Copiar link direto"
                       >
                         {copiedId === project.id ? (
@@ -410,6 +410,7 @@ export const PortfolioSection: React.FC = () => {
                         ) : (
                           <Copy className="w-4 h-4" />
                         )}
+                        <span className="inline sm:hidden text-[11px]">Copiar Link</span>
                       </button>
 
                       <button
@@ -417,7 +418,7 @@ export const PortfolioSection: React.FC = () => {
                           e.stopPropagation();
                           handleOpenLiveLink(project.resultLink);
                         }}
-                        className="bg-[#0A4EE4] hover:bg-blue-600 text-white text-xs font-bold px-3.5 py-2 rounded-xl transition-all flex items-center gap-1.5 shadow-md"
+                        className="bg-[#0A4EE4] hover:bg-blue-600 text-white text-xs font-bold px-4 py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 shadow-md flex-1 sm:flex-initial"
                       >
                         <span>Ver Resultado</span>
                         <ExternalLink className="w-3.5 h-3.5" />

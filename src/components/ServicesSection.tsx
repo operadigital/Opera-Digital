@@ -110,14 +110,14 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({ onNavigateToRe
                 />
 
                 {/* Floating Badge overlay */}
-                <div className="absolute top-4 left-4 bg-slate-950/85 backdrop-blur-md text-white px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-2 border border-slate-700/80">
-                  <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></div>
-                  <span>Exemplo de Site de Alta Performance</span>
+                <div className="absolute top-3 sm:top-4 left-3 sm:left-4 bg-slate-950/85 backdrop-blur-md text-white px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg text-[10px] sm:text-xs font-bold flex items-center gap-1.5 sm:gap-2 border border-slate-700/80 max-w-[calc(100%-1.5rem)] truncate">
+                  <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0"></div>
+                  <span className="truncate">Exemplo de Site de Alta Performance</span>
                 </div>
 
-                <div className="absolute bottom-4 right-4 bg-slate-900/95 backdrop-blur-md text-slate-100 px-3.5 py-2 rounded-xl text-xs font-extrabold shadow-lg border border-slate-800 flex items-center gap-2">
-                  <Star className="w-4 h-4 text-amber-400 fill-amber-400" />
-                  <span>Pontuação Google PageSpeed: 99/100</span>
+                <div className="absolute bottom-3 sm:bottom-4 right-3 sm:right-4 bg-slate-900/95 backdrop-blur-md text-slate-100 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-[10px] sm:text-xs font-extrabold shadow-lg border border-slate-800 flex items-center gap-1.5 sm:gap-2 max-w-[calc(100%-1.5rem)] truncate">
+                  <Star className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-400 fill-amber-400 shrink-0" />
+                  <span className="truncate">Google PageSpeed: 99/100</span>
                 </div>
               </div>
 
@@ -264,9 +264,9 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({ onNavigateToRe
                     </div>
 
                     {/* Bottom Input Field Visual */}
-                    <div className="relative z-10 bg-[#202c33] p-2 rounded-xl border border-[#2a3942] flex items-center justify-between text-slate-400 text-xs">
-                      <span>Digite sua mensagem ou escolha uma resposta rápida...</span>
-                      <div className="p-1.5 bg-emerald-600 text-white rounded-lg">
+                    <div className="relative z-10 bg-[#202c33] p-2 rounded-xl border border-[#2a3942] flex items-center justify-between text-slate-400 text-xs gap-2 min-w-0">
+                      <span className="truncate min-w-0 text-[11px] sm:text-xs">Digite sua mensagem ou escolha uma resposta rápida...</span>
+                      <div className="p-1.5 bg-emerald-600 text-white rounded-lg shrink-0">
                         <ArrowRight className="w-3.5 h-3.5" />
                       </div>
                     </div>

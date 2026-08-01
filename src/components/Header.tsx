@@ -80,11 +80,11 @@ export const Header: React.FC<HeaderProps> = ({
 
               {/* Menu Container */}
               {servicesMenuOpen && (
-                <div className="absolute top-full left-1/2 -translate-x-1/2 w-[520px] bg-slate-900 rounded-2xl shadow-2xl border border-slate-800 p-4 grid grid-cols-1 gap-3 mt-1 animate-in fade-in slide-in-from-top-2 duration-200 z-50">
+                <div className="absolute top-full left-1/2 -translate-x-1/2 w-[calc(100vw-2rem)] max-w-[520px] bg-slate-900 rounded-2xl shadow-2xl border border-slate-800 p-3 sm:p-4 grid grid-cols-1 gap-2.5 mt-1 animate-in fade-in slide-in-from-top-2 duration-200 z-50">
                   <a
                     href="#criacao-de-sites"
                     onClick={() => setServicesMenuOpen(false)}
-                    className="flex items-start gap-3.5 p-3.5 rounded-xl hover:bg-slate-800/80 transition-colors group border border-transparent hover:border-slate-700/80"
+                    className="flex items-start gap-3.5 p-3 sm:p-3.5 rounded-xl hover:bg-slate-800/80 transition-colors group border border-transparent hover:border-slate-700/80"
                   >
                     <div className="p-2.5 rounded-xl bg-blue-950/80 text-blue-400 group-hover:bg-[#0A4EE4] group-hover:text-white transition-colors shrink-0 border border-blue-800/50">
                       <Globe className="w-5 h-5" />
@@ -173,13 +173,13 @@ export const Header: React.FC<HeaderProps> = ({
         <>
           {/* Backdrop */}
           <div 
-            className="fixed inset-0 z-40 bg-slate-950/80 backdrop-blur-xs md:hidden"
+            className="fixed inset-0 z-40 bg-slate-950/80 backdrop-blur-sm md:hidden"
             onClick={() => setMobileMenuOpen(false)}
             aria-hidden="true"
           />
 
           {/* Drawer Menu */}
-          <div className="relative z-50 md:hidden bg-slate-950 border-b border-slate-800 px-4 pt-3 pb-6 space-y-4 shadow-2xl animate-in slide-in-from-top duration-200 max-h-[85vh] overflow-y-auto text-slate-100">
+          <div className="fixed top-[57px] sm:top-[65px] left-0 right-0 bottom-0 z-50 md:hidden bg-slate-950/98 backdrop-blur-xl border-b border-slate-800 px-4 pt-4 pb-8 space-y-4 shadow-2xl animate-in slide-in-from-top duration-200 overflow-y-auto text-slate-100">
             <div className="space-y-1">
               <div className="text-xs uppercase font-extrabold tracking-wider text-slate-400 px-3 py-1">
                 Serviços Principais
