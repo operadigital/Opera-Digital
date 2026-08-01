@@ -132,9 +132,6 @@ export const Header: React.FC<HeaderProps> = ({
               className="hover:text-blue-400 transition-colors flex items-center gap-1.5 font-semibold"
             >
               <span>Agentes de IA</span>
-              <span className="bg-blue-950/80 text-blue-400 border border-blue-800/60 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">
-                BETA
-              </span>
             </a>
 
             <a 
@@ -219,12 +216,9 @@ export const Header: React.FC<HeaderProps> = ({
               <a
                 href="#agentes-ia"
                 onClick={() => setMobileMenuOpen(false)}
-                className="flex items-center justify-between px-3 py-3 text-base font-semibold text-slate-200 hover:bg-slate-900 active:bg-slate-800 rounded-xl transition-colors"
+                className="block px-3 py-3 text-base font-semibold text-slate-200 hover:bg-slate-900 active:bg-slate-800 rounded-xl transition-colors"
               >
-                <span>Agentes de IA</span>
-                <span className="bg-blue-950 text-blue-400 text-xs font-bold px-2.5 py-0.5 rounded-full border border-blue-800/50">
-                  BETA
-                </span>
+                Agentes de IA
               </a>
               <a
                 href="#sobre"

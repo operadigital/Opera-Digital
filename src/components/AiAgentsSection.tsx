@@ -27,7 +27,7 @@ export const AiAgentsSection: React.FC = () => {
               <span>Agentes de Inteligência Artificial</span>
             </div>
             <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
-              Agentes de IA <span className="text-blue-400 text-xs font-bold align-top ml-1 bg-blue-950/80 border border-blue-800/60 px-2 py-0.5 rounded-full">BETA</span>
+              Agentes de IA
             </h2>
           </div>
           <a href="#servicos" className="text-sm font-bold text-blue-400 hover:text-blue-300 hidden sm:flex items-center gap-1">
